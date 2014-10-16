@@ -1,0 +1,27 @@
+{
+  "name": "modelFactory",
+  "version": "0.0.1",
+  "homepage": "https://github.com/phxdatasec/modelFactory",
+  "authors": [
+    "@amcdnl"
+  ],
+  "description": "modelFactory makes working with RESTful APIs in AngularJS easy! ",
+  "main": ["dist/modelFactory.js"],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "src",
+    "examples"
+  ],
+  "dependencies": {
+    "angular": ">=1.3.0",
+    "uri-templates": "~0.1.5",
+    "deep-diff": "~0.2.0"
+  },
+  "devDependencies": {
+    "angular-sanitize": ">=1.2.18",
+    "angular-mocks": ">=1.2.18"
+  }
+}
