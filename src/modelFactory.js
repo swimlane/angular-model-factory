@@ -483,6 +483,7 @@ define(['angular', 'uri-templates', 'deep-diff], function(angular, uriTemplates,
 
                     promiseTracker[params.url] = undefined;
                 }).error(function(response) {
+                    promiseTracker[params.url] = undefined;
                     def.reject(response);
                 });
 
