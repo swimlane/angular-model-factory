@@ -1,12 +1,29 @@
 define(['angular', 'modelFactory'], function (angular) {
 
     var module = angular.module('myapp', ['modelFactory']);
+    
+    module.factory('AnimalModel', function() {
+        function Animal(val) {
+            angular.extend(this, val);
+        };
 
-    module.factory('ZooModel', function($modelFactory){
+        Animal.prototype.dateAdded = function(val) {
+            return new Date(val);
+        };
+
+        return Animal;
+    });
+
+    module.factory('ZooModel', function($modelFactory, AnimalModel){
     
         var model = $modelFactory('api/zoo', {
             defaults: {
                 newAnimal: true
+            },
+            map: {
+                animals: function(animal){
+                    return animal.map(function(a){ return new AnimalModel(a); })
+                }    
             },
             actions: {
                 query: {
