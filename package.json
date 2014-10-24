@@ -8,6 +8,7 @@
     "grunt-cli": ">= 0.1.7",
     "grunt-contrib-concat": "*",
     "grunt-contrib-jshint": "*",
-    "grunt-contrib-uglify": "*"
+    "grunt-contrib-uglify": "*",
+    "grunt-ng-annotate": "^0.4.0"
   }
 }

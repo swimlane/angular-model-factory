@@ -3,6 +3,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-bower-task');
+    grunt.loadNpmTasks('grunt-ng-annotate');
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('bower.json'),
@@ -25,6 +26,17 @@ module.exports = function(grunt) {
             footer: '})(angular);',
             process: function(src, filepath) {
               return src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '$1');
+            }
+          },
+          ngAnnotate: {
+            app: {
+              files: [
+                {
+                    expand: true,
+                    src: ['src/*.js'],
+                    rename: function (dest, src) { return src + '-annotated'; },
+                }
+              ]
             }
           },
           dist: {
@@ -53,7 +65,8 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask('build', ['bower', 'concat', 'uglify']);
+    grunt.registerTask('prebuild', ['bower', 'ngAnnotate']);
+    grunt.registerTask('build', ['concat', 'uglify']);
 
     return grunt;
 };
