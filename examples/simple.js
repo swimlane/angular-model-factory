@@ -15,8 +15,7 @@ define(['angular', 'modelFactory'], function (angular) {
     });
 
     module.factory('ZooModel', function($modelFactory, AnimalModel){
-    
-        var model = $modelFactory('api/zoo', {
+        return $modelFactory('api/zoo', {
             defaults: {
                 zooName: 'New Zoo'
             },
@@ -35,8 +34,6 @@ define(['angular', 'modelFactory'], function (angular) {
                 }
             }
         });
-
-        return model;
     });
 
     module.config(function ($stateProvider) {
