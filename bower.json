@@ -1,13 +1,17 @@
 {
   "name": "modelFactory",
   "version": "0.0.1",
-  "homepage": "https://github.com/phxdatasec/modelFactory",
   "authors": [
-    "amcdnl"
+    "Austin McDaniel <amcdaniel2@gmail.com>"
   ],
-  "description": "modelFactory makes working with RESTful APIs in AngularJS easy! ",
-  "main": ["dist/modelFactory.js"],
+  "description": "modelFactory makes working with RESTful APIs in AngularJS easy",
   "license": "MIT",
+  "homepage": "https://github.com/phxdatasec/modelFactory",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/phxdatasec/modelFactory.git"
+  },
+  "main": "./dist/modelFactory-bundle.min.js",
   "ignore": [
     "**/.*",
     "node_modules",
