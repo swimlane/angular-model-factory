@@ -18,7 +18,7 @@ define(['angular', 'modelFactory'], function (angular) {
     
         var model = $modelFactory('api/zoo', {
             defaults: {
-                newAnimal: true
+                zooName: 'New Zoo'
             },
             map: {
                 animals: function(animal){
