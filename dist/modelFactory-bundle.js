@@ -413,7 +413,7 @@
 	
 	return UriTemplate;
 });
-var module = angular.module('core.model', ['utils.diff']);
+var module = angular.module('modelFactory', []);
 
 // compression
 var forEach = angular.forEach,

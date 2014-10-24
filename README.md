@@ -60,7 +60,7 @@ This is a very full featured model/cache/validation etc.  Its framework agnostic
 Another backbone model clone.  This one actually requires backbone and lodash.
 
 
-## Requirements
+## Features
 
 - URI Templates (RFC6570)
 - Object Deep Diff / Reversion
@@ -95,13 +95,19 @@ Another backbone model clone.  This one actually requires backbone and lodash.
 
 ## API
 
+### Using it
+
+- Include `dist/modelFactory-build.js` in your app
+- Include `modelFactory` in your module
+- Enjoy magic ;)
+
 #### The Factory
 
 **Simple Definition**
 
 A basic model definition.
 
-    var module = angular.module('services.zoo', ['core.model']);
+    var module = angular.module('services.zoo', ['modelFactory']);
 
     module.factory('AnimalModel', function($modelFactory){
       return $modelFactory('api/zoo');
@@ -113,7 +119,7 @@ A basic model definition.
 
 A advanced definition that demonstrates all scenarios.
 
-    var module = angular.module('services.zoo', ['core.model']);
+    var module = angular.module('services.zoo', ['modelFactory']);
 
     module.factory('AnimalModel', function($modelFactory){
     
