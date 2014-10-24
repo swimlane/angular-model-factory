@@ -1,49 +1,59 @@
 module.exports = function(grunt) {
 
-    grunt.loadNpmTasks('grunt-contrib-requirejs');
+    grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-bower-task');
 
     grunt.initConfig({
-        pkg: grunt.file.readJSON('package.json'),
-        bower: {
-            all:{
-                rjsConfig: 'main.js'
-            }
-        },
-        requirejs: {
-            compile: {
-                options: {
-                    removeCombined: true,
-                    findNestedDependencies: true,
-                    //insertRequire: ['main'],
-                    name: 'main',
-                    out: 'dist/modelFactory.js',
-                    separateCSS: true,
-                    skipDirOptimize: true,
-                    fileExclusionRegExp: /^(?:node_modules|(?:r|build)\.js)$/,
+        pkg: grunt.file.readJSON('bower.json'),
 
-                    mainConfigFile: 'main.js',
-                    preserveLicenseComments: false,
-                    //include: ['bower_components/requirejs/require'],
-                    //optimize: 'none',
-                    optimize: 'uglify2',
-                    uglify2:{
-                        mangle: false
-                    },
-                    production: true,
-                    compile: {
-                        options: {
-                            paths: {
-                                'angular':'empty:',
-                                'main':'empty:'
-                            }
-                        }
-                    }
-                }
+        meta: {
+          banner: '/**\n' +
+          ' * <%= pkg.description %>\n' +
+          ' * @version v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %>\n' +
+          ' * @link <%= pkg.homepage %>\n' +
+          ' * @author <%= pkg.authors.join(", ") %>\n' +
+          ' * @license MIT License, http://www.opensource.org/licenses/MIT\n' +
+          ' */\n'
+        },
+        bower: {
+          install: {}
+        },
+        concat: {
+          options: {
+            banner: '<%= meta.banner %>\n(function(angular, undefined) {\n\'use strict\';\n',
+            footer: '})(angular);',
+            process: function(src, filepath) {
+              return src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '$1');
             }
+          },
+          dist: {
+            files: {
+              'dist/<%= pkg.name %>.js': [
+                'src/**/*.js'
+              ],
+              'dist/<%= pkg.name %>-bundle.js': [
+                'bower_components/deep-diff/releases/deep-diff-0.2.0.min.js',
+                'bower_components/uri-templates/uri-templates.js',
+                'src/**/*.js'
+              ]
+            }
+          }
+        },
+        uglify: {
+          options: {
+            banner: '<%= meta.banner %>'
+          },
+          dist: {
+            files: {
+              'dist/<%= pkg.name %>.min.js': 'dist/<%= pkg.name %>.js',
+              'dist/<%= pkg.name %>-bundle.min.js': 'dist/<%= pkg.name %>-bundle.js'
+            }
+          }
         }
     });
 
-    grunt.registerTask('build', ['requirejs']);
+    grunt.registerTask('build', ['bower', 'concat', 'uglify']);
 
     return grunt;
 };
