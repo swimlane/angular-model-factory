@@ -589,7 +589,7 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
 
         // extend the static class with arguments that are not internal
         forEach(options, function(v, k){
-            if(instanceKeywords.indexOf(k) === -1){
+            if(staticKeywords.indexOf(k) === -1){
                 Model[k] = v;
             }
         });
