@@ -12,8 +12,6 @@ Why would you use this over other available solutions?
 - Minimal Depdencies, only use URI template and deep-diff ( this isn't even required ) utility.  NO underscore, lodash, jquery, etc!
 - Its full of awesome features
 
-*CAUTION: This is still experimental.*
-
 
 ### Other Solutions
 
@@ -360,6 +358,8 @@ The `$pending` attribute on the model can be used to easily disable a button whi
 when completed the `$pending` state will be set to false re-enabling the button.
 
 ## Todos
+
+- Tests
 
 - Better cache invalidation
 
