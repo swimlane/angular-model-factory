@@ -11,9 +11,9 @@ var extendDeep = function extendDeep(dst) {
     forEach(arguments, function(obj) {
         if (obj !== dst) {
             forEach(obj, function(value, key) {
-                if (dst[key] && dst[key].constructor && dst[key].constructor === Object) {
+                if (dst[key] && angular.isObject(dst[key])) {
                     extendDeep(dst[key], value);
-                } else {
+                } else if(!angular.isFunction(dst[key])) {
                     dst[key] = value;
                 }
             });
@@ -336,7 +336,7 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
                     instance.$pending = false;
 
                     // extend the value from the server to me
-                    extend(instance, value);
+                    extendDeep(instance, value);
                 });
 
                 return promise;
