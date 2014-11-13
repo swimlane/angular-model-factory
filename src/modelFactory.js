@@ -229,6 +229,9 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
 
             // wrap each obj
             value.forEach(function(v, i){
+                // this should not happen but prevent blow up
+                if(v === null || v === undefined) return;
+                
                 // create an instance
                 var inst = v.constructor === Model ? 
                     v : new Model(v);
