@@ -1,8 +1,8 @@
 /**
- * modelFactory makes working with RESTful APIs in AngularJS easy! 
- * @version v0.0.1 - 2014-10-24
+ * modelFactory makes working with RESTful APIs in AngularJS easy
+ * @version v0.0.1 - 2014-11-14
  * @link https://github.com/phxdatasec/modelFactory
- * @author amcdnl
+ * @author Austin McDaniel <amcdaniel2@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
 
@@ -15,16 +15,30 @@ var forEach = angular.forEach,
     extend = angular.extend,
     copy = angular.copy;
 
+// keywords that are reserved for model instance
+// internal usage only and to be stripped
+// before sending to server
+var instanceKeywords = [ '$$array', '$save', '$destroy', 
+    '$pending', '$revert', '$diff', '$extend' ];
+
+// keywords that are reserved for the model static
+// these are used to determine if a attribute should be extended
+// to the model static class for like a helper that is not a http method
+var staticKeywords = [ 'actions', 'instance', 'list', 'defaults', 
+    'pk', 'stripTrailingSlashes', 'map' ];
+
 // Deep extends
 // http://stackoverflow.com/questions/15310935/angularjs-extend-recursive
 var extendDeep = function extendDeep(dst) {
     forEach(arguments, function(obj) {
         if (obj !== dst) {
             forEach(obj, function(value, key) {
-                if (dst[key] && dst[key].constructor && dst[key].constructor === Object) {
-                    extendDeep(dst[key], value);
-                } else {
-                    dst[key] = value;
+                if(instanceKeywords.indexOf(key) === -1){
+                    if (dst[key] && angular.isObject(dst[key])) {
+                        extendDeep(dst[key], value);
+                    } else if(!angular.isFunction(dst[key])) {
+                        dst[key] = value;
+                    }
                 }
             });
         }
@@ -186,18 +200,6 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
         list: {}
     };
 
-    // keywords that are reserved for model instance
-    // internal usage only and to be stripped
-    // before sending to server
-    var instanceKeywords = [ '$array', '$save', '$destroy', 
-        '$pending', '$revert', '$diff' ];
-
-    // keywords that are reserved for the model static
-    // these are used to determine if a attribute should be extended
-    // to the model static class for like a helper that is not a http method
-    var staticKeywords = [ 'actions', 'instance', 'list', 'defaults', 
-        'pk', 'stripTrailingSlashes', 'map' ];
-
     /**
      * Model factory.
      *
@@ -239,12 +241,15 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
 
             // wrap each obj
             value.forEach(function(v, i){
+                // this should not happen but prevent blow up
+                if(v === null || v === undefined) return;
+
                 // create an instance
                 var inst = v.constructor === Model ? 
                     v : new Model(v);
 
                 // set a pointer to the array
-                inst.$array = value;
+                inst.$$array = value;
 
                 // reset to new instance
                 value[i] = inst;
@@ -255,7 +260,7 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
             var __oldPush = value.push;
             value.push = function(model){
                 if(model.constructor === Model){
-                    model.$array = value;
+                    model.$$array = value;
                 }
                 __oldPush.apply(value, arguments);
             };
@@ -346,7 +351,7 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
                     instance.$pending = false;
 
                     // extend the value from the server to me
-                    extend(instance, value);
+                    extendDeep(instance, value);
                 });
 
                 return promise;
@@ -368,7 +373,7 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
                 promise.then(function(){
                     instance.$pending = false;
 
-                    var arr = instance.$array;
+                    var arr = instance.$$array;
                     if(arr){
                         arr.splice(arr.indexOf(instance), 1);
                     }
@@ -382,7 +387,7 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
              * current instance.
              * https://github.com/flitbit/diff
              */
-            instance.$diff = function() {
+            instance.$diff = function(){
                 return DeepDiff.deep(old, instance, function(path, key) {
                     return key[0] === '$';
                 });
@@ -393,7 +398,16 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
              * This does NOT save the model to the server, call `$save` to do that.
              */
             instance.$revert = function(){
-                extend(instance, old);
+                return instance.$extend(old);
+            };
+
+            /**
+             * Extends the properties of the new object onto
+             * the current object without replacing it.  Helpful
+             * when copying and then re-copying new props back
+             */
+            instance.$extend = function(n){
+                extendDeep(instance, n);
                 return instance;
             };
 
@@ -599,7 +613,7 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
 
         // extend the static class with arguments that are not internal
         forEach(options, function(v, k){
-            if(instanceKeywords.indexOf(k) === -1){
+            if(staticKeywords.indexOf(k) === -1){
                 Model[k] = v;
             }
         });
@@ -611,6 +625,4 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
     };
 
     return modelFactory;
-});
-
-return module;})(angular);
+});})(angular);
