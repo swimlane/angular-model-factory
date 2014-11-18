@@ -583,7 +583,7 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
             var uri = new UriTemplate(u || url)
                 .fillFromObject(params || {});
 
-            if(options.stripTrailing){
+            if(options.stripTrailingSlashes){
                 uri = uri.replace(/\/+$/, '') || '/';
             }
 
