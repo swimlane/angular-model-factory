@@ -1,6 +1,6 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v0.0.1 - 2014-11-14
+ * @version v0.0.1 - 2014-11-18
  * @link https://github.com/phxdatasec/modelFactory
  * @author Austin McDaniel <amcdaniel2@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -352,6 +352,9 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
 
                     // extend the value from the server to me
                     extendDeep(instance, value);
+                }, function(){
+                    // rejected   
+                    instance.$pending = false;
                 });
 
                 return promise;
@@ -377,6 +380,9 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
                     if(arr){
                         arr.splice(arr.indexOf(instance), 1);
                     }
+                }, function(){
+                    // rejected   
+                    instance.$pending = false;
                 });
                 
                 return promise;
@@ -587,7 +593,7 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
             var uri = new UriTemplate(u || url)
                 .fillFromObject(params || {});
 
-            if(options.stripTrailing){
+            if(options.stripTrailingSlashes){
                 uri = uri.replace(/\/+$/, '') || '/';
             }
 
@@ -625,4 +631,5 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
     };
 
     return modelFactory;
-});})(angular);
+});
+})(angular);
