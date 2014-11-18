@@ -95,8 +95,8 @@ Another backbone model clone.  This one actually requires backbone and lodash.
 
 ### Using it
 
-- Include `dist/modelFactory-build.js` in your app
-- Include `modelFactory` in your module
+- Include `dist/modelFactory.js` in your app
+- Add `modelFactory` to your module
 - Enjoy magic ;)
 
 #### The Factory
