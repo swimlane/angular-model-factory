@@ -88,7 +88,7 @@ Another backbone model clone.  This one actually requires backbone and lodash.
 - [deep-diff](https://github.com/flitbit/diff)
 - [uri-templates](https://github.com/geraintluff/uri-templates)
  
-*NOTE: You will need to include deep-diff and uritemplates references and ensure usage is correct.*
+*NOTE: You will need to include deep-diff and uri-templates references; you can use the bundled src if you want to include them all by default.*
 
 
 ## API
