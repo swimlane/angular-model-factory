@@ -8,7 +8,7 @@ Why would you use this over other available solutions?
 - Patterns/Practices, the model definition closely resembles Angular's ngResource meaning its easy to swap out, replace later (if ngResource gets awesome suddenly), eases scaling new devs / organizations, and its designed for Angular; not a backbone port!
 - Utiilizes Angular at the core, it doesn't duplicate things Angular already does.  Any action can be passed a `$http` configuration option, all your interceptors still work, it uses Angular's cache, etc!
 - Compliant, URI Template matches the specs.
-- 1.27KB gziped/minified ( excludes depedencies )
+- 1.45KB gziped/minified ( excludes depedencies )
 - Minimal Depdencies, only use URI template and deep-diff ( this isn't even required ) utility.  NO underscore, lodash, jquery, etc!
 - Its full of awesome features
 
