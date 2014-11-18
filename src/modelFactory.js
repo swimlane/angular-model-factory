@@ -342,6 +342,9 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
 
                     // extend the value from the server to me
                     extendDeep(instance, value);
+                }, function(){
+                    // rejected   
+                    instance.$pending = false;
                 });
 
                 return promise;
@@ -367,6 +370,9 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
                     if(arr){
                         arr.splice(arr.indexOf(instance), 1);
                     }
+                }, function(){
+                    // rejected   
+                    instance.$pending = false;
                 });
                 
                 return promise;
