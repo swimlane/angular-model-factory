@@ -504,15 +504,16 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
          * callback before/after and state setting.
          */
         Model.$call = function(params){
-            // if we have the promise in queue, call it
-            if(promiseTracker[params.url]){
-                return promiseTracker[params.url];
+            // if we have the promise in queue, return it
+            var signature = params.method + ':' + params.url;
+            if (promiseTracker[signature]) {
+                return promiseTracker[signature];
             }
 
             var def = $q.defer();
 
             // set the queue for this promise
-            promiseTracker[params.url] = def.promise;
+            promiseTracker[signature] = def.promise;
 
             // copy the data so we can manipulate 
             // it before the request and not affect
@@ -548,9 +549,9 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory, Diff){
                     def.resolve(response);
                 }
 
-                promiseTracker[params.url] = undefined;
+                promiseTracker[signature] = undefined;
             }).error(function(response){
-                promiseTracker[params.url] = undefined;
+                promiseTracker[signature] = undefined;
                 def.reject(response);
             });
 
