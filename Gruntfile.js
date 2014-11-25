@@ -22,11 +22,12 @@ module.exports = function(grunt) {
         },
         concat: {
           options: {
-            banner: '<%= meta.banner %>\n(function(angular, undefined) {\n\'use strict\';\n',
-            footer: '})(angular);',
-            process: function(src, filepath) {
-              return src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '$1');
-            }
+            banner: '<%= meta.banner %>'
+            //banner: '<%= meta.banner %>\n(function(angular, undefined) {\n\'use strict\';\n',
+            //footer: '})(angular);',
+            //process: function(src, filepath) {
+            //  return src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '$1');
+            //}
           },
           ngAnnotate: {
             app: {
