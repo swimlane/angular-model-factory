@@ -1,6 +1,6 @@
 {
-  "name": "modelFactory",
-  "version": "0.0.4",
+  "name": "model-factory",
+  "version": "0.0.5",
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-bower": "*",

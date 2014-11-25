@@ -95,7 +95,8 @@ Another backbone model clone.  This one actually requires backbone and lodash.
 
 ### Using it
 
-- Include `dist/modelFactory.js` in your app
+- `bower install model-factory --save`
+- Include `bower_components/dist/model-factory-bundle.js` in your app
 - Add `modelFactory` to your module
 - Enjoy magic ;)
 

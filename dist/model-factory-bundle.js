@@ -1,7 +1,7 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
  * @version v0.0.4 - 2014-11-25
- * @link https://github.com/phxdatasec/modelFactory
+ * @link https://github.com/phxdatasec/model-factory
  * @author Austin McDaniel <amcdaniel2@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
