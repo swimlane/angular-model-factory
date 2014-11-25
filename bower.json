@@ -6,10 +6,10 @@
   ],
   "description": "modelFactory makes working with RESTful APIs in AngularJS easy",
   "license": "MIT",
-  "homepage": "https://github.com/phxdatasec/modelFactory",
+  "homepage": "https://github.com/phxdatasec/model-factory",
   "repository": {
     "type": "git",
-    "url": "git://github.com/phxdatasec/modelFactory.git"
+    "url": "git://github.com/phxdatasec/model-factory.git"
   },
   "main": "./dist/modelFactory-bundle.min.js",
   "ignore": [
