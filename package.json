@@ -1,6 +1,6 @@
 {
   "name": "model-factory",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-bower": "*",
@@ -9,6 +9,6 @@
     "grunt-contrib-concat": "*",
     "grunt-contrib-jshint": "*",
     "grunt-contrib-uglify": "*",
-    "grunt-ng-annotate": "^0.7.0"
+    "ng-annotate": "^0.13.0"
   }
 }
