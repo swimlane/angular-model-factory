@@ -11,7 +11,7 @@
     "type": "git",
     "url": "git://github.com/phxdatasec/model-factory.git"
   },
-  "main": "./dist/modelFactory-bundle.min.js",
+  "main": "./dist/model-factory-bundle.min.js",
   "ignore": [
     "**/.*",
     "node_modules",
