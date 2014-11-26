@@ -128,7 +128,7 @@ A advanced definition that demonstrates all scenarios.
             pk: 'id',
         
             map: {
-                'zooId: 'id',
+                'zooId': 'id',
 
                 // has many
                 'animals': AnimalModel.List,
@@ -151,11 +151,11 @@ A advanced definition that demonstrates all scenarios.
                     
                     // before ajax call
                     // this only manipulates data sent not core object
-                    beforeRequest: function() { ... } 
+                    beforeRequest: function() { /*...*/ },
                     
                     // after ajax call response
                     // happens before the object is wrapped
-                    afterRequest: function(){ ... }
+                    afterRequest: function(){ /*...*/ }
                 },
                 
                 // these are implied by default given
