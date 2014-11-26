@@ -22,23 +22,24 @@ module.exports = function(grunt) {
         },
         concat: {
           options: {
-            banner: '<%= meta.banner %>'
+            //banner: '<%= meta.banner %>'
             //banner: '<%= meta.banner %>\n(function(angular, undefined) {\n\'use strict\';\n',
-            //footer: '})(angular);',
+            banner: '<%= meta.banner %>\n(function() {\n',
+            footer: '\n})();',
             //process: function(src, filepath) {
             //  return src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '$1');
             //}
           },
           ngAnnotate: {
-            app: {
-              files: [
-                {
-                    expand: true,
-                    src: ['src/*.js'],
-                    rename: function (dest, src) { return src + '-annotated'; },
-                }
-              ]
-            }
+              target: {
+                  files: [
+                      {
+                          expand: true,
+                          src: ['src/**/*.js'],
+                          ext: '.annotated.js'
+                      }
+                  ]
+              }
           },
           dist: {
             files: {
@@ -55,6 +56,7 @@ module.exports = function(grunt) {
         },
         uglify: {
           options: {
+            mangle: false,
             banner: '<%= meta.banner %>'
           },
           dist: {

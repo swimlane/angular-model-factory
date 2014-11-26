@@ -1,10 +1,12 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v0.0.6 - 2014-11-25
+ * @version v0.0.7 - 2014-11-26
  * @link https://github.com/phxdatasec/model-factory
  * @author Austin McDaniel <amcdaniel2@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
+
+(function() {
 var module = angular.module('modelFactory', []);
 
 // compression
@@ -630,3 +632,5 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory){
 
     return modelFactory;
 });
+
+})();
