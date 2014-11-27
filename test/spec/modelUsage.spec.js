@@ -16,6 +16,13 @@ describe('A person model defined using modelFactory', function(){
         angular.module('test-module', ['modelFactory'])
             .factory('PersonModel', function($modelFactory){
                 return $modelFactory('/api/people');
+            })
+            .factory('PersonWithDefaults', function($modelFactory){
+                return $modelFactory('/api/peoplewithdefaults', {
+                    defaults: {
+                        age: 18 //stupid example I know :)
+                    }
+                });
             });
     });
 
@@ -39,6 +46,48 @@ describe('A person model defined using modelFactory', function(){
 
         it('should have a $save function', function(){
             expect(theModel.$save).toBeDefined();
+        });
+
+    });
+
+    describe('when having default values defined', function(){
+        var PersonWithDefaults;
+
+        beforeEach(inject(function(_PersonWithDefaults_){
+            PersonWithDefaults = _PersonWithDefaults_;
+        }));
+
+        it('should have them properly set when instantiating a new empty object', function(){
+            var personWithDefaults = new PersonWithDefaults();
+
+            expect(personWithDefaults.age).toEqual(18);
+        });
+
+        it('should use the defaults when creating an object with some data', function(){
+            var personWithDefaults = new PersonWithDefaults({
+                name: 'Juri'
+            });
+
+            expect(personWithDefaults.age).toEqual(18);
+        });
+
+        it('should set the defaults when creating a list', function(){
+            var personWithDefaultsList = new PersonWithDefaults.List([
+                {
+                    name: 'Juri'
+                }
+            ]);
+
+            expect(personWithDefaultsList[0].age).toEqual(18);
+        });
+
+        it('should not overwrite with the default when passing a value for it', function(){
+            var personWithDefaults = new PersonWithDefaults({
+                name: 'Juri',
+                age: 29
+            });
+
+            expect(personWithDefaults.age).toEqual(29);
         });
 
     });
