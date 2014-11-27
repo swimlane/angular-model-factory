@@ -220,7 +220,7 @@ describe('A person model defined using modelFactory', function() {
 
     });
 
-    describe('with defaults specified', function() {
+    describe('with defaults', function() {
 
         beforeEach(function() {
             angular.module('test-module', ['modelFactory'])
@@ -270,9 +270,66 @@ describe('A person model defined using modelFactory', function() {
             expect(personWithDefaults.age).toEqual(29);
         });
 
-
     });
 
+    describe('with custom actions', function() {
+        var $httpBackend;
 
+        beforeEach(function() {
+            angular.module('test-module', ['modelFactory'])
+                .factory('PersonModel', function($modelFactory) {
+                    return $modelFactory('/api/people', {
+                        actions: {
+                            queryChildren: {
+                                type: 'GET',
+                                url: 'children',
+                                isArray: true
+                            }
+                        }
+                    });
+                });
+        });
+
+        beforeEach(angular.mock.module('test-module'));
+
+        beforeEach(inject(function(_PersonModel_, _$httpBackend_) {
+            PersonModel = _PersonModel_;
+            $httpBackend = _$httpBackend_;
+        }));
+
+        it('should correctly call the defined url', function(){
+            PersonModel.queryChildren();
+            $httpBackend.expectGET('/api/people/children').respond(200, []);
+            $httpBackend.flush();
+        })
+
+        // BUG: the query params are not passed. should the HTTP method be passed
+        // as type: 'GET' or method: 'GET'?
+        xit('should allow to specify query parameters', function(){
+
+            PersonModel.queryChildren({ type: 'minor' });
+
+            $httpBackend.expectGET('/api/people/children?type=minor').respond(200, '');
+            $httpBackend.flush();
+        });
+
+        it('should wrap the returned objects', function(){
+
+            PersonModel.queryChildren()
+                .then(function(result){
+                    expect(result.length).toBe(1);
+                    expect(result[0].$save).toBeDefined(); // check whether it's a model
+                });
+
+            $httpBackend.expectGET('/api/people/children').respond(200, [
+                {
+                    type: 'minor',
+                    name: 'Juri'
+                }
+                ]);
+            $httpBackend.flush();
+        });
+
+    });
 
 });
