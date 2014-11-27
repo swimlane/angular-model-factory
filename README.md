@@ -106,165 +106,171 @@ Another backbone model clone.  This one actually requires backbone and lodash.
 
 A basic model definition.
 
-    var module = angular.module('services.zoo', ['modelFactory']);
+```javascript
+var module = angular.module('services.zoo', ['modelFactory']);
 
-    module.factory('AnimalModel', function($modelFactory){
-      return $modelFactory('api/zoo');
-    });
-    
-    return module;
+module.factory('AnimalModel', function($modelFactory){
+  return $modelFactory('api/zoo');
+});
+
+return module;
+```
 
 **Advanced Definition**
 
 A advanced definition that demonstrates all scenarios.
 
-    var module = angular.module('services.zoo', ['modelFactory']);
+```javascript
+var module = angular.module('services.zoo', ['modelFactory']);
 
-    module.factory('AnimalModel', function($modelFactory){
+module.factory('AnimalModel', function($modelFactory){
+
+    var model = $modelFactory('api/zoo', {
     
-        var model = $modelFactory('api/zoo', {
-        
-            // the default primary key
-            pk: 'id',
-        
-            map: {
-                'zooId: 'id',
+        // the default primary key
+        pk: 'id',
+    
+        map: {
+            'zooId: 'id',
 
-                // has many
-                'animals': AnimalModel.List,
+            // has many
+            'animals': AnimalModel.List,
 
-                // has one
-                'location': LocationModel
+            // has one
+            'location': LocationModel
+        },
+        
+        // only called on empty inits
+        defaults: {
+            'created': new Date()
+        },
+        
+        // All return $promise 
+        // Note: All default options are transposed to all new instance
+        // unless explicitly overridened
+        actions:{
+            'base': {
+                // any $http argument
+                
+                // before ajax call
+                // this only manipulates data sent not core object
+                beforeRequest: function() { ... } 
+                
+                // after ajax call response
+                // happens before the object is wrapped
+                afterRequest: function(){ ... }
             },
             
-            // only called on empty inits
-            defaults: {
-                'created': new Date()
+            // these are implied by default given
+            // the base url unless overridden like below
+            // - get
+            // - query
+            // - post
+            // - update
+            // - delete
+            
+            'query': { 
+                // lets cache all query requests
+                // this uses the out of the box angular caching
+                // for $http.  I create a cache factory on each
+                // instance so you can access it via `$cache` attribute
+                cache: true
             },
             
-            // All return $promise 
-            // Note: All default options are transposed to all new instance
-            // unless explicitly overridened
-            actions:{
-                'base': {
-                    // any $http argument
-                    
-                    // before ajax call
-                    // this only manipulates data sent not core object
-                    beforeRequest: function() { ... } 
-                    
-                    // after ajax call response
-                    // happens before the object is wrapped
-                    afterRequest: function(){ ... }
-                },
+            // custom methods
+            'queryFood':{
+                type: 'GET',
                 
-                // these are implied by default given
-                // the base url unless overridden like below
-                // - get
-                // - query
-                // - post
-                // - update
-                // - delete
+                // urls inherit the base url
+                // url becomes: api/zoo/food
+                url: 'food', 
                 
-                'query': { 
-                    // lets cache all query requests
-                    // this uses the out of the box angular caching
-                    // for $http.  I create a cache factory on each
-                    // instance so you can access it via `$cache` attribute
-                    cache: true
-                },
-                
-                // custom methods
-                'queryFood':{
-                    type: 'GET',
-                    
-                    // urls inherit the base url
-                    // url becomes: api/zoo/food
-                    url: 'food', 
-                    
-                    // doesn't attach prototype methods
-                    wrap: false 
-                },
-                
-                'update': {
-                    // by default, save/update/delete will all
-                    // invalidate the cache if defined.
-                    invalidateCache: true
-                },
-                
-                // anything with $ prefix is attached to instance
-                '$copy': {
-                    type: 'POST',
-                    url: 'stlouis/zoo/copy',
-                    
-                    // overrides the root url
-                    override: true
-                }
+                // doesn't attach prototype methods
+                wrap: false 
             },
             
-            list: {
-            
-              // example list helper
-              nameById: function(id) {
-                   var user = this.find(function(u){
-                       return u.id === id;
-                   });
-                   return user ? user.name() : "Unavailable";
-               }
-               
+            'update': {
+                // by default, save/update/delete will all
+                // invalidate the cache if defined.
+                invalidateCache: true
             },
             
-            instance: {
+            // anything with $ prefix is attached to instance
+            '$copy': {
+                type: 'POST',
+                url: 'stlouis/zoo/copy',
                 
-                // instance api
-                // - $save
-                // - $destroy
-                
-                // revision api
-                // - $diff
-                // - $revert
-            
-                // example custom helper
-                'getName': function(val){ 
-                    return val.first + ' ' val.last 
-                } 
-            },
-            
-            // any method that does not represent a http action
-            // that will be attached to the static class
-            myStaticMethod: function(){
-            
+                // overrides the root url
+                override: true
             }
-        });
+        },
         
-        return model;
-    
+        list: {
+        
+          // example list helper
+          nameById: function(id) {
+               var user = this.find(function(u){
+                   return u.id === id;
+               });
+               return user ? user.name() : "Unavailable";
+           }
+           
+        },
+        
+        instance: {
+            
+            // instance api
+            // - $save
+            // - $destroy
+            
+            // revision api
+            // - $diff
+            // - $revert
+        
+            // example custom helper
+            'getName': function(val){ 
+                return val.first + ' ' val.last 
+            } 
+        },
+        
+        // any method that does not represent a http action
+        // that will be attached to the static class
+        myStaticMethod: function(){
+        
+        }
     });
+    
+    return model;
+
+});
+```
 
 #### Controller Usage
 
-    module.controller('ZooCtrl', function ($scope, AnimalModel) {
+```javascript
+module.controller('ZooCtrl', function ($scope, AnimalModel) {
 
-        // create single
-        var animal = new AnimalModel({
-            name: 'Panda'
-        });
-        
-        // creates if no id
-        // updates if has id
-        animal.$save();
-
-        // create list
-        // objects will automatically be wrapped
-        var animalList = new AnimalModel.List([ {}, {}, ... ]);
-        
-        // add the model to this list
-        animalList.push(animal)
-        
-        // deletes the model
-        // and removes from the list i pushed into
-        animal.$destroy();
+    // create single
+    var animal = new AnimalModel({
+        name: 'Panda'
     });
+    
+    // creates if no id
+    // updates if has id
+    animal.$save();
+
+    // create list
+    // objects will automatically be wrapped
+    var animalList = new AnimalModel.List([ {}, {}, ... ]);
+    
+    // add the model to this list
+    animalList.push(animal)
+    
+    // deletes the model
+    // and removes from the list i pushed into
+    animal.$destroy();
+});
+```
     
 #### Example Requests
     
@@ -282,38 +288,42 @@ A advanced definition that demonstrates all scenarios.
     
 #### UI-Router resolves
 
-    $stateProvider.state('zoo', {
-        url: '/zoo',
-        templateUrl: 'zoo.tpl.html',
-        controller: 'ZooCtrl',
-        resolve: {
-            animals: function (AnimalsModel) {
-                return AnimalsModel.query({ name: 'panda' });
-                
-            }
+```javascript
+$stateProvider.state('zoo', {
+    url: '/zoo',
+    templateUrl: 'zoo.tpl.html',
+    controller: 'ZooCtrl',
+    resolve: {
+        animals: function (AnimalsModel) {
+            return AnimalsModel.query({ name: 'panda' });
+            
         }
-    });
+    }
+});
+```
     
 #### Lists
 
-    module.controller('ZooCtrl', function ($scope, AnimalModel, animals) {
-        // animals === [ AnimalModel({ type: 'panda' }) ]
-        
-        var animal = animals[0];
-        //-> animals = [ { type: 'panda' } ]
-        
-        // Update an instance in the list
-        animal.type = 'lion';
-        //-> animal[0].type == 'lion'
-        
-        //-> commits THIS model to server
-        animal.$save();
-
-        // automatically deletes from list
-        animal.$destroy();
-        //-> animals = []
+```javascript
+module.controller('ZooCtrl', function ($scope, AnimalModel, animals) {
+    // animals === [ AnimalModel({ type: 'panda' }) ]
     
-    });
+    var animal = animals[0];
+    //-> animals = [ { type: 'panda' } ]
+    
+    // Update an instance in the list
+    animal.type = 'lion';
+    //-> animal[0].type == 'lion'
+    
+    //-> commits THIS model to server
+    animal.$save();
+
+    // automatically deletes from list
+    animal.$destroy();
+    //-> animals = []
+
+});
+```
 
 #### Useful Tips/Notes
 
@@ -333,28 +343,33 @@ If you choose to use the cache, you should also consider other clients invalidat
 
 Sometimes you need a pub/sub model.  Using Angular's core broadcast system we can achieve that relatively simple.
 
-
-    var factory = $modelFactory('api/zoo', {
-        actions:{
-            'delete': {
-                afterRequest:function(model){
-                    $rootScope.$broadcast('animalDeleted', model.id);
-                }
+```javascript
+var factory = $modelFactory('api/zoo', {
+    actions:{
+        'delete': {
+            afterRequest:function(model){
+                $rootScope.$broadcast('animalDeleted', model.id);
             }
         }
-    });
+    }
+});
+```
 
 then later in another controller/etc:
 
-    $rootScope.$on('animalDeleted', function(id){
-        alert('Animal deleted: ' + id)    
-    })
+```javascript
+$rootScope.$on('animalDeleted', function(id){
+    alert('Animal deleted: ' + id)    
+});
+```
 
 **Button States**
 
-The `$pending` attribute on the model can be used to easily disable a button while things are saving/updating/deleting.  Example:
+The `$pending` attribute on the model can be used to easily disable a button while things are saving/updating/deleting. Example:
 
-    <button ng-disabled="myModel.$pending">Save</button>
+```html
+<button ng-disabled="myModel.$pending">Save</button>
+```
   
 when completed the `$pending` state will be set to false re-enabling the button.
 
