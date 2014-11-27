@@ -122,7 +122,7 @@ describe('A person model defined using modelFactory', function(){
 
     });
 
-    xdescribe('when calling get(..)', function(){
+    describe('when calling get(..)', function(){
         var $httpBackend;
 
         beforeEach(inject(function(_$httpBackend_){
@@ -131,6 +131,7 @@ describe('A person model defined using modelFactory', function(){
             $httpBackend
                 .whenGET('/api/people/123')
                 .respond({
+                        id: 123,
                         name: 'Juri'
                     });
         }));
