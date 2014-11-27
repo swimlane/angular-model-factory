@@ -141,8 +141,19 @@ describe('A person model defined using modelFactory', function(){
             $httpBackend.verifyNoOutstandingRequest();
         });
 
-        it('should return the requested resource by its id', function(){
+        it('should return the requested resource by its id (as number)', function(){
             PersonModel.get(123)
+                .then(function(theFetchedPerson){
+                    expect(theFetchedPerson).toBeDefined();
+                    expect(theFetchedPerson.name).toEqual('Juri');
+                });
+
+            $httpBackend.expectGET('/api/people/123');
+            $httpBackend.flush();
+        });
+
+        it('should return the requested resource by its id (as string)', function(){
+            PersonModel.get('123')
                 .then(function(theFetchedPerson){
                     expect(theFetchedPerson).toBeDefined();
                     expect(theFetchedPerson.name).toEqual('Juri');
