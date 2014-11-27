@@ -6,10 +6,10 @@ Why would you use this over other available solutions?
 
 - Lightweight/Simple, the code simply does some basic copy/extending and prototypical instances; no magic required.
 - Patterns/Practices, the model definition closely resembles Angular's ngResource meaning its easy to swap out, replace later (if ngResource gets awesome suddenly), eases scaling new devs / organizations, and its designed for Angular; not a backbone port!
-- Utiilizes Angular at the core, it doesn't duplicate things Angular already does.  Any action can be passed a `$http` configuration option, all your interceptors still work, it uses Angular's cache, etc!
+- Utilizes Angular at the core, it doesn't duplicate things Angular already does.  Any action can be passed a `$http` configuration option, all your interceptors still work, it uses Angular's cache, etc!
 - Compliant, URI Template matches the specs.
-- 1.45KB gziped/minified ( excludes depedencies )
-- Minimal Depdencies, only use URI template and deep-diff ( this isn't even required ) utility.  NO underscore, lodash, jquery, etc!
+- 1.45KB gzipped/minified ( excludes depedencies )
+- Minimal Dependencies, only use URI template and deep-diff ( this isn't even required ) utility.  NO underscore, lodash, jquery, etc!
 - Its full of awesome features
 
 
@@ -75,14 +75,14 @@ Another backbone model clone.  This one actually requires backbone and lodash.
 ## Roadmap
 
 - Lifecyle events ( pre-save, post-save, after-update, after-delete, etc )
-- Inhertiance 
+- Inheritance 
 - Deseralizers
 - Socket listeners - probably could do w/ events
 - API Versioning ( api/v1/  ... api/v2/ )
 - Pagination out of the box
 
 
-## Depedencies
+## Dependencies
 
 - Angular >= 1.3
 - [deep-diff](https://github.com/flitbit/diff)
@@ -310,7 +310,7 @@ A advanced definition that demonstrates all scenarios.
         animal.$save();
 
         // automatically deletes from list
-        animal.$destory();
+        animal.$destroy();
         //-> animals = []
     
     });
@@ -319,7 +319,7 @@ A advanced definition that demonstrates all scenarios.
 
 **Usage**
 
-This system DOESNT make sense for all your `$http` assets.  I'd recommend implementing for assets that have CRUD with [RESTful APIs](http://www.restapitutorial.com/).
+This system DOESN'T make sense for all your `$http` assets.  I'd recommend implementing for assets that have CRUD with [RESTful APIs](http://www.restapitutorial.com/).
 
 
 **Cache**
