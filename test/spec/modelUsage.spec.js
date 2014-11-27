@@ -82,14 +82,13 @@ describe('A person model defined using modelFactory', function(){
     });
 
     describe('when calling query()', function(){
-        var $httpBackend;
+        var $httpBackend,
+            backendListResponse;
 
         beforeEach(inject(function(_$httpBackend_){
             $httpBackend = _$httpBackend_;
 
-            $httpBackend
-                .whenGET('/api/people')
-                .respond([
+            backendListResponse = [
                     {
                         name: 'Juri'
                     },
@@ -99,7 +98,7 @@ describe('A person model defined using modelFactory', function(){
                     {
                         name: 'Anne'
                     }
-                ]);
+                ];
         }));
 
         afterEach(function(){
@@ -116,7 +115,14 @@ describe('A person model defined using modelFactory', function(){
 
                 });
 
-            $httpBackend.expectGET('/api/people');
+            $httpBackend.expectGET('/api/people').respond(200, backendListResponse);
+            $httpBackend.flush();
+        });
+
+        it('should properly send parameters', function(){
+            PersonModel.query({ name: 'Juri', age: 29 });
+
+            $httpBackend.expectGET('/api/people?name=Juri&age=29').respond(200,backendListResponse);
             $httpBackend.flush();
         });
 
