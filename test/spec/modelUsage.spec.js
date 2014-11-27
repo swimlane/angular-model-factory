@@ -218,6 +218,85 @@ describe('A person model defined using modelFactory', function() {
 
         });
 
+        describe('when deleting an object', function() {
+            var $httpBackend;
+
+            beforeEach(inject(function(_$httpBackend_) {
+                $httpBackend = _$httpBackend_;
+            }));
+
+            afterEach(function() {
+                $httpBackend.verifyNoOutstandingExpectation();
+                $httpBackend.verifyNoOutstandingRequest();
+            });
+
+
+            it('should properly execute a DELETE request', function(){
+                var theModel = new PersonModel({
+                    id: 1234
+                });
+
+                // act
+                theModel.$destroy();
+
+                $httpBackend.expectDELETE('/api/people/1234').respond(200,'');
+                $httpBackend.flush();
+            });
+
+            it('should remove the deleted object from a model list when the deletion succeeds', function(){
+                var modelList = new PersonModel.List([
+                    {
+                        id: 1,
+                        name: 'Juri'
+                    },
+                    {
+                        id: 2,
+                        name: 'Jack'
+                    },
+                    {
+                        id: 3,
+                        name: 'Austin'
+                    }
+                    ]);
+
+                // act
+                modelList[1].$destroy();
+
+
+                $httpBackend.expectDELETE('/api/people/2').respond(200, '');
+                $httpBackend.flush();
+
+                expect(modelList.length).toEqual(2);
+            });
+
+            it('should NOT remove the deleted object from a model list when the deletion fails', function(){
+                var modelList = new PersonModel.List([
+                    {
+                        id: 1,
+                        name: 'Juri'
+                    },
+                    {
+                        id: 2,
+                        name: 'Jack'
+                    },
+                    {
+                        id: 3,
+                        name: 'Austin'
+                    }
+                    ]);
+
+                // act
+                modelList[1].$destroy();
+
+
+                $httpBackend.expectDELETE('/api/people/2').respond(500, '');
+                $httpBackend.flush();
+
+                expect(modelList.length).toEqual(3);
+            });
+
+        });
+
     });
 
     describe('with defaults', function() {
