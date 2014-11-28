@@ -3,7 +3,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-bower-task');
-    grunt.loadNpmTasks('ng-annotate');
     grunt.loadNpmTasks('grunt-karma');
 
     var ngAnnotate = require("ng-annotate");

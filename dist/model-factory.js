@@ -1,6 +1,6 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v0.0.9 - 2014-11-26
+ * @version v0.0.10 - 2014-11-28
  * @link https://github.com/phxdatasec/model-factory
  * @author Austin McDaniel <amcdaniel2@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -17,13 +17,13 @@ var forEach = angular.forEach,
 // keywords that are reserved for model instance
 // internal usage only and to be stripped
 // before sending to server
-var instanceKeywords = [ '$$array', '$save', '$destroy', 
+var instanceKeywords = [ '$$array', '$save', '$destroy',
     '$pending', '$revert', '$diff', '$extend' ];
 
 // keywords that are reserved for the model static
 // these are used to determine if a attribute should be extended
 // to the model static class for like a helper that is not a http method
-var staticKeywords = [ 'actions', 'instance', 'list', 'defaults', 
+var staticKeywords = [ 'actions', 'instance', 'list', 'defaults',
     'pk', 'stripTrailingSlashes', 'map' ];
 
 // Deep extends
@@ -56,7 +56,7 @@ module.factory('$modelFactory', ["$http", "$q", "$log", "$cacheFactory", functio
         pk: 'id',
 
         /**
-         * By default, trailing slashes will be stripped 
+         * By default, trailing slashes will be stripped
          * from the calculated URLs.
          */
         stripTrailingSlashes: true,
@@ -66,7 +66,7 @@ module.factory('$modelFactory', ["$http", "$q", "$log", "$cacheFactory", functio
          * This will only be populated if the property
          * is undefined.
          *
-         * Example: 
+         * Example:
          *      defaults: {
          *          'create': new Date()
          *      }
@@ -74,17 +74,17 @@ module.factory('$modelFactory', ["$http", "$q", "$log", "$cacheFactory", functio
         defaults: {},
 
         /**
-         * Attribute mapping.  Tranposes attributes 
+         * Attribute mapping.  Tranposes attributes
          * from a response to a different attribute.
          *
          * Also handles 'has many' and 'has one' relations.
          *
-         * Example: 
+         * Example:
          *      map: {
-         *          // transpose `animalId` to 
+         *          // transpose `animalId` to
          *          // `id` on our instance
          *          'id': 'animalId',
-         *          
+         *
          *          // transposes `animal` attribute
          *          // to an array of `AnimalModel`'s
          *          'animal': AnimalModel.List,
@@ -125,8 +125,8 @@ module.factory('$modelFactory', ["$http", "$q", "$log", "$cacheFactory", functio
 
                 /**
                  * Callback before data is sent to server.
-                 * This allows developers to manipulate the 
-                 * object before its sent to the server but 
+                 * This allows developers to manipulate the
+                 * object before its sent to the server but
                  * not effect the core object.
                  */
                 beforeRequest: undefined,
@@ -177,8 +177,8 @@ module.factory('$modelFactory', ["$http", "$q", "$log", "$cacheFactory", functio
          *
          * Example:
          *      instance: {
-         *          'name': function() { 
-         *              return this.first + ' ' + this.last 
+         *          'name': function() {
+         *              return this.first + ' ' + this.last
          *          }
          *      }
          */
@@ -223,7 +223,7 @@ module.factory('$modelFactory', ["$http", "$q", "$log", "$cacheFactory", functio
         //
         // Collection
         // ------------------------------------------------------------
-        // 
+        //
 
         /**
          * Model list instance.
@@ -244,7 +244,7 @@ module.factory('$modelFactory', ["$http", "$q", "$log", "$cacheFactory", functio
                 if(v === null || v === undefined) return;
 
                 // create an instance
-                var inst = v.constructor === Model ? 
+                var inst = v.constructor === Model ?
                     v : new Model(v);
 
                 // set a pointer to the array
@@ -255,7 +255,7 @@ module.factory('$modelFactory', ["$http", "$q", "$log", "$cacheFactory", functio
             });
 
             // override push to set an instance
-            // of the list on the model so destroys will chain 
+            // of the list on the model so destroys will chain
             var __oldPush = value.push;
             value.push = function(model){
                 if(model.constructor === Model){
@@ -276,7 +276,7 @@ module.factory('$modelFactory', ["$http", "$q", "$log", "$cacheFactory", functio
         //
         // Model Instance
         // ------------------------------------------------------------
-        
+
         /**
          * Model instance.
          *
@@ -337,11 +337,11 @@ module.factory('$modelFactory', ["$http", "$q", "$log", "$cacheFactory", functio
             extend(instance, copy(options.instance));
 
             /**
-             * Save the instance to the server.  Posts the instance unless 
+             * Save the instance to the server.  Posts the instance unless
              * the instance has the `pk` attribute already then it will do a put.
              */
             instance.$save = function(){
-                var promise = Model[instance[options.pk] ? 
+                var promise = Model[instance[options.pk] ?
                     'update' : 'post'](instance);
 
                 instance.$pending = true;
@@ -352,7 +352,7 @@ module.factory('$modelFactory', ["$http", "$q", "$log", "$cacheFactory", functio
                     // extend the value from the server to me
                     extendDeep(instance, value);
                 }, function(){
-                    // rejected   
+                    // rejected
                     instance.$pending = false;
                 });
 
@@ -380,15 +380,15 @@ module.factory('$modelFactory', ["$http", "$q", "$log", "$cacheFactory", functio
                         arr.splice(arr.indexOf(instance), 1);
                     }
                 }, function(){
-                    // rejected   
+                    // rejected
                     instance.$pending = false;
                 });
-                
+
                 return promise;
             };
 
             /**
-             * Display the difference between the original data and the 
+             * Display the difference between the original data and the
              * current instance.
              * https://github.com/flitbit/diff
              */
@@ -476,8 +476,8 @@ module.factory('$modelFactory', ["$http", "$q", "$log", "$cacheFactory", functio
                 if(action === "get" || action === "post" || action === "update" || action === "delete"){
                     uri += "/{" + options.pk + "}";
                 }
-            
-                if(clone.method === "GET" && (angular.isString(data) || angular.isNumber("number"))){
+
+                if(clone.method === "GET" && (angular.isString(data) || angular.isNumber(data))){
                     // if we have a get method and its a number or a string
                     // you can assume i'm wanting to do something like:
                     // ZooModel.get(1234) instead of ZooModel.get({ id: 1234 });
@@ -485,8 +485,8 @@ module.factory('$modelFactory', ["$http", "$q", "$log", "$cacheFactory", functio
                     obj[options.pk] = data;
                     data = obj;
 
-                    // if we have a extra argument on this case we should assume its a 
-                    // 
+                    // if we have a extra argument on this case we should assume its a
+                    //
                     if(extras){
                         data.param = extras;
                         uri += "{?param*}";
@@ -524,13 +524,13 @@ module.factory('$modelFactory', ["$http", "$q", "$log", "$cacheFactory", functio
             // set the queue for this promise
             promiseTracker[signature] = def.promise;
 
-            // copy the data so we can manipulate 
+            // copy the data so we can manipulate
             // it before the request and not affect
             // the core object
             params.data = copy(params.data);
 
             // before callbacks
-            params.beforeRequest && 
+            params.beforeRequest &&
                 params.beforeRequest(params);
 
             // strip all the internal functions/etc
@@ -538,7 +538,7 @@ module.factory('$modelFactory', ["$http", "$q", "$log", "$cacheFactory", functio
 
             $http(params).success(function(response){
                 // after callbacks
-                params.afterRequest && 
+                params.afterRequest &&
                     params.afterRequest(response);
 
                 // if we had a cache, remove it
