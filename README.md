@@ -12,6 +12,7 @@ Why would you use this over other available solutions?
 - Minimal Dependencies, only use URI template and deep-diff ( this isn't even required ) utility.  NO underscore, lodash, jquery, etc!
 - Its full of awesome features
 
+
 See [wiki](https://github.com/phxdatasec/model-factory/wiki) for documentation.
 
 
@@ -54,7 +55,7 @@ Very ruby-ish api.  Requires lodash.  Has validation but thats not needed in ang
 I don't consider this a model layer; it feels moore like a fancy http layer that returns promises because everyone complains about ngResource not doing it.  It requires underscore.
 
 - [BreezeJS](http://www.breezejs.com/) 
-This is a very full featured model/cache/validation etc.  Its framework agnostic, which means it follows its own patterns and not angulars.  Its very heavy, requires server data massaging, and the API looks like Microsoft Entity Framework ( overkill IMO ).
+This is a very full featured model/cache/validation etc.  Its framework agnostic, which means it follows its own patterns and not angulars.  Its very heavy, requires server data massaging, and the API looks like Microsoft Entity Framework.
 
 - [ng-backbone](https://github.com/adrianlee44/ng-backbone)
 Another backbone model clone.  This one actually requires backbone and lodash.
