@@ -1,4 +1,4 @@
-# modelFactory
+# modelFactory [![Build Status](https://travis-ci.org/phxdatasec/model-factory.svg?branch=master)](https://travis-ci.org/phxdatasec/model-factory)
 
 A light-weight model layer that bridges the gap between some of the features that are common with SPA.
 
