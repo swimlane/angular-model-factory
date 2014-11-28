@@ -216,6 +216,59 @@ describe('A person model defined using modelFactory', function() {
                 $httpBackend.flush();
             });
 
+            it('should update the entry with the new results from the server', function(){
+                var newModel = new PersonModel({
+                    name: 'Juri'
+                });
+
+                $httpBackend.expectPOST('/api/people', JSON.stringify(newModel)).respond(200, JSON.stringify({id: 12, name: 'Juri Strumpflohner'}));
+
+                //act
+                newModel.$save();
+                $httpBackend.flush();
+
+                expect(newModel.id).toEqual(12);
+                expect(newModel.name).toEqual('Juri Strumpflohner');
+            });
+
+        });
+
+        describe('when calling $revert', function(){
+
+            it('should revert to the previous values of the object', function(){
+                var newModel = new PersonModel({
+                    name: 'Juri'
+                });
+
+                // act
+                newModel.name = 'Jack';
+                newModel.$revert();
+
+                expect(newModel.name).toEqual('Juri');
+            });
+
+            xit('should NOT revert to the old values after an entity has been persisted with $save', inject(function($httpBackend){
+                var newModel = new PersonModel({
+                    name: 'Juri'
+                });
+
+                newModel.name = 'Jack';
+
+                // persist it
+                newModel.$save();
+
+                $httpBackend
+                    .expectPOST('/api/people')
+                    .respond(200, JSON.stringify({ id: 1, name: 'Jack'}));
+                $httpBackend.flush();
+
+                // act
+                newModel.$revert();
+
+                // assert
+                expect(newModel.name).toEqual('Jack'); // there is nothing to revert 'cause the model is fresh from the server'
+            }));
+
         });
 
         describe('when deleting an object', function() {
