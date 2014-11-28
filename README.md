@@ -12,6 +12,8 @@ Why would you use this over other available solutions?
 - Minimal Dependencies, only use URI template and deep-diff ( this isn't even required ) utility.  NO underscore, lodash, jquery, etc!
 - Its full of awesome features
 
+See [wiki](https://github.com/phxdatasec/model-factory/wiki) for documentation.
+
 
 ### Other Solutions
 
@@ -70,16 +72,6 @@ Another backbone model clone.  This one actually requires backbone and lodash.
 - Pending / Completed Status
 - Relationships
 - Track active promises to prevent duplicate sends
-
-
-## Roadmap
-
-- Lifecyle events ( pre-save, post-save, after-update, after-delete, etc )
-- Inheritance 
-- Deseralizers
-- Socket listeners - probably could do w/ events
-- API Versioning ( api/v1/  ... api/v2/ )
-- Pagination out of the box
 
 
 ## Dependencies
@@ -372,15 +364,3 @@ The `$pending` attribute on the model can be used to easily disable a button whi
 ```
   
 when completed the `$pending` state will be set to false re-enabling the button.
-
-## Todos
-
-- Tests
-
-- Better cache invalidation
-
-- Investigate copy/extend usage for perf
-
-- Fetch relationships if not present in response
-
-- Odd API cases like: `POST api/zoo/{locationId}/{animalId}/` with data that might look like: `{ id: 1234, animalName: 'panda', ... }`
