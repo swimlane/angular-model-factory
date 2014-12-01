@@ -233,27 +233,23 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory){
         function ModelCollection(value){
             var instance = this;
 
-            if(value){
-                // wrap each obj
-                value.forEach(function(v, i){
-                    // this should not happen but prevent blow up
-                    if(v === null || v === undefined) return;
+            value = value || [];
 
-                    // create an instance
-                    var inst = v.constructor === Model ?
-                        v : new Model(v);
+            // wrap each obj
+            value.forEach(function(v, i){
+                // this should not happen but prevent blow up
+                if(v === null || v === undefined) return;
 
-                    // set a pointer to the array
-                    inst.$$array = value;
+                // create an instance
+                var inst = v.constructor === Model ?
+                    v : new Model(v);
 
-                    // reset to new instance
-                    value[i] = inst;
-                });
-            }else{
-                // no list has been provided, thus create an empty array to
-                // allow for later push's
-                value = [];
-            }
+                // set a pointer to the array
+                inst.$$array = value;
+
+                // reset to new instance
+                value[i] = inst;
+            });
 
             // override push to set an instance
             // of the list on the model so destroys will chain
@@ -288,9 +284,7 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory){
             var instance = this, old;
 
             // if the value is undefined, create a empty obj
-            if(value === undefined){
-                value = {};
-            }
+            value = value || {};
 
             // build the defaults but only on new instances
             forEach(options.defaults, function(v, k){
