@@ -1,3 +1,7 @@
+/* global angular:false */
+
+'use strict';
+
 var module = angular.module('modelFactory', []);
 
 // compression
@@ -229,21 +233,27 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory){
         function ModelCollection(value){
             var instance = this;
 
-            // wrap each obj
-            value.forEach(function(v, i){
-                // this should not happen but prevent blow up
-                if(v === null || v === undefined) return;
+            if(value){
+                // wrap each obj
+                value.forEach(function(v, i){
+                    // this should not happen but prevent blow up
+                    if(v === null || v === undefined) return;
 
-                // create an instance
-                var inst = v.constructor === Model ?
-                    v : new Model(v);
+                    // create an instance
+                    var inst = v.constructor === Model ?
+                        v : new Model(v);
 
-                // set a pointer to the array
-                inst.$$array = value;
+                    // set a pointer to the array
+                    inst.$$array = value;
 
-                // reset to new instance
-                value[i] = inst;
-            });
+                    // reset to new instance
+                    value[i] = inst;
+                });
+            }else{
+                // no list has been provided, thus create an empty array to
+                // allow for later push's
+                value = [];
+            }
 
             // override push to set an instance
             // of the list on the model so destroys will chain

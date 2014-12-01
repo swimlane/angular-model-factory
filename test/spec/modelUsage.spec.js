@@ -62,8 +62,7 @@ describe('A person model defined using modelFactory', function() {
                 expect(modelList[0].$save).toBeDefined();
             });
 
-            // TODO this one fails...clarify whether it is intended behavior
-            xit('should allow to define an empty list', function() {
+            it('should allow to define an empty list', function() {
                 var newEmptyList = new PersonModel.List();
                 expect(newEmptyList).toBeDefined();
                 expect(newEmptyList.length).toEqual(0);
