@@ -35,3 +35,23 @@ See [wiki](https://github.com/phxdatasec/model-factory/wiki) for documentation.
 - Angular >= 1.3
 - [deep-diff](https://github.com/flitbit/diff)
 - [uri-templates](https://github.com/geraintluff/uri-templates)
+
+
+## Development
+
+### Prepare your environment
+* Install [Node.js](http://nodejs.org/) and NPM (should come with)
+* Install global dev dependencies: `npm install -g bower grunt-cli`
+* Install local dev dependencies: `npm install && bower install` in repository directory
+
+### Development Commands
+
+* `grunt prebuild` install bower deps
+* `grunt build` to concat and build
+* `grunt karma` for one-time test with karma
+
+## Contributing
+
+- Run the tests
+- Create a feature branch
+- When issuing a pull request, please exclude changes from the "dist" folder to avoid merge conflicts.
