@@ -231,8 +231,6 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory){
          *       var zoos = new Zoo.List([ {}, ... ]);
          */
         function ModelCollection(value){
-            var instance = this;
-
             value = value || [];
 
             // wrap each obj
@@ -240,25 +238,22 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory){
                 // this should not happen but prevent blow up
                 if(v === null || v === undefined) return;
 
-                // create an instance
-                var inst = v.constructor === Model ?
-                    v : new Model(v);
-
-                // set a pointer to the array
-                inst.$$array = value;
-
                 // reset to new instance
-                value[i] = inst;
+                value[i] = wrapAsNewModelInstance(v, value);
             });
 
             // override push to set an instance
             // of the list on the model so destroys will chain
             var __oldPush = value.push;
-            value.push = function(model){
-                if(model.constructor === Model){
-                    model.$$array = value;
+            value.push = function(){
+                // Array.push(..) allows to pass in multiple params
+                var args = Array.prototype.slice.call(arguments);
+
+                for(var i=0; i<args.length; i++){
+                    args[i] = wrapAsNewModelInstance(args[i]);
                 }
-                __oldPush.apply(value, arguments);
+
+                __oldPush.apply(value, args);
             };
 
             // add list helpers
@@ -268,6 +263,20 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory){
 
             return value;
         };
+
+        // helper function for creating a new instance of a model from
+        // a raw JavaScript obj. If it is already a model, it will be left
+        // as it is
+        function wrapAsNewModelInstance(rawObj, arrayInst){
+            // create an instance
+            var inst = rawObj.constructor === Model ?
+                rawObj : new Model(rawObj);
+
+            // set a pointer to the array
+            inst.$$array = arrayInst;
+
+            return inst;
+        }
 
 
         //

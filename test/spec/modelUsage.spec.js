@@ -63,12 +63,30 @@ describe('A person model defined using modelFactory', function() {
             });
 
             // TODO this doesn't work right now...should it??
-            xit('should wrap newly added JavaScript objects', function(){
+            it('should wrap newly added JavaScript objects', function(){
                 modelList.push({
                     name: 'Tom'
                 });
 
                 expect(modelList[1] instanceof PersonModel).toBeTruthy();
+            });
+
+            it('should account for Array.push(obj1, obj2,...) API; all passed obj should be wrapped as models', function(){
+                var newList = new PersonModel.List();
+
+                // act
+                newList.push(
+                    {
+                        name: 'Juri'
+                    },
+                    {
+                        name: 'Austin'
+                    });
+
+                // assert
+                expect(newList.length).toEqual(2);
+                expect(newList[0] instanceof PersonModel).toBeTruthy();
+                expect(newList[1] instanceof PersonModel).toBeTruthy();
             });
 
             it('should allow to define an empty list', function() {
@@ -77,7 +95,7 @@ describe('A person model defined using modelFactory', function() {
                 expect(newEmptyList.length).toEqual(0);
             });
 
-            xit('should allow to add elements on a previously empty model list collection', function(){
+            it('should allow to add elements on a previously empty model list collection', function(){
                 var newList = new PersonModel.List();
 
                 newList.push({ name: 'Juri' });
