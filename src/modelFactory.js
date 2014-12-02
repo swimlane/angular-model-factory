@@ -2,6 +2,16 @@
 
 'use strict';
 
+(function(global, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(['angular', 'uri-templates'], factory);
+    } else if (typeof module !== 'undefined' && module.exports) {
+        module.exports = factory();
+    } else {
+        global.ModelFactory = factory(angular, UriTemplate);
+    }
+})(this, function(angular, UriTemplate) {
+
 var module = angular.module('modelFactory', []);
 
 // compression
@@ -635,4 +645,6 @@ module.factory('$modelFactory', function($http, $q, $log, $cacheFactory){
     };
 
     return modelFactory;
+});
+
 });

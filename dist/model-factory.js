@@ -1,12 +1,26 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v0.0.10 - 2014-11-28
+ * @version v0.1.0 - 2014-12-02
  * @link https://github.com/phxdatasec/model-factory
  * @author Austin McDaniel <amcdaniel2@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
 
 (function() {
+/* global angular:false */
+
+'use strict';
+
+(function(global, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(['angular', 'uri-templates'], factory);
+    } else if (typeof module !== 'undefined' && module.exports) {
+        module.exports = factory();
+    } else {
+        global.ModelFactory = factory(angular, UriTemplate);
+    }
+})(this, function(angular, UriTemplate) {
+
 var module = angular.module('modelFactory', []);
 
 // compression
@@ -236,32 +250,29 @@ module.factory('$modelFactory', ["$http", "$q", "$log", "$cacheFactory", functio
          *       var zoos = new Zoo.List([ {}, ... ]);
          */
         function ModelCollection(value){
-            var instance = this;
+            value = value || [];
 
             // wrap each obj
             value.forEach(function(v, i){
                 // this should not happen but prevent blow up
                 if(v === null || v === undefined) return;
 
-                // create an instance
-                var inst = v.constructor === Model ?
-                    v : new Model(v);
-
-                // set a pointer to the array
-                inst.$$array = value;
-
                 // reset to new instance
-                value[i] = inst;
+                value[i] = wrapAsNewModelInstance(v, value);
             });
 
             // override push to set an instance
             // of the list on the model so destroys will chain
             var __oldPush = value.push;
-            value.push = function(model){
-                if(model.constructor === Model){
-                    model.$$array = value;
+            value.push = function(){
+                // Array.push(..) allows to pass in multiple params
+                var args = Array.prototype.slice.call(arguments);
+
+                for(var i=0; i<args.length; i++){
+                    args[i] = wrapAsNewModelInstance(args[i]);
                 }
-                __oldPush.apply(value, arguments);
+
+                __oldPush.apply(value, args);
             };
 
             // add list helpers
@@ -271,6 +282,20 @@ module.factory('$modelFactory', ["$http", "$q", "$log", "$cacheFactory", functio
 
             return value;
         };
+
+        // helper function for creating a new instance of a model from
+        // a raw JavaScript obj. If it is already a model, it will be left
+        // as it is
+        function wrapAsNewModelInstance(rawObj, arrayInst){
+            // create an instance
+            var inst = rawObj.constructor === Model ?
+                rawObj : new Model(rawObj);
+
+            // set a pointer to the array
+            inst.$$array = arrayInst;
+
+            return inst;
+        }
 
 
         //
@@ -287,9 +312,7 @@ module.factory('$modelFactory', ["$http", "$q", "$log", "$cacheFactory", functio
             var instance = this, old;
 
             // if the value is undefined, create a empty obj
-            if(value === undefined){
-                value = {};
-            }
+            value = value || {};
 
             // build the defaults but only on new instances
             forEach(options.defaults, function(v, k){
@@ -633,4 +656,5 @@ module.factory('$modelFactory', ["$http", "$q", "$log", "$cacheFactory", functio
     return modelFactory;
 }]);
 
+});
 })();
