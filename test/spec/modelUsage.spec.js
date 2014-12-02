@@ -59,14 +59,48 @@ describe('A person model defined using modelFactory', function() {
             });
 
             it('should contain wrapped model objects', function() {
-                expect(modelList[0].$save).toBeDefined();
+                expect(modelList[0] instanceof PersonModel).toBeTruthy();
             });
 
-            // TODO this one fails...clarify whether it is intended behavior
-            xit('should allow to define an empty list', function() {
+            // TODO this doesn't work right now...should it??
+            it('should wrap newly added JavaScript objects', function(){
+                modelList.push({
+                    name: 'Tom'
+                });
+
+                expect(modelList[1] instanceof PersonModel).toBeTruthy();
+            });
+
+            it('should account for Array.push(obj1, obj2,...) API; all passed obj should be wrapped as models', function(){
+                var newList = new PersonModel.List();
+
+                // act
+                newList.push(
+                    {
+                        name: 'Juri'
+                    },
+                    {
+                        name: 'Austin'
+                    });
+
+                // assert
+                expect(newList.length).toEqual(2);
+                expect(newList[0] instanceof PersonModel).toBeTruthy();
+                expect(newList[1] instanceof PersonModel).toBeTruthy();
+            });
+
+            it('should allow to define an empty list', function() {
                 var newEmptyList = new PersonModel.List();
                 expect(newEmptyList).toBeDefined();
                 expect(newEmptyList.length).toEqual(0);
+            });
+
+            it('should allow to add elements on a previously empty model list collection', function(){
+                var newList = new PersonModel.List();
+
+                newList.push({ name: 'Juri' });
+                expect(newList.length).toEqual(1);
+                expect(newList[0] instanceof PersonModel).toBeTruthy(); // wrapping should still work
             });
 
             it('should allow to add new models', function() {
@@ -450,7 +484,7 @@ describe('A person model defined using modelFactory', function() {
             PersonModel.queryChildren()
                 .then(function(result){
                     expect(result.length).toBe(1);
-                    expect(result[0].$save).toBeDefined(); // check whether it's a model
+                    expect(result[0] instanceof PersonModel).toBeTruthy(); // check whether it's a model
                 });
 
             $httpBackend.expectGET('/api/people/children').respond(200, [
