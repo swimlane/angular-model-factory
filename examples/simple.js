@@ -1,4 +1,4 @@
-define(['angular'], function (angular) {
+define(['angular', 'model-factory'], function (angular) {
 
     var module = angular.module('myapp', ['modelFactory']);
     
