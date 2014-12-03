@@ -50,7 +50,6 @@ var extendDeep = function extendDeep(dst) {
     return dst;
 };
 
-// Based on https://gist.github.com/amcdnl/9f5609713ae8a4fd475e
 module.factory('$modelFactory', function($http, $q, $log, $cacheFactory){
 
     var defaultOptions = {
