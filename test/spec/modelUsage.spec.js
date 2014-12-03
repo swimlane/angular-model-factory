@@ -63,7 +63,7 @@ describe('A person model defined using modelFactory', function() {
             });
 
             // TODO this doesn't work right now...should it??
-            it('should wrap newly added JavaScript objects', function(){
+            it('should wrap newly added JavaScript objects', function() {
                 modelList.push({
                     name: 'Tom'
                 });
@@ -71,17 +71,15 @@ describe('A person model defined using modelFactory', function() {
                 expect(modelList[1] instanceof PersonModel).toBeTruthy();
             });
 
-            it('should account for Array.push(obj1, obj2,...) API; all passed obj should be wrapped as models', function(){
+            it('should account for Array.push(obj1, obj2,...) API; all passed obj should be wrapped as models', function() {
                 var newList = new PersonModel.List();
 
                 // act
-                newList.push(
-                    {
-                        name: 'Juri'
-                    },
-                    {
-                        name: 'Austin'
-                    });
+                newList.push({
+                    name: 'Juri'
+                }, {
+                    name: 'Austin'
+                });
 
                 // assert
                 expect(newList.length).toEqual(2);
@@ -95,10 +93,12 @@ describe('A person model defined using modelFactory', function() {
                 expect(newEmptyList.length).toEqual(0);
             });
 
-            it('should allow to add elements on a previously empty model list collection', function(){
+            it('should allow to add elements on a previously empty model list collection', function() {
                 var newList = new PersonModel.List();
 
-                newList.push({ name: 'Juri' });
+                newList.push({
+                    name: 'Juri'
+                });
                 expect(newList.length).toEqual(1);
                 expect(newList[0] instanceof PersonModel).toBeTruthy(); // wrapping should still work
             });
@@ -250,12 +250,15 @@ describe('A person model defined using modelFactory', function() {
                 $httpBackend.flush();
             });
 
-            it('should update the entry with the new results from the server', function(){
+            it('should update the entry with the new results from the server', function() {
                 var newModel = new PersonModel({
                     name: 'Juri'
                 });
 
-                $httpBackend.expectPOST('/api/people', JSON.stringify(newModel)).respond(200, JSON.stringify({id: 12, name: 'Juri Strumpflohner'}));
+                $httpBackend.expectPOST('/api/people', JSON.stringify(newModel)).respond(200, JSON.stringify({
+                    id: 12,
+                    name: 'Juri Strumpflohner'
+                }));
 
                 //act
                 newModel.$save();
@@ -267,9 +270,9 @@ describe('A person model defined using modelFactory', function() {
 
         });
 
-        describe('when calling $revert', function(){
+        describe('when calling $revert', function() {
 
-            it('should revert to the previous values of the object', function(){
+            it('should revert to the previous values of the object', function() {
                 var newModel = new PersonModel({
                     name: 'Juri'
                 });
@@ -281,7 +284,7 @@ describe('A person model defined using modelFactory', function() {
                 expect(newModel.name).toEqual('Juri');
             });
 
-            xit('should NOT revert to the old values after an entity has been persisted with $save', inject(function($httpBackend){
+            xit('should NOT revert to the old values after an entity has been persisted with $save', inject(function($httpBackend) {
                 var newModel = new PersonModel({
                     name: 'Juri'
                 });
@@ -293,7 +296,10 @@ describe('A person model defined using modelFactory', function() {
 
                 $httpBackend
                     .expectPOST('/api/people')
-                    .respond(200, JSON.stringify({ id: 1, name: 'Jack'}));
+                    .respond(200, JSON.stringify({
+                        id: 1,
+                        name: 'Jack'
+                    }));
                 $httpBackend.flush();
 
                 // act
@@ -318,7 +324,7 @@ describe('A person model defined using modelFactory', function() {
             });
 
 
-            it('should properly execute a DELETE request', function(){
+            it('should properly execute a DELETE request', function() {
                 var theModel = new PersonModel({
                     id: 1234
                 });
@@ -326,25 +332,21 @@ describe('A person model defined using modelFactory', function() {
                 // act
                 theModel.$destroy();
 
-                $httpBackend.expectDELETE('/api/people/1234').respond(200,'');
+                $httpBackend.expectDELETE('/api/people/1234').respond(200, '');
                 $httpBackend.flush();
             });
 
-            it('should remove the deleted object from a model list when the deletion succeeds', function(){
-                var modelList = new PersonModel.List([
-                    {
-                        id: 1,
-                        name: 'Juri'
-                    },
-                    {
-                        id: 2,
-                        name: 'Jack'
-                    },
-                    {
-                        id: 3,
-                        name: 'Austin'
-                    }
-                    ]);
+            it('should remove the deleted object from a model list when the deletion succeeds', function() {
+                var modelList = new PersonModel.List([{
+                    id: 1,
+                    name: 'Juri'
+                }, {
+                    id: 2,
+                    name: 'Jack'
+                }, {
+                    id: 3,
+                    name: 'Austin'
+                }]);
 
                 // act
                 modelList[1].$destroy();
@@ -356,21 +358,17 @@ describe('A person model defined using modelFactory', function() {
                 expect(modelList.length).toEqual(2);
             });
 
-            it('should NOT remove the deleted object from a model list when the deletion fails', function(){
-                var modelList = new PersonModel.List([
-                    {
-                        id: 1,
-                        name: 'Juri'
-                    },
-                    {
-                        id: 2,
-                        name: 'Jack'
-                    },
-                    {
-                        id: 3,
-                        name: 'Austin'
-                    }
-                    ]);
+            it('should NOT remove the deleted object from a model list when the deletion fails', function() {
+                var modelList = new PersonModel.List([{
+                    id: 1,
+                    name: 'Juri'
+                }, {
+                    id: 2,
+                    name: 'Jack'
+                }, {
+                    id: 3,
+                    name: 'Austin'
+                }]);
 
                 // act
                 modelList[1].$destroy();
@@ -446,11 +444,20 @@ describe('A person model defined using modelFactory', function() {
                 .factory('PersonModel', function($modelFactory) {
                     return $modelFactory('/api/people', {
                         actions: {
+
+                            // static
                             queryChildren: {
                                 type: 'GET',
                                 url: 'children',
                                 isArray: true
+                            },
+
+                            // instance function
+                            '$copy': {
+                                method: 'POST',
+                                url: 'copy'
                             }
+
                         }
                     });
                 });
@@ -463,36 +470,48 @@ describe('A person model defined using modelFactory', function() {
             $httpBackend = _$httpBackend_;
         }));
 
-        it('should correctly call the defined url', function(){
+        it('should correctly call the defined url', function() {
             PersonModel.queryChildren();
             $httpBackend.expectGET('/api/people/children').respond(200, []);
             $httpBackend.flush();
-        })
+        });
 
         // BUG: the query params are not passed. should the HTTP method be passed
         // as type: 'GET' or method: 'GET'?
-        xit('should allow to specify query parameters', function(){
+        xit('should allow to specify query parameters', function() {
 
-            PersonModel.queryChildren({ type: 'minor' });
+            PersonModel.queryChildren({
+                type: 'minor'
+            });
 
             $httpBackend.expectGET('/api/people/children?type=minor').respond(200, '');
             $httpBackend.flush();
         });
 
-        it('should wrap the returned objects', function(){
+        it('should wrap the returned objects', function() {
 
             PersonModel.queryChildren()
-                .then(function(result){
+                .then(function(result) {
                     expect(result.length).toBe(1);
                     expect(result[0] instanceof PersonModel).toBeTruthy(); // check whether it's a model
                 });
 
-            $httpBackend.expectGET('/api/people/children').respond(200, [
-                {
-                    type: 'minor',
-                    name: 'Juri'
-                }
-                ]);
+            $httpBackend.expectGET('/api/people/children').respond(200, [{
+                type: 'minor',
+                name: 'Juri'
+            }]);
+            $httpBackend.flush();
+        });
+
+        it('should correctly invoke the custom model instance function', function() {
+            var model = new PersonModel({
+                name: 'Juri'
+            });
+
+            $httpBackend.expectPOST('/api/people/copy').respond(200, '');
+
+            // act
+            model.$copy();
             $httpBackend.flush();
         });
 
