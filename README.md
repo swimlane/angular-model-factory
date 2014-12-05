@@ -46,7 +46,6 @@ See [wiki](https://github.com/phxdatasec/model-factory/wiki) for documentation.
 
 ### Development Commands
 
-* `grunt prebuild` install bower deps
 * `grunt build` to concat and build
 * `grunt karma` for one-time test with karma
 
