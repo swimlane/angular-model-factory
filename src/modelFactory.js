@@ -481,7 +481,7 @@ module.provider('$modelFactory', function(){
                 }
 
                 // uri template to parameterize
-                var uri = options.prefix ? options.prefix : '';
+                var uri = options.prefix ? options.prefix + '/' : '';
 
                 // make sure we didn't override the base url prefixing
                 if(!clone.override){

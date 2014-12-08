@@ -1,6 +1,6 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v0.1.2 - 2014-12-08
+ * @version v0.1.3 - 2014-12-08
  * @link https://github.com/phxdatasec/model-factory
  * @author Austin McDaniel <amcdaniel2@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -895,7 +895,7 @@ module.provider('$modelFactory', function(){
                 }
 
                 // uri template to parameterize
-                var uri = options.prefix ? options.prefix : '';
+                var uri = options.prefix ? options.prefix + '/' : '';
 
                 // make sure we didn't override the base url prefixing
                 if(!clone.override){
