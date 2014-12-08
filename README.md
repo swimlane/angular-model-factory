@@ -1,6 +1,6 @@
 # modelFactory [![Build Status](https://travis-ci.org/phxdatasec/model-factory.svg?branch=master)](https://travis-ci.org/phxdatasec/model-factory)
 
-A light-weight model layer that bridges the gap between JavaScript and RESTful API's in Angular.
+A light-weight model layer that bridges the gap between AngularJS and your RESTful APIs.
 
 Why would you use this over other available solutions?
 
@@ -19,14 +19,14 @@ See [wiki](https://github.com/phxdatasec/model-factory/wiki) for documentation.
 ## Features
 
 - URI Templates (RFC6570)
-- Object Deep Diff / Reversion
 - Model instances
 - Collections
 - Single Datastore
-- Caching
+- Caching / Cache invalidation
 - Default value population
 - Pending / Completed Status
 - Relationships
+- Object Deep Diff / Reversion
 - Track active promises to prevent duplicate sends
 
 
@@ -35,7 +35,6 @@ See [wiki](https://github.com/phxdatasec/model-factory/wiki) for documentation.
 - Angular >= 1.3
 - [deep-diff](https://github.com/flitbit/diff)
 - [uri-templates](https://github.com/geraintluff/uri-templates)
-
 
 ## Development
 
