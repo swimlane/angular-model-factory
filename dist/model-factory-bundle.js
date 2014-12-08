@@ -1,6 +1,6 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v0.1.1 - 2014-12-08
+ * @version v0.1.2 - 2014-12-08
  * @link https://github.com/phxdatasec/model-factory
  * @author Austin McDaniel <amcdaniel2@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -470,6 +470,12 @@ module.provider('$modelFactory', function(){
     provider.defaultOptions = {
 
         /**
+         * URL Prefix for requests.  This should only really
+         * be used at the provider level, not an instance.
+         */
+        prefix: '',
+
+        /**
          * Primary key of the model
          */
         pk: 'id',
@@ -889,17 +895,17 @@ module.provider('$modelFactory', function(){
                 }
 
                 // uri template to parameterize
-                var uri = "";
+                var uri = options.prefix ? options.prefix : '';
 
                 // make sure we didn't override the base url prefixing
                 if(!clone.override){
 
                     // set the uri to the base
-                    uri = url;
+                    uri += url;
 
                     // if we have a url defined, append to base
                     if(clone.url) {
-                        uri += "/" + clone.url;
+                        uri += '/' + clone.url;
                     }
 
                     // attach the pk referece by default if it is a 'core' type
