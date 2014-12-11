@@ -364,7 +364,7 @@ module.provider('$modelFactory', function(){
                  */
                 instance.$save = function(){
                     var promise = Model[instance[options.pk] ?
-                        'update' : 'post'](instance);
+                        'update' : 'post'](this);
 
                     instance.$pending = true;
 
@@ -391,7 +391,7 @@ module.provider('$modelFactory', function(){
                 instance.$destroy = function(){
                     // keep a local pointer since we strip before send
 
-                    var promise = Model.delete(instance);
+                    var promise = Model.delete(this);
                     instance.$pending = true;
 
                     promise.then(function(){
