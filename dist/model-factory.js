@@ -1,6 +1,6 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v0.1.3 - 2014-12-08
+ * @version v0.1.4 - 2014-12-17
  * @link https://github.com/phxdatasec/model-factory
  * @author Austin McDaniel <amcdaniel2@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -42,7 +42,7 @@ var staticKeywords = [ 'actions', 'instance', 'list', 'defaults',
 
 // Deep extends
 // http://stackoverflow.com/questions/15310935/angularjs-extend-recursive
-var extendDeep = function extendDeep(dst) {
+var extendDeep = function(dst) {
     forEach(arguments, function(obj) {
         if (obj !== dst) {
             forEach(obj, function(value, key) {
@@ -294,7 +294,7 @@ module.provider('$modelFactory', function(){
             // helper function for creating a new instance of a model from
             // a raw JavaScript obj. If it is already a model, it will be left
             // as it is
-            function wrapAsNewModelInstance(rawObj, arrayInst){
+            var  wrapAsNewModelInstance = function(rawObj, arrayInst){
                 // create an instance
                 var inst = rawObj.constructor === Model ?
                     rawObj : new Model(rawObj);
@@ -303,7 +303,7 @@ module.provider('$modelFactory', function(){
                 inst.$$array = arrayInst;
 
                 return inst;
-            }
+            };
 
 
             //
@@ -317,7 +317,8 @@ module.provider('$modelFactory', function(){
              *       var zoo = new Zoo({ ... });
              */
             function Model(value) {
-                var instance = this, old;
+                var instance = this, 
+                    commits = [];;
 
                 // if the value is undefined, create a empty obj
                 value = value || {};
@@ -430,11 +431,22 @@ module.provider('$modelFactory', function(){
                 };
 
                 /**
-                 * Reverts the current instance back to the first instance of the object.
-                 * This does NOT save the model to the server, call `$save` to do that.
+                 * Commits the change the commits bucket for rollback later if needed.
                  */
-                instance.$revert = function(){
-                    return instance.$extend(old);
+                instance.$commit = function () {
+                    // stringify it so you have a clean instance
+                    commits.push(angular.toJson(instance));
+                    return instance;
+                };
+
+                /**
+                 * Reverts the current instance back either the latest instance
+                 * or you can pass a specific instance on the commits stack.
+                 */
+                instance.$rollback = function(version) {
+                    var prevCommit = commits[version || commits.length - 1];
+                    instance.$extend(JSON.parse(prevCommit));
+                    return instance;
                 };
 
                 /**
@@ -449,7 +461,7 @@ module.provider('$modelFactory', function(){
 
                 // Create a copy of the value last so we get all the goodies,
                 // like default values and whatnot.
-                old = copy(value);
+                instance.$commit();
             };
 
             //
