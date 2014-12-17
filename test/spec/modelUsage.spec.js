@@ -272,7 +272,7 @@ describe('A person model defined using modelFactory', function() {
 
         describe('when calling $revert', function() {
 
-            it('should revert to the previous values of the object', function() {
+            xit('should revert to the previous values of the object', function() {
                 var newModel = new PersonModel({
                     name: 'Juri'
                 });
