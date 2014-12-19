@@ -272,14 +272,14 @@ describe('A person model defined using modelFactory', function() {
 
         describe('when calling $revert', function() {
 
-            xit('should revert to the previous values of the object', function() {
+            it('should revert to the previous values of the object', function() {
                 var newModel = new PersonModel({
                     name: 'Juri'
                 });
 
                 // act
                 newModel.name = 'Jack';
-                newModel.$revert();
+                newModel.$rollback();
 
                 expect(newModel.name).toEqual('Juri');
             });
@@ -303,7 +303,7 @@ describe('A person model defined using modelFactory', function() {
                 $httpBackend.flush();
 
                 // act
-                newModel.$revert();
+                newModel.$rollback();
 
                 // assert
                 expect(newModel.name).toEqual('Jack'); // there is nothing to revert 'cause the model is fresh from the server'
