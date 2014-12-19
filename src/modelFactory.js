@@ -23,7 +23,7 @@ var forEach = angular.forEach,
 // internal usage only and to be stripped
 // before sending to server
 var instanceKeywords = [ '$$array', '$save', '$destroy',
-    '$pending', '$revert', '$diff', '$extend' ];
+    '$pending', '$rollback', '$diff', '$update', '$commit' ];
 
 // keywords that are reserved for the model static
 // these are used to determine if a attribute should be extended
