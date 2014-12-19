@@ -509,7 +509,6 @@ describe('A person model defined using modelFactory', function() {
             });
 
             $httpBackend.expectPOST('/api/people/copy').respond(200, '');
-
             // act
             model.$copy();
             $httpBackend.flush();

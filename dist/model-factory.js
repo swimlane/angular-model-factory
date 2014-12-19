@@ -1,6 +1,6 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v0.1.4 - 2014-12-17
+ * @version v0.2.0 - 2014-12-19
  * @link https://github.com/phxdatasec/model-factory
  * @author Austin McDaniel <amcdaniel2@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -38,18 +38,26 @@ var instanceKeywords = [ '$$array', '$save', '$destroy',
 // these are used to determine if a attribute should be extended
 // to the model static class for like a helper that is not a http method
 var staticKeywords = [ 'actions', 'instance', 'list', 'defaults',
-    'pk', 'stripTrailingSlashes', 'map' ];
+    'pk', 'stripTrailingSlashes', 'map'];
 
 // Deep extends
 // http://stackoverflow.com/questions/15310935/angularjs-extend-recursive
-var extendDeep = function(dst) {
-    forEach(arguments, function(obj) {
+var extendDeep = function (dst) {
+    forEach(arguments, function (obj) {
         if (obj !== dst) {
-            forEach(obj, function(value, key) {
-                if(instanceKeywords.indexOf(key) === -1){
-                    if (dst[key] && angular.isObject(dst[key])) {
-                        extendDeep(dst[key], value);
-                    } else if(!angular.isFunction(dst[key])) {
+            forEach(obj, function (value, key) {
+                if (instanceKeywords.indexOf(key) === -1) {
+                    if (dst[key]) {
+                        if (angular.isArray(dst[key])) {
+                            dst[key].concat(value.filter(function (v) {
+                                var vv = dst[key].indexOf(v) !== -1;
+                                if (vv) extendDeep(vv, v);
+                                return vv;
+                            }));
+                        } else if (angular.isObject(dst[key])) {
+                            extendDeep(dst[key], value);
+                        }
+                    } else if (!angular.isFunction(dst[key])) {
                         dst[key] = value;
                     }
                 }
@@ -58,6 +66,25 @@ var extendDeep = function(dst) {
     });
     return dst;
 };
+
+// Create a shallow copy of an object and clear other fields from the destination
+// https://github.com/angular/angular.js/blob/master/src/ngResource/resource.js#L30
+var shallowClearAndCopy = function(src, dst) {
+    dst = dst || {};
+
+    forEach(dst, function (value, key) {
+        delete dst[key];
+    });
+
+    for (var key in src) {
+        if (src.hasOwnProperty(key)) {
+            dst[key] = src[key];
+        }
+    }
+
+    return dst;
+};
+
 
 module.provider('$modelFactory', function(){
     var provider = this;
@@ -382,8 +409,13 @@ module.provider('$modelFactory', function(){
                         instance.$pending = false;
 
                         // extend the value from the server to me
-                        extendDeep(instance, value);
-                    }, function(){
+                        if (value) {
+                            instance.$update(value);
+                        }
+
+                        // commit the change for reversion
+                        commits.push(angular.toJson(instance));
+                    }, function () {
                         // rejected
                         instance.$pending = false;
                     });
@@ -445,7 +477,7 @@ module.provider('$modelFactory', function(){
                  */
                 instance.$rollback = function(version) {
                     var prevCommit = commits[version || commits.length - 1];
-                    instance.$extend(JSON.parse(prevCommit));
+                    instance.$update(JSON.parse(prevCommit));
                     return instance;
                 };
 
@@ -454,8 +486,8 @@ module.provider('$modelFactory', function(){
                  * the current object without replacing it.  Helpful
                  * when copying and then re-copying new props back
                  */
-                instance.$extend = function(n){
-                    extendDeep(instance, n);
+                instance.$update = function(n){
+                    shallowClearAndCopy(n, instance);
                     return instance;
                 };
 
@@ -591,14 +623,18 @@ module.provider('$modelFactory', function(){
                         Model.$cache.removeAll();
                     }
 
-                    if(params.wrap){
-                        if(params.isArray){
-                            def.resolve(new Model.List(response));
+                    if (response) {
+                        if (params.wrap) {
+                            if (params.isArray) {
+                                def.resolve(new Model.List(response));
+                            } else {
+                                def.resolve(new Model(response));
+                            }
                         } else {
-                            def.resolve(new Model(response));
+                            def.resolve(response);
                         }
                     } else {
-                        def.resolve(response);
+                        def.resolve();
                     }
 
                     promiseTracker[signature] = undefined;
@@ -678,5 +714,4 @@ module.provider('$modelFactory', function(){
 });
 
 });
-
 })();
