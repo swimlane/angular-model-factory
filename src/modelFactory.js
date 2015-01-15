@@ -399,7 +399,7 @@ module.provider('$modelFactory', function(){
 
                         var arr = instance.$$array;
                         if(arr){
-                            arr.splice(arr.indexOf(instance), 1);
+                            arr.splice(arr.indexOf(this), 1);
                         }
                     }, function(){
                         // rejected
@@ -436,6 +436,19 @@ module.provider('$modelFactory', function(){
                 instance.$extend = function(n){
                     extendDeep(instance, n);
                     return instance;
+                };
+
+
+                /**
+                 * Creates a copy by taking the raw data values and by
+                 * creating a new instance of the model.
+                 */
+                instance.$copy = function(){
+                  // get the raw data of the model
+                  var rawData = Model.$strip(this);
+
+                  // ..then wrap it into a new instance
+                  return new Model(rawData);
                 };
 
                 // Create a copy of the value last so we get all the goodies,

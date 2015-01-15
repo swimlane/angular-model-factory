@@ -469,7 +469,7 @@ describe('A person model defined using modelFactory', function() {
                             },
 
                             // instance function
-                            '$copy': {
+                            '$serverCopy': {
                                 method: 'POST',
                                 url: 'copy'
                             }
@@ -527,7 +527,7 @@ describe('A person model defined using modelFactory', function() {
             $httpBackend.expectPOST('/api/people/copy').respond(200, '');
 
             // act
-            model.$copy();
+            model.$serverCopy();
             $httpBackend.flush();
         });
 

@@ -5,7 +5,7 @@
   tests can be placed in here.
 */
 
-ddescribe('A person model defined using modelFactory', function() {
+describe('A person model defined using modelFactory', function() {
     var PersonModel;
     var $httpBackend;
 
@@ -48,7 +48,7 @@ ddescribe('A person model defined using modelFactory', function() {
                 name: 'Juri'
             });
 
-            var copied = angular.copy(newModel);
+            var copied = newModel.$copy(); //angular.copy(newModel);
             copied.name = 'Austin';
 
             $httpBackend.expectPOST('/api/people', JSON.stringify(copied)).respond(200, '');
@@ -62,7 +62,7 @@ ddescribe('A person model defined using modelFactory', function() {
                 name: 'Juri'
             });
 
-            var copied = angular.copy(newModel);
+            var copied = newModel.$copy(); //angular.copy(newModel);
             copied.name = 'Austin';
 
             $httpBackend.expectPOST('/api/people', JSON.stringify(copied)).respond(200, '');
@@ -77,13 +77,40 @@ ddescribe('A person model defined using modelFactory', function() {
                 name: 'Juri'
             });
 
-            var copied = angular.copy(newModel);
+            var copied = newModel.$copy(); // angular.copy(newModel);
             copied.id = 100;
 
             $httpBackend.expectDELETE('/api/people/100').respond(200, '');
 
             copied.$destroy();
             $httpBackend.flush();
+        });
+
+        it('calling $destroy on a model list entry should not have any effect on the list', function(){
+
+            var modelList = new PersonModel.List([
+                {
+                    id: 1,
+                    name: 'Juri'
+                },
+                {
+                    id: 2,
+                    name: 'Austin'
+                },
+                {
+                    id: 3,
+                    name: 'Tim'
+                }
+            ]);
+
+            var copy = modelList[1].$copy(); // angular.copy(modelList[1]);
+
+            $httpBackend.expectDELETE('/api/people/2').respond(200,'');
+
+            copy.$destroy();
+            $httpBackend.flush();
+
+            expect(modelList.length).toEqual(3);
         });
 
     });
