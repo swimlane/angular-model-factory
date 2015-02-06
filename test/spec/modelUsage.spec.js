@@ -267,8 +267,14 @@ describe('A person model defined using modelFactory', function() {
             });
 
             it('should update the entry with the new results from the server', function() {
+
+                var children = {
+                    count: 1
+                };
+
                 var newModel = new PersonModel({
-                    name: 'Juri'
+                    name: 'Juri',
+                    kids: children
                 });
 
                 $httpBackend.expectPOST('/api/people', JSON.stringify(newModel)).respond(200, JSON.stringify({
@@ -282,6 +288,7 @@ describe('A person model defined using modelFactory', function() {
 
                 expect(newModel.id).toEqual(12);
                 expect(newModel.name).toEqual('Juri Strumpflohner');
+                expect(newModel.kids).toBe(children);
             });
 
             it('on a copied model it should sent back the copied model data', function(){
