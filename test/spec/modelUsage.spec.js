@@ -279,7 +279,8 @@ describe('A person model defined using modelFactory', function() {
 
                 $httpBackend.expectPOST('/api/people', JSON.stringify(newModel)).respond(200, JSON.stringify({
                     id: 12,
-                    name: 'Juri Strumpflohner'
+                    name: 'Juri Strumpflohner',
+                    kids: children
                 }));
 
                 //act
