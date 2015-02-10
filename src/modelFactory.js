@@ -445,10 +445,12 @@ module.provider('$modelFactory', function(){
                  */
                 instance.$copy = function(){
                   // get the raw data of the model
-                  var rawData = Model.$strip(this);
+                  // var rawData = Model.$strip(this);
+                  var rawData = angular.toJson(this);
+
 
                   // ..then wrap it into a new instance
-                  return new Model(rawData);
+                  return new Model(angular.fromJson(rawData));
                 };
 
                 // Create a copy of the value last so we get all the goodies,
