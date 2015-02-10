@@ -392,7 +392,7 @@ module.provider('$modelFactory', function(){
                  */
                 instance.$save = function(){
                     var promise = Model[instance[options.pk] ?
-                        'update' : 'post'](instance);
+                        'update' : 'post'](this);
 
                     instance.$pending = true;
 
@@ -424,7 +424,7 @@ module.provider('$modelFactory', function(){
                 instance.$destroy = function(){
                     // keep a local pointer since we strip before send
 
-                    var promise = Model.delete(instance);
+                    var promise = Model.delete(this);
                     instance.$pending = true;
 
                     promise.then(function(){
@@ -432,7 +432,7 @@ module.provider('$modelFactory', function(){
 
                         var arr = instance.$$array;
                         if(arr){
-                            arr.splice(arr.indexOf(instance), 1);
+                            arr.splice(arr.indexOf(this), 1);
                         }
                     }, function(){
                         // rejected
@@ -480,6 +480,21 @@ module.provider('$modelFactory', function(){
                 instance.$update = function(n){
                     shallowClearAndCopy(n, instance);
                     return instance;
+                };
+
+
+                /**
+                 * Creates a copy by taking the raw data values and by
+                 * creating a new instance of the model.
+                 */
+                instance.$copy = function(){
+                  // get the raw data of the model
+                  // var rawData = Model.$strip(this);
+                  var rawData = angular.toJson(this);
+
+
+                  // ..then wrap it into a new instance
+                  return new Model(angular.fromJson(rawData));
                 };
 
                 // Create a copy of the value last so we get all the goodies,

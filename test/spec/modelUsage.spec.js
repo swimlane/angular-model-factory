@@ -268,6 +268,22 @@ describe('A person model defined using modelFactory', function() {
                 expect(newModel.name).toEqual('Juri Strumpflohner');
             });
 
+            it('on a copied model it should sent back the copied model data', function(){
+                var newModel = new PersonModel({
+                    name: 'Juri'
+                });
+
+
+                var copied = angular.copy(newModel);
+                copied.name = 'Austin'; //change something in the clone
+
+                $httpBackend.expectPOST('/api/people', JSON.stringify(copied)).respond(200, '');
+
+
+                copied.$save();
+                $httpBackend.flush();
+            });
+
         });
 
         describe('when calling $revert', function() {
@@ -453,7 +469,7 @@ describe('A person model defined using modelFactory', function() {
                             },
 
                             // instance function
-                            '$copy': {
+                            '$serverCopy': {
                                 method: 'POST',
                                 url: 'copy'
                             }
@@ -510,7 +526,7 @@ describe('A person model defined using modelFactory', function() {
 
             $httpBackend.expectPOST('/api/people/copy').respond(200, '');
             // act
-            model.$copy();
+            model.$serverCopy();
             $httpBackend.flush();
         });
 
