@@ -1,4 +1,4 @@
-# modelFactory [![Build Status](https://travis-ci.org/phxdatasec/model-factory.svg?branch=master)](https://travis-ci.org/phxdatasec/model-factory)
+# modelFactory [![Build Status](https://travis-ci.org/Swimlane/model-factory.svg?branch=master)](https://travis-ci.org/Swimlane/model-factory)
 
 A light-weight model layer that bridges the gap between AngularJS and your RESTful APIs.
 
@@ -13,7 +13,7 @@ Why would you use this over other available solutions?
 - Its full of awesome features
 
 
-See [wiki](https://github.com/phxdatasec/model-factory/wiki) for documentation.
+See [wiki](https://github.com/Swimlane/model-factory/wiki) for documentation.
 
 
 ## Features
