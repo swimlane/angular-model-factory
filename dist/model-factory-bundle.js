@@ -1,6 +1,6 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v0.2.0 - 2014-12-19
+ * @version v0.2.1 - 2015-02-12
  * @link https://github.com/phxdatasec/model-factory
  * @author Austin McDaniel <amcdaniel2@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -437,7 +437,7 @@ var forEach = angular.forEach,
 // internal usage only and to be stripped
 // before sending to server
 var instanceKeywords = [ '$$array', '$save', '$destroy',
-    '$pending', '$revert', '$diff', '$extend' ];
+    '$pending', '$rollback', '$diff', '$update', '$commit', '$copy' ];
 
 // keywords that are reserved for the model static
 // these are used to determine if a attribute should be extended
@@ -749,7 +749,7 @@ module.provider('$modelFactory', function(){
              *       var zoo = new Zoo({ ... });
              */
             function Model(value) {
-                var instance = this, 
+                var instance = this,
                     commits = [];;
 
                 // if the value is undefined, create a empty obj
@@ -806,7 +806,7 @@ module.provider('$modelFactory', function(){
                  */
                 instance.$save = function(){
                     var promise = Model[instance[options.pk] ?
-                        'update' : 'post'](instance);
+                        'update' : 'post'](this);
 
                     instance.$pending = true;
 
@@ -838,7 +838,7 @@ module.provider('$modelFactory', function(){
                 instance.$destroy = function(){
                     // keep a local pointer since we strip before send
 
-                    var promise = Model.delete(instance);
+                    var promise = Model.delete(this);
                     instance.$pending = true;
 
                     promise.then(function(){
@@ -846,7 +846,7 @@ module.provider('$modelFactory', function(){
 
                         var arr = instance.$$array;
                         if(arr){
-                            arr.splice(arr.indexOf(instance), 1);
+                            arr.splice(arr.indexOf(this), 1);
                         }
                     }, function(){
                         // rejected
@@ -894,6 +894,19 @@ module.provider('$modelFactory', function(){
                 instance.$update = function(n){
                     shallowClearAndCopy(n, instance);
                     return instance;
+                };
+
+
+                /**
+                 * Creates a copy by taking the raw data values and by
+                 * creating a new instance of the model.
+                 */
+                instance.$copy = function(){
+                  // get the raw data of the model
+                  var rawData = angular.toJson(this);
+
+                  // ..then wrap it into a new instance to create a clone
+                  return new Model(angular.fromJson(rawData));
                 };
 
                 // Create a copy of the value last so we get all the goodies,
@@ -1119,4 +1132,5 @@ module.provider('$modelFactory', function(){
 });
 
 });
+
 })();
