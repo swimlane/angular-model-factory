@@ -23,7 +23,7 @@ var forEach = angular.forEach,
 // internal usage only and to be stripped
 // before sending to server
 var instanceKeywords = [ '$$array', '$save', '$destroy',
-    '$pending', '$rollback', '$diff', '$update', '$commit' ];
+    '$pending', '$rollback', '$diff', '$update', '$commit', '$copy' ];
 
 // keywords that are reserved for the model static
 // these are used to determine if a attribute should be extended
@@ -335,7 +335,7 @@ module.provider('$modelFactory', function(){
              *       var zoo = new Zoo({ ... });
              */
             function Model(value) {
-                var instance = this, 
+                var instance = this,
                     commits = [];;
 
                 // if the value is undefined, create a empty obj
@@ -489,11 +489,9 @@ module.provider('$modelFactory', function(){
                  */
                 instance.$copy = function(){
                   // get the raw data of the model
-                  // var rawData = Model.$strip(this);
                   var rawData = angular.toJson(this);
 
-
-                  // ..then wrap it into a new instance
+                  // ..then wrap it into a new instance to create a clone
                   return new Model(angular.fromJson(rawData));
                 };
 
