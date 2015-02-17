@@ -1,6 +1,6 @@
 {
   "name": "angular-model-factory",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "authors": [
     "Austin McDaniel <amcdaniel2@gmail.com>"
   ],
@@ -11,7 +11,7 @@
     "type": "git",
     "url": "git://github.com/swimlane/model-factory.git"
   },
-  "main": "./dist/model-factory.js",
+  "main": "./dist/angular-model-factory.js",
   "ignore": [
     "**/.*",
     "node_modules",
