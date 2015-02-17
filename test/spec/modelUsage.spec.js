@@ -374,6 +374,32 @@ describe('A person model defined using modelFactory', function() {
                 expect(modelList.length).toEqual(2);
             });
 
+            it('should also properly remove an object that has just been added to the list before', function(){
+
+                var modelList = new PersonModel.List([{
+                    id: 1,
+                    name: 'Juri'
+                }]);
+
+                var newModel = new PersonModel({
+                    id: 2,
+                    name: 'Tom'
+                });
+
+                // act: add a new model to the list
+                modelList.push(newModel);
+                expect(modelList.length).toBe(2);
+
+                // act: delete the added model again
+                newModel.$destroy();
+                $httpBackend.expectDELETE('/api/people/2').respond(200, '');
+                $httpBackend.flush();
+
+                // I'd expect that it is properly removed from it
+                expect(modelList.length).toBe(1);
+                expect(modelList[0].name).toEqual('Juri');
+            });
+
             it('should NOT remove the deleted object from a model list when the deletion fails', function() {
                 var modelList = new PersonModel.List([{
                     id: 1,
