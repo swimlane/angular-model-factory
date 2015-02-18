@@ -202,6 +202,22 @@ describe('A person model defined using modelFactory', function() {
                 $httpBackend.flush();
             });
 
+            it('should allow to add additional query params', function(){
+                PersonModel.get(123, { age: 29 });
+
+                $httpBackend
+                    .whenGET('/api/people/123?age=29')
+                    .respond({
+                        id: 123,
+                        name: 'Juri',
+                        age: 29
+                    });
+
+                $httpBackend.expectGET('/api/people/123?age=29');
+                $httpBackend.flush();
+            });
+
+
             xit('should return the requested resource by its id when passing it as object', function() {
                 PersonModel.get({
                     id: 123
@@ -286,7 +302,7 @@ describe('A person model defined using modelFactory', function() {
 
         });
 
-        describe('when calling $revert', function() {
+        describe('when calling $rollback', function() {
 
             it('should revert to the previous values of the object', function() {
                 var newModel = new PersonModel({
