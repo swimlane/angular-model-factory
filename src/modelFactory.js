@@ -47,6 +47,10 @@ var extendDeep = function (dst) {
                             }));
                         } else if (angular.isObject(dst[key])) {
                             extendDeep(dst[key], value);
+                        } else {
+                            // if value is a simple type like a string, boolean or number
+                            // then assign it
+                            dst[key] = value;
                         }
                     } else if (!angular.isFunction(dst[key])) {
                         dst[key] = value;
