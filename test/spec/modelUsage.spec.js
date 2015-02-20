@@ -574,4 +574,61 @@ describe('A person model defined using modelFactory', function() {
 
     });
 
+    describe('using the isArray property', function(){
+        var AddressModel, $httpBackend;
+
+        beforeEach(function() {
+            angular.module('test-module', ['modelFactory'])
+                .factory('AddressModel', function($modelFactory) {
+                    return $modelFactory('/api/addresses', {
+                        actions: {
+                            'query': {
+                                isArray: false
+                            },
+
+                            'myCustomAction': {
+                                url: 'customAction',
+                                isArray: false
+                            }
+                        }
+                    });
+                });
+        });
+
+        beforeEach(angular.mock.module('test-module'));
+
+        beforeEach(inject(function(_AddressModel_, _$httpBackend_) {
+            AddressModel = _AddressModel_;
+            $httpBackend = _$httpBackend_;
+        }));
+
+        afterEach(function() {
+            $httpBackend.verifyNoOutstandingExpectation();
+            $httpBackend.verifyNoOutstandingRequest();
+        });
+
+        it('when setting it to false should accept non-array responses', function(){
+            AddressModel.query()
+                .then(function(result){
+                    expect(result.rows.length).toBe(1);
+                    expect(result.numRecords).toBe(1);
+                });
+
+            $httpBackend.expectGET('/api/addresses').respond(200, { rows: [{ id: 1, street: 'test'}], numRecords: 1 });
+            $httpBackend.flush();
+        });
+
+        it('when setting it to false on a custom action should accept non-array responses', function(){
+            AddressModel.myCustomAction()
+                .then(function(result){
+                    expect(result.rows.length).toBe(1);
+                    expect(result.numRecords).toBe(1);
+                });
+
+            $httpBackend.expectGET('/api/addresses/customAction').respond(200, { rows: [{ id: 1, street: 'test'}], numRecords: 1 });
+            $httpBackend.flush();
+        });
+
+    });
+
 });
