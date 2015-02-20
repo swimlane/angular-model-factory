@@ -1,8 +1,9 @@
 {
   "name": "angular-model-factory",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "authors": [
-    "Austin McDaniel <amcdaniel2@gmail.com>"
+    "Austin McDaniel <amcdaniel2@gmail.com>",
+    "Juri Strumpflohner <juri.strumpflohner@gmail.com>"
   ],
   "description": "modelFactory makes working with RESTful APIs in AngularJS easy",
   "license": "MIT",

@@ -1,8 +1,8 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v0.2.4 - 2015-02-17
+ * @version v0.2.5 - 2015-02-20
  * @link https://github.com/swimlane/model-factory
- * @author Austin McDaniel <amcdaniel2@gmail.com>
+ * @author Austin McDaniel <amcdaniel2@gmail.com>, Juri Strumpflohner <juri.strumpflohner@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
 
@@ -461,6 +461,10 @@ var extendDeep = function (dst) {
                             }));
                         } else if (angular.isObject(dst[key])) {
                             extendDeep(dst[key], value);
+                        } else {
+                            // if value is a simple type like a string, boolean or number
+                            // then assign it
+                            dst[key] = value;
                         }
                     } else if (!angular.isFunction(dst[key])) {
                         dst[key] = value;
