@@ -41,6 +41,20 @@ describe('A person model defined using modelFactory', function() {
     //     });
     // });
 
+    describe('using $rollback', function(){
+
+        it('should be able to do multiple rollbacks', function(){
+            var someModel = new PersonModel({
+                name: 'Juri'
+            });
+
+            expect(someModel.$rollback).toBeDefined();
+            someModel.$rollback();
+            expect(someModel.$rollback).toBeDefined();
+        });
+
+    });
+
     describe('when copying a model object', function() {
 
         it('calling $save on a new model should submit the copied values', function() {
