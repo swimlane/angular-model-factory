@@ -280,7 +280,7 @@ describe('A person model defined using modelFactory', function() {
                 $httpBackend.expectPOST('/api/people', JSON.stringify(newModel)).respond(200, JSON.stringify({
                     id: 12,
                     name: 'Juri Strumpflohner',
-                    kids: children
+                    kids: { count: 99 }
                 }));
 
                 //act
@@ -290,6 +290,7 @@ describe('A person model defined using modelFactory', function() {
                 expect(newModel.id).toEqual(12);
                 expect(newModel.name).toEqual('Juri Strumpflohner');
                 expect(newModel.kids).toBe(children);
+                expect(children.count).toEqual(99);
             });
 
             it('on a copied model it should sent back the copied model data', function(){
