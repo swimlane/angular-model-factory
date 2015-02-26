@@ -46,7 +46,8 @@ See [wiki](https://github.com/Swimlane/model-factory/wiki) for documentation.
 ### Development Commands
 
 * `grunt build` to concat and build
-* `grunt karma` for one-time test with karma
+* `grunt karma` for continuous testing mode with karma (useful during development as tests will be run on each change)
+* `grunt karma:ci` for a one-time execution of the tests (used by Travis)
 
 ## Contributing
 
