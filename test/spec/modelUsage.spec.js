@@ -289,15 +289,49 @@ describe('A person model defined using modelFactory', function() {
 
                 expect(newModel.id).toEqual(12);
                 expect(newModel.name).toEqual('Juri Strumpflohner');
+
+                // Make sure object references are not lost
                 expect(newModel.kids).toBe(children);
                 expect(children.count).toEqual(99);
+            });
+
+            it('Should overwrite array properties with the returned server version on update', function() {
+
+                // Set PersonModel object with an array property
+                var people = [];
+                people.push(new PersonModel({
+                        name: 'Ryan'
+                    }
+                ));
+                people.push(new PersonModel({
+                        name: 'Austin'
+                    }
+                ));
+                var newModel = new PersonModel({
+                    friends: people
+                });
+
+                // Create a changed array to return which has an extra element
+                var sender = people.slice().reverse();
+                sender.push(new PersonModel( { name: 'Juri'}));
+
+                $httpBackend.expectPOST('/api/people', JSON.stringify(newModel)).respond(200, JSON.stringify({
+                    friends: sender
+                }));
+
+                //act
+                newModel.$save();
+                $httpBackend.flush();
+
+                // Arrays should be exactly as returned
+                expect(newModel.friends.length).toBe(3);
+                expect(newModel.friends[1].name).toBe('Ryan');
             });
 
             it('on a copied model it should sent back the copied model data', function(){
                 var newModel = new PersonModel({
                     name: 'Juri'
                 });
-
 
                 var copied = angular.copy(newModel);
                 copied.name = 'Austin'; //change something in the clone
