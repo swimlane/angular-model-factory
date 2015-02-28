@@ -79,8 +79,9 @@ var shallowClearAndCopy = function(src, dst) {
 
         if(src.hasOwnProperty(key) && key.charAt(0) !== '$')  {
             // For properties common to both source and destination,
-            // check for object references and recurse as needed
-            if(angular.isObject(src[key])) {
+            // check for object references and recurse as needed. Route around
+            // arrays to prevent value/order inconsistencies
+            if(angular.isObject(src[key]) && !angular.isArray(src[key])) {
                 shallowClearAndCopy(src[key], dst[key]);
             } else {
                 // Not an object, so just overwrite with value from source
