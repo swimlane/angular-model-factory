@@ -1,6 +1,6 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v0.2.5 - 2015-02-20
+ * @version v0.2.6 - 2015-03-04
  * @link https://github.com/swimlane/model-factory
  * @author Austin McDaniel <amcdaniel2@gmail.com>, Juri Strumpflohner <juri.strumpflohner@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -481,13 +481,26 @@ var extendDeep = function (dst) {
 var shallowClearAndCopy = function(src, dst) {
     dst = dst || {};
 
+    // Remove any properties in destination that were not
+    // returned from the source
     forEach(dst, function (value, key) {
-        delete dst[key];
+        if(!src.hasOwnProperty(key)) {
+            delete dst[key];
+        }
     });
 
-    for (var key in src) {
-        if (src.hasOwnProperty(key)) {
-            dst[key] = src[key];
+    for(var key in src) {
+
+        if(src.hasOwnProperty(key) && key.charAt(0) !== '$')  {
+            // For properties common to both source and destination,
+            // check for object references and recurse as needed. Route around
+            // arrays to prevent value/order inconsistencies
+            if(angular.isObject(src[key]) && !angular.isArray(src[key])) {
+                shallowClearAndCopy(src[key], dst[key]);
+            } else {
+                // Not an object, so just overwrite with value from source
+                dst[key] = src[key];
+            }
         }
     }
 
