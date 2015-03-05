@@ -8,7 +8,8 @@
 */
 
 describe('A person model defined using modelFactory', function() {
-    var PersonModel;
+    var PersonModel, PersonWithMapModel;
+
 
     beforeEach(angular.mock.module('modelFactory'));
 
@@ -18,13 +19,19 @@ describe('A person model defined using modelFactory', function() {
             angular.module('test-module', ['modelFactory'])
                 .factory('PersonModel', function($modelFactory) {
                     return $modelFactory('/api/people');
+                })
+                .factory('PersonWithMapModel', function($modelFactory) {
+                    return $modelFactory('/api/peoplemodified', {
+                        pk: 'fooId'
+                    });
                 });
         });
 
         beforeEach(angular.mock.module('test-module'));
 
-        beforeEach(inject(function(_PersonModel_) {
+        beforeEach(inject(function(_PersonModel_, _PersonWithMapModel_) {
             PersonModel = _PersonModel_;
+            PersonWithMapModel = _PersonWithMapModel_;
         }));
 
         describe('when creating a new instance using the "new" keyword', function() {
@@ -411,6 +418,18 @@ describe('A person model defined using modelFactory', function() {
                 $httpBackend.flush();
             });
 
+            it('should properly execute a correct DELETE request with a different PK name', function(){
+                var theModel = new PersonWithMapModel({
+                    fooId: 1234
+                });
+
+                // act
+                theModel.$destroy();
+
+                $httpBackend.expectDELETE('/api/peoplemodified/1234').respond(200, '');
+                $httpBackend.flush();
+            });
+
             it('should remove the deleted object from a model list when the deletion succeeds', function() {
                 var modelList = new PersonModel.List([{
                     id: 1,
@@ -424,9 +443,41 @@ describe('A person model defined using modelFactory', function() {
                 }]);
 
                 // act
-                modelList[1].$destroy();
+                var modelToDelete = modelList[1];
+                modelToDelete.$destroy();
 
+                // assert
+                $httpBackend.expectDELETE('/api/people/2').respond(200, '');
+                $httpBackend.flush();
 
+                expect(modelList.length).toEqual(2);
+                expect(modelList[0].id).toEqual(1);
+                expect(modelList[1].id).toEqual(3);
+            });
+
+            it('should remove the deleted object even if the list order changed', function() {
+                var modelList = new PersonModel.List([{
+                    id: 1,
+                    name: 'Juri'
+                }, {
+                    id: 2,
+                    name: 'Otto'
+                }, {
+                    id: 3,
+                    name: 'Austin'
+                }]);
+
+                var modelToDelete = modelList[1];
+
+                // resort the list s.t. the array indices change..
+                modelList.sort(function(a, b){
+                    return a.name.localeCompare(b.name);
+                });
+
+                // act
+                modelToDelete.$destroy();
+
+                // should still delete "Otto"
                 $httpBackend.expectDELETE('/api/people/2').respond(200, '');
                 $httpBackend.flush();
 
@@ -440,23 +491,40 @@ describe('A person model defined using modelFactory', function() {
                     name: 'Juri'
                 }]);
 
-                var newModel = new PersonModel({
-                    id: 2,
-                    name: 'Tom'
-                });
 
-                // act: add a new model to the list
-                modelList.push(newModel);
-                expect(modelList.length).toBe(2);
+                // save a new model through the $save function
+                var newModel = new PersonModel({ name: 'Tom' });
+                newModel.$save()
+                    .then(function(){
+                        // add it to the overall collection
+                        modelList.push(newModel);
 
-                // act: delete the added model again
-                newModel.$destroy();
-                $httpBackend.expectDELETE('/api/people/2').respond(200, '');
+                        // act: delete the newly added model again
+                        modelList[1].$destroy();
+                    });
+
+                $httpBackend.expectPOST('/api/people').respond(200, JSON.stringify({ id: 111, name: 'Tom'}));
+                $httpBackend.expectDELETE('/api/people/111').respond(200, '');
                 $httpBackend.flush();
 
                 // I'd expect that it is properly removed from it
                 expect(modelList.length).toBe(1);
                 expect(modelList[0].name).toEqual('Juri');
+            });
+
+            it('should also remove deleted models that have a different PK name', function(){
+                var modelList = new PersonWithMapModel.List([{
+                    fooId: 112,
+                    name: 'Juri'
+                }]);
+
+                //act
+                modelList[0].$destroy();
+
+                $httpBackend.expectDELETE('/api/peoplemodified/112').respond(200, '');
+                $httpBackend.flush();
+
+                expect(modelList.length).toBe(0);
             });
 
             it('should NOT remove the deleted object from a model list when the deletion fails', function() {

@@ -449,7 +449,7 @@ module.provider('$modelFactory', function(){
 
                         var arr = instance.$$array;
                         if(arr){
-                            arr.splice(arr.indexOf(this), 1);
+                            arr.splice(arr.indexOf(instance), 1);
                         }
                     }, function(){
                         // rejected
