@@ -1,6 +1,6 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v0.2.7 - 2015-03-05
+ * @version v0.2.8 - 2015-03-06
  * @link https://github.com/swimlane/model-factory
  * @author Austin McDaniel <amcdaniel2@gmail.com>, Juri Strumpflohner <juri.strumpflohner@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -484,7 +484,7 @@ var shallowClearAndCopy = function(src, dst) {
     // Remove any properties in destination that were not
     // returned from the source
     forEach(dst, function (value, key) {
-        if(!src.hasOwnProperty(key)) {
+        if(!src.hasOwnProperty(key) && key.charAt(0) !== '$') {
             delete dst[key];
         }
     });
