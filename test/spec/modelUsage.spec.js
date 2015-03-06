@@ -350,6 +350,39 @@ describe('A person model defined using modelFactory', function() {
                 $httpBackend.flush();
             });
 
+            it('should not loose $$array reference when updating existing model', function (){
+                var list = new PersonModel.List([
+                    {
+                        id: 1,
+                        name: 'Juri'
+                    }
+                ]);
+
+                var aPerson = new PersonModel({
+                    name: 'Jack'
+                });
+
+                aPerson.$save()
+                    .then(function() {
+                        // add to list
+                        list.push(aPerson);
+                    });
+                $httpBackend.expectPOST('/api/people').respond(200, JSON.stringify({ id: 123, name: 'Jack' }));
+                $httpBackend.flush();
+
+                // save again
+                aPerson.$save();
+                $httpBackend.expectPUT('/api/people/123').respond(200, JSON.stringify({ id: 123, name: 'Jack'}));
+                $httpBackend.flush();
+
+                // now delete
+                aPerson.$destroy();
+                $httpBackend.expectDELETE('/api/people/123').respond(200, '');
+                $httpBackend.flush();
+
+                expect(list.length).toBe(1);
+            });
+
         });
 
         describe('when calling $rollback', function() {

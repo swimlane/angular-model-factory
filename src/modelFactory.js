@@ -70,7 +70,7 @@ var shallowClearAndCopy = function(src, dst) {
     // Remove any properties in destination that were not
     // returned from the source
     forEach(dst, function (value, key) {
-        if(!src.hasOwnProperty(key)) {
+        if(!src.hasOwnProperty(key) && key.charAt(0) !== '$') {
             delete dst[key];
         }
     });
