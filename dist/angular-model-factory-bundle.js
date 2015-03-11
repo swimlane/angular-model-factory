@@ -1,6 +1,6 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v0.2.8 - 2015-03-06
+ * @version v0.2.9 - 2015-03-11
  * @link https://github.com/swimlane/model-factory
  * @author Austin McDaniel <amcdaniel2@gmail.com>, Juri Strumpflohner <juri.strumpflohner@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -668,7 +668,7 @@ module.provider('$modelFactory', function(){
         list: {}
     };
 
-    provider.$get = ["$http", "$q", "$log", "$cacheFactory", function($http, $q, $log, $cacheFactory) {
+    provider.$get = ['$http', '$q', '$log', '$cacheFactory', function($http, $q, $log, $cacheFactory) {
 
         /**
          * Model factory.
@@ -929,7 +929,7 @@ module.provider('$modelFactory', function(){
                 // Create a copy of the value last so we get all the goodies,
                 // like default values and whatnot.
                 instance.$commit();
-            };
+            }
 
             //
             // Model Static
@@ -983,11 +983,11 @@ module.provider('$modelFactory', function(){
                     }
 
                     // attach the pk referece by default if it is a 'core' type
-                    if(action === "get" || action === "post" || action === "update" || action === "delete"){
-                        uri += "/{" + options.pk + "}";
+                    if(action === 'get' || action === 'post' || action === 'update' || action === 'delete'){
+                        uri += '/{' + options.pk + '}';
                     }
 
-                    if(clone.method === "GET" && (angular.isString(data) || angular.isNumber(data))){
+                    if(clone.method === 'GET' && (angular.isString(data) || angular.isNumber(data))){
                         // if we have a get method and its a number or a string
                         // you can assume i'm wanting to do something like:
                         // ZooModel.get(1234) instead of ZooModel.get({ id: 1234 });
@@ -999,21 +999,24 @@ module.provider('$modelFactory', function(){
                         //
                         if(extras){
                             data.param = extras;
-                            uri += "{?param*}";
+                            uri += '{?param*}';
                         }
-                    } else if(clone.method === "GET" && angular.isObject(data)){
+                    } else if(clone.method === 'GET' && angular.isObject(data)){
                         // if its a GET request and its not the above, we can assume
                         // you want to do a query param like:
                         // ZooModel.query({ type: 'panda' }) and do /api/zoo?type=panda
                         data = { param: data };
-                        uri += "{?param*}";
+                        uri += '{?param*}';
                     }
                 } else {
                     uri = clone.url;
                 }
 
                 clone.url = Model.$url(uri, data);
-                clone.data = data;
+
+                if(action !== 'delete'){ // don't include the payload for DELETE requests
+                    clone.data = data;
+                }
 
                 return Model.$call(clone);
             };
@@ -1121,7 +1124,7 @@ module.provider('$modelFactory', function(){
             Model.$strip = function(args){
                 // todo: this needs to account for relationships too?
                 // either make recursive or chain invoked
-                if(args && typeof args === "object"){
+                if(args && typeof args === 'object'){
                     forEach(args, function(v,k){
                         if(instanceKeywords.indexOf(k) > -1){
                             delete args[k];
@@ -1142,7 +1145,7 @@ module.provider('$modelFactory', function(){
             Model.List = ModelCollection;
 
             return Model;
-        };
+        }
 
         return modelFactory;
     }];
