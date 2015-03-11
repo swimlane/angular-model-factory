@@ -599,7 +599,10 @@ module.provider('$modelFactory', function(){
                 }
 
                 clone.url = Model.$url(uri, data);
-                clone.data = data;
+
+                if(action !== 'delete'){ // don't include the payload for DELETE requests
+                    clone.data = data;
+                }
 
                 return Model.$call(clone);
             };
