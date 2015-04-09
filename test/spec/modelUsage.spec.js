@@ -680,7 +680,7 @@ describe('A person model defined using modelFactory', function() {
 
         // BUG: the query params are not passed. should the HTTP method be passed
         // as type: 'GET' or method: 'GET'?
-        xit('should allow to specify query parameters', function() {
+        fit('should allow to specify query parameters', function() {
 
             PersonModel.queryChildren({
                 type: 'minor'
