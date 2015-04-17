@@ -649,7 +649,6 @@ describe('A person model defined using modelFactory', function() {
 
                             // static
                             queryChildren: {
-                                type: 'GET',
                                 url: 'children',
                                 isArray: true
                             },
@@ -678,9 +677,7 @@ describe('A person model defined using modelFactory', function() {
             $httpBackend.flush();
         });
 
-        // BUG: the query params are not passed. should the HTTP method be passed
-        // as type: 'GET' or method: 'GET'?
-        fit('should allow to specify query parameters', function() {
+        it('should allow to specify query parameters', function() {
 
             PersonModel.queryChildren({
                 type: 'minor'
