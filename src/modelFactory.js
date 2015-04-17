@@ -554,6 +554,10 @@ module.provider('$modelFactory', function(){
                     clone.cache = Model.$cache;
                 }
 
+                // make sure we have a method specified, otherwise
+                // default to GET
+                clone.method = clone.method || 'GET';
+
                 // uri template to parameterize
                 var uri = options.prefix ? options.prefix + '/' : '';
 
@@ -600,7 +604,8 @@ module.provider('$modelFactory', function(){
 
                 clone.url = Model.$url(uri, data);
 
-                if(action !== 'delete'){ // don't include the payload for DELETE requests
+                // don't include the payload for DELETE requests
+                if(action !== 'delete'){
                     clone.data = data;
                 }
 
