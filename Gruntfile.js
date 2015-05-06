@@ -24,8 +24,8 @@ module.exports = function(grunt) {
         concat: {
           options: {
             //banner: '<%= meta.banner %>\n(function(angular, undefined) {\n\'use strict\';\n',
-            banner: '<%= meta.banner %>\n(function() {\n',
-            footer: '\n})();',
+            banner: '<%= meta.banner %>\n',
+            footer: '',
             process: function(src, filepath) {
               var res = ngAnnotate(src, {
                   add: true,

@@ -1,5 +1,4 @@
 /* global angular:false */
-
 'use strict';
 
 (function(global, factory) {
