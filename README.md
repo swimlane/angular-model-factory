@@ -92,13 +92,11 @@ Another backbone model clone.  This one actually requires backbone and lodash.
 * Install local dev dependencies: `npm install && bower install` in repository directory
 
 ### Development Commands
-
 * `grunt build` to concat and build
 * `grunt karma` for continuous testing mode with karma (useful during development as tests will be run on each change)
 * `grunt karma:ci` for a one-time execution of the tests (used by Travis)
 
 ## Contributing
-
 - Run the tests
 - Create a feature branch
 - When issuing a pull request, please exclude changes from the "dist" folder to avoid merge conflicts.

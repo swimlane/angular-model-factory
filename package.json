@@ -1,6 +1,6 @@
 {
   "name": "angular-model-factory",
-  "version": "0.2.3",
+  "version": "0.2.11",
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-bower": "*",
