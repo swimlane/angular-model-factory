@@ -666,39 +666,39 @@ describe('A person model defined using modelFactory', function() {
         var $httpBackend;
 
         beforeEach(function() {
-            angular.module('test-module', ['modelFactory'])
-                .factory('PersonModel', function($modelFactory) {
-                    return $modelFactory('/api/people', {
-                        actions: {
+          angular.module('test-module', ['modelFactory'])
+              .factory('PersonModel', function($modelFactory) {
+                  return $modelFactory('/api/people', {
+                      actions: {
 
-                            // static
-                            queryChildren: {
-                                url: 'children',
-                                isArray: true
-                            },
+                          // static
+                          queryChildren: {
+                              url: 'children',
+                              isArray: true
+                          },
 
-                            getById: {
-                                url: 'child/{id}/some/subpath'
-                            },
+                          getById: {
+                              url: 'child/{id}/some/subpath'
+                          },
 
-                            getByName: {
-                                url: 'child/{name}/some/subpath'
-                            },
+                          getByName: {
+                              url: 'child/{name}/some/subpath'
+                          },
 
-                            // instance function
-                            '$serverCopy': {
-                                method: 'POST',
-                                url: 'copy/{name}'
-                            },
+                          // instance function
+                          '$serverCopy': {
+                              method: 'POST',
+                              url: 'copy/{name}'
+                          },
 
-                            '$customUpdate': {
-                                method: 'PUT',
-                                url: 'update/{name}'
-                            }
+                          '$customUpdate': {
+                              method: 'PUT',
+                              url: 'update/{name}'
+                          }
 
-                        }
-                    });
-                });
+                      }
+                  });
+              });
         });
 
         beforeEach(angular.mock.module('test-module'));
@@ -761,10 +761,6 @@ describe('A person model defined using modelFactory', function() {
                                 isArray: true
                             },
 
-                            getComplexUri: {
-                                url: 'child/{id}/some/subpath'
-                            },
-
                             // instance function
                             '$serverCopy': {
                                 method: 'POST',
@@ -782,13 +778,6 @@ describe('A person model defined using modelFactory', function() {
             PersonModel = _PersonModel_;
             $httpBackend = _$httpBackend_;
         }));
-
-        it('should allow to have variables in the url', function(){
-            PersonModel.getComplexUri({ id: 123 });
-
-            $httpBackend.expectGET('/api/people/child/123/some/subpath').respond(200, []);
-            $httpBackend.flush();
-        });
 
         it('should correctly call the defined url', function() {
             PersonModel.queryChildren();
