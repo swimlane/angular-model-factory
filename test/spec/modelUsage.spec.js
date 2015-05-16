@@ -236,6 +236,30 @@ describe('A person model defined using modelFactory', function() {
 
         });
 
+        describe('when calling $update()', function() {
+
+            it('should update the existing model properties with the new ones', function() {
+                var newModel = new PersonModel({
+                    name: null
+                });
+
+                var newModelUpdate = new PersonModel({
+                    name: 'elec29a',
+                    language: {
+                      de: 'hallo'
+                    }
+                });
+
+                //act
+                newModel.$update(newModelUpdate);
+
+                expect(newModel.name).toEqual('elec29a');
+                expect(newModel.language).toBeDefined();
+                expect(newModel.language.de).toEqual('hallo');
+            });
+
+        });
+
         describe('when calling $save()', function() {
             var $httpBackend;
 

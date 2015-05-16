@@ -81,7 +81,7 @@ var shallowClearAndCopy = function(src, dst) {
             // check for object references and recurse as needed. Route around
             // arrays to prevent value/order inconsistencies
             if(angular.isObject(src[key]) && !angular.isArray(src[key])) {
-                shallowClearAndCopy(src[key], dst[key]);
+                dst[key] = shallowClearAndCopy(src[key], dst[key]);
             } else {
                 // Not an object, so just overwrite with value from source
                 dst[key] = src[key];
@@ -460,7 +460,7 @@ module.provider('$modelFactory', function(){
                         if(arr){
                             arr.splice(arr.indexOf(instance), 1);
                         }
-                        
+
                         $rootScope.$broadcast(prettyName + '-destroyed', instance);
                     }, function(){
                         // rejected
