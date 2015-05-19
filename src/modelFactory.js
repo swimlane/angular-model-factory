@@ -583,6 +583,10 @@ module.provider('$modelFactory', function(){
                         uri += '/' + clone.url;
                     }
 
+
+                    // set the uri to the base
+                    uri = Model.$url(uri, data, clone.method);
+
                     // attach the pk referece by default if it is a 'core' type
                     if(action === 'get' || action === 'post' || action === 'update' || action === 'delete'){
                         uri += '/{' + options.pk + '}';
@@ -613,7 +617,7 @@ module.provider('$modelFactory', function(){
                     uri = clone.url;
                 }
 
-                clone.url = Model.$url(uri, data);
+                clone.url = Model.$url(uri, data, clone.method);
 
                 // don't include the payload for DELETE requests
                 if(action !== 'delete'){
@@ -708,9 +712,29 @@ module.provider('$modelFactory', function(){
              * Based on:
              * https://github.com/geraintluff/uri-templates
              */
-            Model.$url = function(u, params){
+            Model.$url = function(u, params, method){
                 var uri = new UriTemplate(u || url)
-                    .fillFromObject(params || {});
+                            .fill(function(variableName){
+                                var resolvedVariable = params[variableName];
+
+                                // if we have a match, substitute and remove it
+                                // from the original params object
+                                if(resolvedVariable){
+                                    // only remove params on GET requests as the
+                                    // passed object is intended to be used
+                                    // as URL params. For persistent HTTP calls
+                                    // the object has to be left as it is (for now)
+                                    if(method === 'GET'){
+                                      delete params[variableName];
+                                    }
+
+                                    return resolvedVariable;
+                                }else{
+                                    // ?? log an error??
+                                    return null;
+                                }
+                            });
+                            // .fillFromObject(params || {});
 
                 if(options.stripTrailingSlashes){
                     uri = uri.replace(/\/+$/, '') || '/';

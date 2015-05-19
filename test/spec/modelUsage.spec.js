@@ -662,6 +662,90 @@ describe('A person model defined using modelFactory', function() {
 
     });
 
+    describe('backend URL resolution', function() {
+        var $httpBackend;
+
+        beforeEach(function() {
+          angular.module('test-module', ['modelFactory'])
+              .factory('PersonModel', function($modelFactory) {
+                  return $modelFactory('/api/people', {
+                      actions: {
+
+                          // static
+                          queryChildren: {
+                              url: 'children',
+                              isArray: true
+                          },
+
+                          getById: {
+                              url: 'child/{id}/some/subpath'
+                          },
+
+                          getByName: {
+                              url: 'child/{name}/some/subpath'
+                          },
+
+                          // instance function
+                          '$serverCopy': {
+                              method: 'POST',
+                              url: 'copy/{name}'
+                          },
+
+                          '$customUpdate': {
+                              method: 'PUT',
+                              url: 'update/{name}'
+                          }
+
+                      }
+                  });
+              });
+        });
+
+        beforeEach(angular.mock.module('test-module'));
+
+        beforeEach(inject(function(_PersonModel_, _$httpBackend_) {
+            PersonModel = _PersonModel_;
+            $httpBackend = _$httpBackend_;
+        }));
+
+        it('should work with GET and id variable', function(){
+            PersonModel.getById({ id: 123 });
+
+            $httpBackend.expectGET('/api/people/child/123/some/subpath').respond(200, []);
+            $httpBackend.flush();
+        });
+
+        it('should work with GET and name variable', function(){
+            PersonModel.getByName({ name: 'juri' });
+
+            $httpBackend.expectGET('/api/people/child/juri/some/subpath').respond(200, []);
+            $httpBackend.flush();
+        });
+
+        it('should work with POST and name variable', function(){
+            var person = new PersonModel({
+              name: 'juri'
+            });
+
+            person.$serverCopy();
+
+            $httpBackend.expectPOST('/api/people/copy/juri').respond(200, []);
+            $httpBackend.flush();
+        });
+
+        it('should work with PUT and name variable', function(){
+            var person = new PersonModel({
+              name: 'juri'
+            });
+
+            person.$customUpdate();
+
+            $httpBackend.expectPUT('/api/people/update/juri').respond(200, []);
+            $httpBackend.flush();
+        });
+
+    });
+
     describe('with custom actions', function() {
         var $httpBackend;
 
