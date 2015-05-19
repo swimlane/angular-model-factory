@@ -722,7 +722,8 @@ module.provider('$modelFactory', function(){
                                 if(resolvedVariable){
                                     // only remove params on GET requests as the
                                     // passed object is intended to be used
-                                    // as URL params
+                                    // as URL params. For persistent HTTP calls
+                                    // the object has to be left as it is (for now)
                                     if(method === 'GET'){
                                       delete params[variableName];
                                     }
