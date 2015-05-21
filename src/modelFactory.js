@@ -729,7 +729,12 @@ module.provider('$modelFactory', function(){
                                     }
 
                                     return resolvedVariable;
-                                }else{
+                                }else if(method === 'GET' &&
+                                        variableName === options.pk &&
+                                        (angular.isString(params) || angular.isNumber(params))){
+                                    // is the the primary key which is passed directly?
+                                    return params;
+                                }else {
                                     // ?? log an error??
                                     return null;
                                 }

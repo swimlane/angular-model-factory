@@ -186,7 +186,6 @@ describe('A person model defined using modelFactory', function() {
                 $httpBackend.verifyNoOutstandingRequest();
             });
 
-
             it('should return the requested resource by its id (as number)', function() {
                 PersonModel.get(123)
                     .then(function(theFetchedPerson) {
@@ -695,7 +694,6 @@ describe('A person model defined using modelFactory', function() {
                               method: 'PUT',
                               url: 'update/{name}'
                           }
-
                       }
                   });
               });
@@ -761,6 +759,11 @@ describe('A person model defined using modelFactory', function() {
                                 isArray: true
                             },
 
+                            getByIdCustom: {
+                                method: 'GET',
+                                url: 'customEndpoint/{id}'
+                            },
+
                             // instance function
                             '$serverCopy': {
                                 method: 'POST',
@@ -818,6 +821,13 @@ describe('A person model defined using modelFactory', function() {
             $httpBackend.expectPOST('/api/people/copy').respond(200, '');
             // act
             model.$serverCopy();
+            $httpBackend.flush();
+        });
+
+        it('it should automatically use a number or string as the primary key substitute', function(){
+            PersonModel.getByIdCustom(123);
+
+            $httpBackend.expectGET('/api/people/customEndpoint/123').respond(200, []);
             $httpBackend.flush();
         });
 
