@@ -890,17 +890,17 @@ describe('A person model defined using modelFactory', function() {
                         actions: {
                             'base':{
                                 afterRequest: function(response){
-                                    var transfrom = response.data;
+                                    var transform = response.data;
                                     delete response.data;
-                                    transfrom.meta = response;
-                                    return transfrom;
+                                    transform.meta = response;
+                                    return transform;
                                 }
                             },
                             'query': {
                                 afterRequest: function(response){
-                                    var transfrom = response.data;
-                                    transfrom.paginator = response.paginator;
-                                    return transfrom;
+                                    var transform = response.data;
+                                    transform.paginator = response.paginator;
+                                    return transform;
                                 }
                             },
                         }
