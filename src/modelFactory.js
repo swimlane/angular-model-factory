@@ -658,8 +658,10 @@ module.provider('$modelFactory', function(){
                 $http(params).success(function(response){
                     // after callbacks
                     if(params.afterRequest) {
-                      var transfrom = params.afterRequest(response);
-                      if(transfrom) response = transfrom;
+                        var transform = params.afterRequest(response);
+                        if(transform) {
+                            response = transform;
+                        }
                     }
 
                     // if we had a cache, remove it
