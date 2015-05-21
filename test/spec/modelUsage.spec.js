@@ -880,4 +880,68 @@ describe('A person model defined using modelFactory', function() {
 
     });
 
+    describe('when backend respond with metadata', function(){
+        var StadiumModel, $httpBackend;
+
+        beforeEach(function() {
+            angular.module('test-module', ['modelFactory'])
+                .factory('StadiumModel', function($modelFactory) {
+                    return $modelFactory('/api/stadiums', {
+                        actions: {
+                            'base':{
+                                afterRequest: function(response){
+                                    var transfrom = response.data;
+                                    delete response.data;
+                                    transfrom.meta = response;
+                                    return transfrom;
+                                }
+                            },
+                            'query': {
+                                afterRequest: function(response){
+                                    var transfrom = response.data;
+                                    transfrom.paginator = response.paginator;
+                                    return transfrom;
+                                }
+                            },
+                        }
+                    });
+                });
+        });
+
+        beforeEach(angular.mock.module('test-module'));
+
+        beforeEach(inject(function(_StadiumModel_, _$httpBackend_) {
+            StadiumModel = _StadiumModel_;
+            $httpBackend = _$httpBackend_;
+        }));
+
+        afterEach(function() {
+            $httpBackend.verifyNoOutstandingExpectation();
+            $httpBackend.verifyNoOutstandingRequest();
+        });
+
+        it('when backend respond with pagination ', function(){
+            StadiumModel.query()
+                .then(function(result){
+                    expect(result.length).toBe(3);
+                    expect(result.paginator.limit).toBe(3);
+                });
+
+            $httpBackend.expectGET('/api/stadiums').respond(200, {"data":[{"title":"Accusantium rem magni accusantium placeat."},{"title":"Maxime ut eum pariatur magni quia iusto."},{"title":"Sapiente perferendis consectetur ut ipsa consectetur."}],"paginator":{"totalCount":30,"totalPage":10,"currentPage":1,"limit":3}});
+            $httpBackend.flush();
+        });
+        it('when backend respond with metadata ', function(){
+            StadiumModel.get(1)
+                .then(function(result){
+                    // console.log(result.meta);
+                    expect(result.meta.status.code).toBe(1000);
+                    // expect(result.paginator.limit).toBe(3);
+                });
+
+            $httpBackend.expectGET('/api/stadiums/1').respond(200, {"data":{"title":"Accusantium rem magni accusantium placeat."},"status":{"code":1000}});
+            $httpBackend.flush();
+        });
+
+    });
+
 });
