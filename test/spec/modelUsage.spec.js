@@ -880,4 +880,43 @@ describe('A person model defined using modelFactory', function() {
 
     });
 
+    describe('using the map property',function(){
+        var PersonModel, $httpBackend;
+
+         beforeEach(function() {
+            angular.module('test-module', ['modelFactory'])
+                .factory('PersonModel', function($modelFactory) {
+                    return $modelFactory('/api/people',{
+                        map:{
+                            'id' : 'personId',
+                            'address' :'street'
+                        }
+                    });
+                });
+        });
+
+        beforeEach(angular.mock.module('test-module'));
+
+        beforeEach(inject(function(_PersonModel_,_$httpBackend_) {
+            PersonModel = _PersonModel_;
+            $httpBackend = _$httpBackend_;
+        }));
+
+        afterEach(function() {
+            $httpBackend.verifyNoOutstandingExpectation();
+            $httpBackend.verifyNoOutstandingRequest();
+        });
+
+        it('Setting map, transpose `personId` to `id` and `street` to `address` on our instance', function(){
+            PersonModel.query()
+                .then(function(result){
+                    expect(result[0].id).toBe(1);
+                    expect(result[0].address).toBe('test');
+                });
+
+            $httpBackend.expectGET('/api/people').respond(200, [{ personId: 1, street: 'test'}]);
+            $httpBackend.flush();
+        });
+    })
+
 });
