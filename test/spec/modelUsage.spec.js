@@ -907,7 +907,7 @@ describe('A person model defined using modelFactory', function() {
             $httpBackend.verifyNoOutstandingRequest();
         });
 
-        it('Setting map, transpose `personId` to `id` and `street` to `address` on our instance', function(){
+        it('setting map, transpose `personId` to `id` and `street` to `address` on our instance', function(){
             PersonModel.query()
                 .then(function(result){
                     expect(result[0].id).toBe(1);
@@ -917,6 +917,6 @@ describe('A person model defined using modelFactory', function() {
             $httpBackend.expectGET('/api/people').respond(200, [{ personId: 1, street: 'test'}]);
             $httpBackend.flush();
         });
-    })
+    });
 
 });
