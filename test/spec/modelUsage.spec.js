@@ -475,6 +475,20 @@ describe('A person model defined using modelFactory', function() {
                 $httpBackend.flush();
             });
 
+            it('should not include any data in the request body', function(){
+                var theModel = new PersonModel({
+                    id: 1234,
+                    name: 'Juri',
+                    age: 30
+                });
+
+                // act
+                theModel.$destroy();
+
+                $httpBackend.expect('DELETE', '/api/people/1234', null).respond(200, '');
+                $httpBackend.flush();
+            });
+
             it('should properly execute a correct DELETE request with a different PK name', function(){
                 var theModel = new PersonWithMapModel({
                     fooId: 1234
