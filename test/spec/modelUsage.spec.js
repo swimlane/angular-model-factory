@@ -18,7 +18,14 @@ describe('A person model defined using modelFactory', function() {
         beforeEach(function() {
             angular.module('test-module', ['modelFactory'])
                 .factory('PersonModel', function($modelFactory) {
-                    return $modelFactory('/api/people');
+                    return $modelFactory('/api/people', {
+                        actions: {
+                            '$customDelete': {
+                                method: 'DELETE',
+                                url: 'customDelete/{id}'
+                            }
+                        }
+                    });
                 })
                 .factory('PersonWithMapModel', function($modelFactory) {
                     return $modelFactory('/api/peoplemodified', {
@@ -486,6 +493,20 @@ describe('A person model defined using modelFactory', function() {
                 theModel.$destroy();
 
                 $httpBackend.expect('DELETE', '/api/people/1234', null).respond(200, '');
+                $httpBackend.flush();
+            });
+
+            it('should not include any data in the request body for custom endpoints', function(){
+                var theModel = new PersonModel({
+                    id: 1234,
+                    name: 'Juri',
+                    age: 30
+                });
+
+                // act
+                theModel.$customDelete();
+
+                $httpBackend.expect('DELETE', '/api/people/customDelete/1234', null).respond(200, '');
                 $httpBackend.flush();
             });
 

@@ -620,7 +620,7 @@ module.provider('$modelFactory', function(){
                 clone.url = Model.$url(uri, data, clone.method);
 
                 // don't include the payload for DELETE requests
-                if(action !== 'delete'){
+                if(action !== 'delete' && clone.method !== 'DELETE'){
                     clone.data = data;
                 }
 
