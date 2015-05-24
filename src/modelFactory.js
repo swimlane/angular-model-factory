@@ -389,8 +389,8 @@ module.provider('$modelFactory', function(){
                         // like: map: { date: function(val){ return moment(val) } }
                         value[k] = v(value[k], value);
                     } else {
-                        value[k] = value[k];
-                        delete value[k];
+                        value[k] = value[v];
+                        delete value[v];
                     }
                 });
 
