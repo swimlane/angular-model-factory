@@ -1,6 +1,6 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v0.3.0 - 2015-05-19
+ * @version v0.4.0 - 2015-05-26
  * @link https://github.com/swimlane/model-factory
  * @author Austin McDaniel <amcdaniel2@gmail.com>, Juri Strumpflohner <juri.strumpflohner@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -802,8 +802,8 @@ module.provider('$modelFactory', function(){
                         // like: map: { date: function(val){ return moment(val) } }
                         value[k] = v(value[k], value);
                     } else {
-                        value[k] = value[k];
-                        delete value[k];
+                        value[k] = value[v];
+                        delete value[v];
                     }
                 });
 
@@ -1033,7 +1033,7 @@ module.provider('$modelFactory', function(){
                 clone.url = Model.$url(uri, data, clone.method);
 
                 // don't include the payload for DELETE requests
-                if(action !== 'delete'){
+                if(action !== 'delete' && clone.method !== 'DELETE'){
                     clone.data = data;
                 }
 
@@ -1070,8 +1070,12 @@ module.provider('$modelFactory', function(){
 
                 $http(params).success(function(response){
                     // after callbacks
-                    params.afterRequest &&
-                        params.afterRequest(response);
+                    if(params.afterRequest) {
+                        var transform = params.afterRequest(response);
+                        if(transform) {
+                            response = transform;
+                        }
+                    }
 
                     // if we had a cache, remove it
                     // this could be optimized to only do
