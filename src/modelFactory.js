@@ -657,8 +657,12 @@ module.provider('$modelFactory', function(){
 
                 $http(params).success(function(response){
                     // after callbacks
-                    params.afterRequest &&
-                        params.afterRequest(response);
+                    if(params.afterRequest) {
+                        var transform = params.afterRequest(response);
+                        if(transform) {
+                            response = transform;
+                        }
+                    }
 
                     // if we had a cache, remove it
                     // this could be optimized to only do
