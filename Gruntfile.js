@@ -3,6 +3,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-karma');
+    grunt.loadNpmTasks('grunt-groc');
+    grunt.loadNpmTasks('grunt-contrib-clean');
 
     var ngAnnotate = require("ng-annotate");
 
@@ -64,6 +66,17 @@ module.exports = function(grunt) {
             }
           }
         },
+        clean: {
+          docs: 'docs'
+        },
+        groc: {
+          javascript: [
+            'test/spec/modelUsage.spec.js'
+          ],
+          options: {
+            'out': 'docs/'
+          }
+        },
         karma: {
           dev: {
             configFile: 'test/karma.conf.js',
@@ -82,6 +95,7 @@ module.exports = function(grunt) {
         }
     });
 
+    grunt.registerTask('docs', ['clean', 'groc']);
     grunt.registerTask('build', ['concat', 'uglify']);
 
     return grunt;

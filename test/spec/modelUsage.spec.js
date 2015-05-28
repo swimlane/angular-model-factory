@@ -1,10 +1,14 @@
 'use strict';
 
 /*
-    High level unit/acceptance tests that
-    simulate the usage of modelFactory from the perspective
-    of a developer/library user, without testing
-    the inner workings of the modelFactory service.
+
+# Angular Model Factory
+
+Angular model-factory is a lightweight model layer that bridges the gap
+between AngularJS and your RESTful APIs.
+
+More infos can be found on [Official GitHub Repo](https://github.com/Swimlane/angular-model-factory).
+
 */
 
 describe('A person model defined using modelFactory', function() {
@@ -13,10 +17,27 @@ describe('A person model defined using modelFactory', function() {
 
     beforeEach(angular.mock.module('modelFactory'));
 
+/*
+## Creating a new model
+
+Model-factory is based upon the concept of having a JavaScript object
+upon which we can act to retrieve the according data. Meaning, if we have
+an API `/api/v1/people`, we create (for instance) a model `PersonModel` which
+wrapps all the interactions with that specific endpoint. The PersonModel object
+already comes with **predefined static functions** to retrieve new instances and
+**per-instance functions** to operate upon existing data.
+ */
+
     describe('with the default configuration', function() {
 
         beforeEach(function() {
+
+            // First of all, we have to **reference the "modelFactory" module**
+            // to make use of the services it comes with.
             angular.module('test-module', ['modelFactory'])
+
+                // Define a new factory for an endpoint to read
+                // people.
                 .factory('PersonModel', function($modelFactory) {
                     return $modelFactory('/api/people', {
                         actions: {

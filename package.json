@@ -20,5 +20,9 @@
   },
   "scripts": {
     "test": "grunt karma:ci"
+  },
+  "dependencies": {
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-groc": "^0.6.0"
   }
 }
