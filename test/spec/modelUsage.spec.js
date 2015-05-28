@@ -7,7 +7,7 @@
 Angular model-factory is a lightweight model layer that bridges the gap
 between AngularJS and your RESTful APIs.
 
-More infos can be found on [Official GitHub Repo](https://github.com/Swimlane/angular-model-factory).
+More infos can be found at the [official GitHub Repo](https://github.com/Swimlane/angular-model-factory).
 
 */
 
@@ -18,7 +18,7 @@ describe('A person model defined using modelFactory', function() {
     beforeEach(angular.mock.module('modelFactory'));
 
 /*
-## Creating a new model
+## Setting it up
 
 Model-factory is based upon the concept of having a JavaScript object
 upon which we can act to retrieve the according data. Meaning, if we have
@@ -27,6 +27,73 @@ wrapps all the interactions with that specific endpoint. The PersonModel object
 already comes with **predefined static functions** to retrieve new instances and
 **per-instance functions** to operate upon existing data.
  */
+
+    describe('configuring angular-model-factory', function(){
+        var module;
+
+        beforeEach(function(){
+
+            // First of all, we have to **reference the "modelFactory" module**
+            // to make use of the services it comes with.
+            module = angular.module('test-module', ['modelFactory']);
+        });
+
+/*
+
+## Define a new Model
+
+ */
+
+        describe('define a new model', function(){
+
+            beforeEach(function(){
+                // To define a new model, create a factory, import `$modelFactory` from
+                // the angular-model-factory module and configure it.
+                module.factory('PersonModel', function($modelFactory) {
+                    // In the simplest scenario, simply define the endpoint
+                    // url of the model.
+                    return $modelFactory('/api/people');
+                })
+            });
+
+            beforeEach(angular.mock.module('test-module'));
+
+            beforeEach(inject(function(_PersonModel_) {
+                PersonModel = _PersonModel_;
+            }));
+
+            it('should be possible to create a new instance', function(){
+                // Once you defined a model, it can simply be instantiated using the `new` keyword.
+                var person = new PersonModel();
+                expect(person).toBeDefined();
+            });
+
+            it('should be possible to initialze the model with data', function(){
+
+                // It is also possible to initialize the model directly with some
+                // data by simply passing an object to the "constructor"...
+                var person = new PersonModel({
+                    name: 'Juri',
+                    age: 30
+                });
+
+                expect(person.name).toBe('Juri');
+                expect(person.age).toBe(30);
+            });
+
+            it('should be possible to set the data on the created instance', function(){
+                var person = new PersonModel();
+
+                // ...or simply set the data on the existing object.
+                person.name = 'Juri';
+
+                expect(person.name).toBe('Juri');
+            });
+
+        });
+
+    });
+
 
     describe('with the default configuration', function() {
 
