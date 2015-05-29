@@ -28,7 +28,7 @@ already comes with **predefined static functions** to retrieve new instances and
 **per-instance functions** to operate upon existing data.
  */
 
-    describe('configuring angular-model-factory', function(){
+    describe('the angular-model-factory', function(){
         var module;
 
         beforeEach(function(){
@@ -44,7 +44,7 @@ already comes with **predefined static functions** to retrieve new instances and
 
  */
 
-        describe('define a new model', function(){
+        describe('after defining a new model', function(){
 
             beforeEach(function(){
                 // To define a new model, create a factory, import `$modelFactory` from
@@ -53,7 +53,8 @@ already comes with **predefined static functions** to retrieve new instances and
                     // In the simplest scenario, simply define the endpoint
                     // url of the model.
                     return $modelFactory('/api/people');
-                })
+                });
+
             });
 
             beforeEach(angular.mock.module('test-module'));
@@ -62,13 +63,14 @@ already comes with **predefined static functions** to retrieve new instances and
                 PersonModel = _PersonModel_;
             }));
 
-            it('should be possible to create a new instance', function(){
+            it('you can simply create a new instance using the "new" keyword', function(){
                 // Once you defined a model, it can simply be instantiated using the `new` keyword.
                 var person = new PersonModel();
                 expect(person).toBeDefined();
+                expect(person instanceof PersonModel).toBeTruthy();
             });
 
-            it('should be possible to initialze the model with data', function(){
+            it('you can initialize the model with some data passed to the constructor', function(){
 
                 // It is also possible to initialize the model directly with some
                 // data by simply passing an object to the "constructor"...
@@ -81,13 +83,160 @@ already comes with **predefined static functions** to retrieve new instances and
                 expect(person.age).toBe(30);
             });
 
-            it('should be possible to set the data on the created instance', function(){
+            it('you can set model properties just like with any other JavaScript object', function(){
                 var person = new PersonModel();
 
                 // ...or simply set the data on the existing object.
                 person.name = 'Juri';
 
                 expect(person.name).toBe('Juri');
+            });
+
+/*
+## Build-in REST comunication functions
+
+
+
+ */
+            describe('to contact the remote backend', function(){
+                var $httpBackend,
+                    backendMockResponse;
+
+                beforeEach(inject(function(_$httpBackend_) {
+                    $httpBackend = _$httpBackend_;
+
+                    backendMockResponse = [{
+                        name: 'Juri'
+                    }, {
+                        name: 'Jack'
+                    }, {
+                        name: 'Anne'
+                    }];
+                }));
+
+                afterEach(function() {
+                    $httpBackend.verifyNoOutstandingExpectation();
+                    $httpBackend.verifyNoOutstandingRequest();
+                });
+
+                /*
+                ### To fetch multiple records
+
+                Use the static function `.query()` to fetch a list of records from the backend. In a REST
+                like API this usually maps to `<baseurl>/entityname/`.
+
+                 */
+                describe('when you want to fetch multiple records', function(){
+                    var backendMockResponse;
+
+                    beforeEach(function() {
+                        backendMockResponse = [{
+                            name: 'Juri'
+                        }, {
+                            name: 'Jack'
+                        }, {
+                            name: 'Anne'
+                        }];
+                    });
+
+                    it('you can use query() to fetch all of the records', function(){
+                        PersonModel.query()
+                            // implement the promise which will return a list of people where each
+                            // entry is already wrapped as an instance of "PersonModel".
+                            .then(function(peopleList) {
+                                expect(peopleList).toBeDefined();
+                                expect(peopleList.length).toEqual(3);
+                                expect(peopleList[0] instanceof PersonModel).toBeTruthy();
+                            });
+
+                        $httpBackend.expectGET('/api/people').respond(200, backendMockResponse);
+                        $httpBackend.flush();
+                    });
+
+                    it('you can also pass an object to query(..) which will be passed as query params', function(){
+                        // In order **to send additional parameters to your backend** (i.e. `/../people/?name=Juri...`),
+                        // simply pass an object containing the desired params to the `query()` function.
+                        PersonModel.query({
+                            name: 'Juri',
+                            age: 29
+                        });
+
+                        $httpBackend.expectGET('/api/people?name=Juri&age=29').respond(200, backendMockResponse);
+                        $httpBackend.flush();
+                    });
+
+                });
+
+                describe('when you want to fetch a single record from the backend', function(){
+
+                    beforeEach(function() {
+                        $httpBackend
+                            .whenGET('/api/people/123')
+                            .respond({
+                                id: 123,
+                                name: 'Juri'
+                            });
+                    });
+
+/*
+### To fetch a single record
+
+To fetch a single instance of some record from your backend, you'd make a call to `<baseurl>/people/<id>`.
+You can do this by using the `.get(123)` function.
+ */
+
+                    it('you can use get(<id>) to fetch a single instance, usually identified by some id', function(){
+                        PersonModel.get(123)
+                            .then(function(theFetchedPerson) {
+                                expect(theFetchedPerson).toBeDefined();
+                                expect(theFetchedPerson.name).toEqual('Juri');
+                            });
+
+                        $httpBackend.expectGET('/api/people/123');
+                        $httpBackend.flush();
+                    });
+
+                    it('you can also pass the id as a string', function(){
+                        PersonModel.get('123')
+                            .then(function(theFetchedPerson) {
+                                expect(theFetchedPerson).toBeDefined();
+                                expect(theFetchedPerson.name).toEqual('Juri');
+                            });
+
+                        $httpBackend.expectGET('/api/people/123');
+                        $httpBackend.flush();
+                    });
+
+                    it('you can also pass additional params to you get call to apply further filters', function(){
+                        // If you need, you can pass further filters to your `.get(..)` call as illustrated in the
+                        // following piece of code.
+                        PersonModel.get(123, { age: 29 });
+
+                        $httpBackend
+                            .whenGET('/api/people/123?age=29')
+                            .respond({
+                                id: 123,
+                                name: 'Juri',
+                                age: 29
+                            });
+
+                        $httpBackend.expectGET('/api/people/123?age=29');
+                        $httpBackend.flush();
+                    });
+
+                    xit('should return the requested resource by its id when passing it as object', function() {
+                        PersonModel.get({
+                            id: 123
+                        });
+
+                        $httpBackend.expectGET('/api/people/123');
+                        $httpBackend.flush();
+                    });
+                });
+
+
+
+
             });
 
         });
@@ -128,23 +277,6 @@ already comes with **predefined static functions** to retrieve new instances and
             PersonModel = _PersonModel_;
             PersonWithMapModel = _PersonWithMapModel_;
         }));
-
-        describe('when creating a new instance using the "new" keyword', function() {
-            var theModel;
-
-            beforeEach(function() {
-                theModel = new PersonModel();
-            });
-
-            it('we should get a proper instance', function() {
-                expect(theModel).toBeDefined();
-            });
-
-            it('should have a $save function', function() {
-                expect(theModel.$save).toBeDefined();
-            });
-
-        });
 
         describe('when using the list helper', function() {
             var modelList;
@@ -212,52 +344,6 @@ already comes with **predefined static functions** to retrieve new instances and
                 });
 
                 expect(modelList.length).toEqual(2);
-            });
-
-        });
-
-        describe('when calling query()', function() {
-            var $httpBackend,
-                backendListResponse;
-
-            beforeEach(inject(function(_$httpBackend_) {
-                $httpBackend = _$httpBackend_;
-
-                backendListResponse = [{
-                    name: 'Juri'
-                }, {
-                    name: 'Jack'
-                }, {
-                    name: 'Anne'
-                }];
-            }));
-
-            afterEach(function() {
-                $httpBackend.verifyNoOutstandingExpectation();
-                $httpBackend.verifyNoOutstandingRequest();
-            });
-
-            it('should return a list of people', function() {
-                PersonModel.query()
-                    .then(function(peopleList) {
-
-                        expect(peopleList).toBeDefined();
-                        expect(peopleList.length).toEqual(3);
-
-                    });
-
-                $httpBackend.expectGET('/api/people').respond(200, backendListResponse);
-                $httpBackend.flush();
-            });
-
-            it('should properly send parameters', function() {
-                PersonModel.query({
-                    name: 'Juri',
-                    age: 29
-                });
-
-                $httpBackend.expectGET('/api/people?name=Juri&age=29').respond(200, backendListResponse);
-                $httpBackend.flush();
             });
 
         });
