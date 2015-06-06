@@ -12,8 +12,7 @@ More infos can be found at the [official GitHub Repo](https://github.com/Swimlan
 */
 
 describe('A person model defined using modelFactory', function() {
-    var PersonModel, PersonWithMapModel;
-
+    var PersonModel;
 
     beforeEach(angular.mock.module('modelFactory'));
 
@@ -37,6 +36,9 @@ already comes with **predefined static functions** to retrieve new instances and
             // to make use of the services it comes with.
             module = angular.module('test-module', ['modelFactory']);
         });
+
+        beforeEach(angular.mock.module('test-module'));
+
 
 /*
 
@@ -90,6 +92,28 @@ already comes with **predefined static functions** to retrieve new instances and
                 person.name = 'Juri';
 
                 expect(person.name).toBe('Juri');
+            });
+
+
+            it('you can also use the $update function and pass in an entire object', function() {
+                var newModel = new PersonModel({
+                    name: null
+                });
+
+                var newModelUpdate = new PersonModel({
+                    name: 'elec29a',
+                    language: {
+                      de: 'hallo'
+                    }
+                });
+
+                // By using the `$update(someObj)` function, you can update a whole set of
+                // properties by passing in the interested ones.
+                newModel.$update(newModelUpdate);
+
+                expect(newModel.name).toEqual('elec29a');
+                expect(newModel.language).toBeDefined();
+                expect(newModel.language.de).toEqual('hallo');
             });
 
 /*
@@ -294,7 +318,7 @@ To fetch a single instance of some record from your backend, you'd make a call t
 
 ### Persisting data
 
-The next step after you learned how to fetch data from the backend, is to learn
+The next step after knowing how to fetch data from the backend, is to learn
 how you can save any modifications back to the server.
 
 There are two build-in options:
@@ -516,7 +540,7 @@ There are two build-in options:
                             name: 'Austin'
                         }]);
 
-                        // act
+
                         modelList[1].$destroy();
 
                         $httpBackend.expectDELETE('/api/people/2').respond(500, '');
@@ -525,109 +549,81 @@ There are two build-in options:
                         expect(modelList.length).toEqual(3);
                     });
 
-
-                    // **TODO** move to separate spec file
-                    it('should not include any data in the request body', function(){
-                        var theModel = new PersonModel({
-                            id: 1234,
-                            name: 'Juri',
-                            age: 30
-                        });
-
-                        // act
-                        theModel.$destroy();
-
-                        $httpBackend.expect('DELETE', '/api/people/1234', null).respond(200, '');
-                        $httpBackend.flush();
-                    });
-
-                    it('should also properly remove an object that has just been added to the list before', function(){
-
-                        var modelList = new PersonModel.List([{
-                            id: 1,
-                            name: 'Juri'
-                        }]);
-
-
-                        // save a new model through the $save function
-                        var newModel = new PersonModel({ name: 'Tom' });
-                        newModel.$save()
-                            .then(function(){
-                                // add it to the overall collection
-                                modelList.push(newModel);
-
-                                // act: delete the newly added model again
-                                modelList[1].$destroy();
-                            });
-
-                        $httpBackend.expectPOST('/api/people').respond(200, JSON.stringify({ id: 111, name: 'Tom'}));
-                        $httpBackend.expectDELETE('/api/people/111').respond(200, '');
-                        $httpBackend.flush();
-
-                        // I'd expect that it is properly removed from it
-                        expect(modelList.length).toBe(1);
-                        expect(modelList[0].name).toEqual('Juri');
-                    });
-
-                    // **TODO** move to separate spec file not used as docs.
-                    it('on a copied model it should sent back the copied model data', function(){
-                        var newModel = new PersonModel({
-                            name: 'Juri'
-                        });
-
-                        var copied = angular.copy(newModel);
-                        copied.name = 'Austin'; //change something in the clone
-
-                        $httpBackend.expectPOST('/api/people', JSON.stringify(copied)).respond(200, '');
-
-
-                        copied.$save();
-                        $httpBackend.flush();
-                    });
-
-                    // **TODO** move to separate spec file not used as docs.
-                    it('should not loose $$array reference when updating existing model', function (){
-                        var list = new PersonModel.List([
-                            {
-                                id: 1,
-                                name: 'Juri'
-                            }
-                        ]);
-
-                        var aPerson = new PersonModel({
-                            name: 'Jack'
-                        });
-
-                        aPerson.$save()
-                            .then(function() {
-                                // add to list
-                                list.push(aPerson);
-                            });
-                        $httpBackend.expectPOST('/api/people').respond(200, JSON.stringify({ id: 123, name: 'Jack' }));
-                        $httpBackend.flush();
-
-                        // save again
-                        aPerson.$save();
-                        $httpBackend.expectPUT('/api/people/123').respond(200, JSON.stringify({ id: 123, name: 'Jack'}));
-                        $httpBackend.flush();
-
-                        // now delete
-                        aPerson.$destroy();
-                        $httpBackend.expectDELETE('/api/people/123').respond(200, '');
-                        $httpBackend.flush();
-
-                        expect(list.length).toBe(1);
-                    });
-
                 });
-
 
             });
 
         });
 
-    });
 
+/*
+## Defaults
+
+You can define defaults which often come in handy.
+
+*/
+        describe('Model defaults', function() {
+            var PersonModelWithDefaults;
+
+            beforeEach(function() {
+                // angular.module('test-module', ['modelFactory'])
+                module.factory('PersonModelWithDefaults', function($modelFactory) {
+                        return $modelFactory('/api/people', {
+                            // Simply declare a `defaults` object within the model
+                            // configuration and set the desired default properties
+                            // accordingly.
+                            defaults: {
+                                age: 18
+                            }
+                        });
+                    });
+            });
+
+            beforeEach(inject(function(_PersonModelWithDefaults_) {
+                PersonModelWithDefaults = _PersonModelWithDefaults_;
+            }));
+
+            it('when you instantiate the model, the default properties are already set', function() {
+                // Thus, when you create a new instance,
+                var personWithDefaults = new PersonModelWithDefaults();
+
+                // the default property is set to the value you specified before.
+                expect(personWithDefaults.age).toEqual(18);
+            });
+
+            // Obviously it doesn't only work with empty objects, but also when you already pass
+            // some data to the constructor of the object.
+            it('should use the defaults when creating an object with some data', function() {
+                var personWithDefaults = new PersonModelWithDefaults({
+                    name: 'Juri'
+                });
+
+                expect(personWithDefaults.age).toEqual(18);
+            });
+
+            it('should not overwrite with the default when passing a value for it', function() {
+                // Correctly, when you pass the value of the default property in the
+                // constructor, that value takes precedence over the previously specified default
+                // value.
+                var personWithDefaults = new PersonModelWithDefaults({
+                    name: 'Juri',
+                    age: 29
+                });
+
+                expect(personWithDefaults.age).toEqual(29);
+            });
+
+            it('should set the defaults when creating a list', function() {
+                var personWithDefaultsList = new PersonModelWithDefaults.List([{
+                    name: 'Juri'
+                }]);
+
+                expect(personWithDefaultsList[0].age).toEqual(18);
+            });
+
+        });
+
+    });
 
     describe('with the default configuration', function() {
 
@@ -648,45 +644,14 @@ There are two build-in options:
                             }
                         }
                     });
-                })
-                .factory('PersonWithMapModel', function($modelFactory) {
-                    return $modelFactory('/api/peoplemodified', {
-                        pk: 'fooId'
-                    });
                 });
         });
 
         beforeEach(angular.mock.module('test-module'));
 
-        beforeEach(inject(function(_PersonModel_, _PersonWithMapModel_) {
+        beforeEach(inject(function(_PersonModel_) {
             PersonModel = _PersonModel_;
-            PersonWithMapModel = _PersonWithMapModel_;
         }));
-
-        describe('when calling $update()', function() {
-
-            it('should update the existing model properties with the new ones', function() {
-                var newModel = new PersonModel({
-                    name: null
-                });
-
-                var newModelUpdate = new PersonModel({
-                    name: 'elec29a',
-                    language: {
-                      de: 'hallo'
-                    }
-                });
-
-                //act
-                newModel.$update(newModelUpdate);
-
-                expect(newModel.name).toEqual('elec29a');
-                expect(newModel.language).toBeDefined();
-                expect(newModel.language.de).toEqual('hallo');
-            });
-
-        });
-
 
         describe('when calling $rollback', function() {
 
@@ -702,7 +667,7 @@ There are two build-in options:
                 expect(newModel.name).toEqual('Juri');
             });
 
-            xit('should NOT revert to the old values after an entity has been persisted with $save', inject(function($httpBackend) {
+            it('should NOT revert to the old values after an entity has been persisted with $save', inject(function($httpBackend) {
                 var newModel = new PersonModel({
                     name: 'Juri'
                 });
@@ -729,114 +694,6 @@ There are two build-in options:
 
         });
 
-        describe('when deleting an object', function() {
-            var $httpBackend;
-
-            beforeEach(inject(function(_$httpBackend_) {
-                $httpBackend = _$httpBackend_;
-            }));
-
-            afterEach(function() {
-                $httpBackend.verifyNoOutstandingExpectation();
-                $httpBackend.verifyNoOutstandingRequest();
-            });
-
-            it('should also remove deleted models that have a different PK name', function(){
-                var modelList = new PersonWithMapModel.List([{
-                    fooId: 112,
-                    name: 'Juri'
-                }]);
-
-                //act
-                modelList[0].$destroy();
-
-                $httpBackend.expectDELETE('/api/peoplemodified/112').respond(200, '');
-                $httpBackend.flush();
-
-                expect(modelList.length).toBe(0);
-            });
-
-            it('should properly execute a correct DELETE request with a different PK name', function(){
-                var theModel = new PersonWithMapModel({
-                    fooId: 1234
-                });
-
-                // act
-                theModel.$destroy();
-
-                $httpBackend.expectDELETE('/api/peoplemodified/1234').respond(200, '');
-                $httpBackend.flush();
-            });
-
-            it('should not include any data in the request body for custom endpoints', function(){
-                var theModel = new PersonModel({
-                    id: 1234,
-                    name: 'Juri',
-                    age: 30
-                });
-
-                // act
-                theModel.$customDelete();
-
-                $httpBackend.expect('DELETE', '/api/people/customDelete/1234', null).respond(200, '');
-                $httpBackend.flush();
-            });
-
-
-
-        });
-
-    });
-
-    describe('with defaults', function() {
-
-        beforeEach(function() {
-            angular.module('test-module', ['modelFactory'])
-                .factory('PersonModel', function($modelFactory) {
-                    return $modelFactory('/api/people', {
-                        defaults: {
-                            age: 18 //stupid example I know :)
-                        }
-                    });
-                });
-        });
-
-        beforeEach(angular.mock.module('test-module'));
-
-        beforeEach(inject(function(_PersonModel_) {
-            PersonModel = _PersonModel_;
-        }));
-
-        it('should have them properly set when instantiating a new empty object', function() {
-            var personWithDefaults = new PersonModel();
-
-            expect(personWithDefaults.age).toEqual(18);
-        });
-
-        it('should use the defaults when creating an object with some data', function() {
-            var personWithDefaults = new PersonModel({
-                name: 'Juri'
-            });
-
-            expect(personWithDefaults.age).toEqual(18);
-        });
-
-        it('should set the defaults when creating a list', function() {
-            var personWithDefaultsList = new PersonModel.List([{
-                name: 'Juri'
-            }]);
-
-            expect(personWithDefaultsList[0].age).toEqual(18);
-        });
-
-        it('should not overwrite with the default when passing a value for it', function() {
-            var personWithDefaults = new PersonModel({
-                name: 'Juri',
-                age: 29
-            });
-
-            expect(personWithDefaults.age).toEqual(29);
-        });
 
     });
 
