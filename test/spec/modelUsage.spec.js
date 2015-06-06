@@ -93,10 +93,74 @@ already comes with **predefined static functions** to retrieve new instances and
             });
 
 /*
+## Model Lists
+
+Model Factory has build-in support for lists as well.
+
+*/
+            describe('instantiate a list by using the Model.List constructor', function() {
+                var modelList;
+
+                beforeEach(function() {
+                    // You can define a new model list by creating a new instance of `PersonModel.List` instead of `PersonModel`. Then, instead of an object, pass in an array of objects.
+                    modelList = new PersonModel.List([{
+                        name: 'Juri'
+                    }]);
+                });
+
+                it('should instantiate a new model list with some predefined objects', function() {
+                    expect(modelList).toBeDefined();
+                    expect(modelList.length).toEqual(1);
+                });
+
+                it('should contain wrapped model objects', function() {
+                    expect(modelList[0] instanceof PersonModel).toBeTruthy();
+                });
+
+                it('you can instantiate an empty list and add new objects later using push()', function() {
+
+                    // Obviously it allows to define an empty list...
+                    var newEmptyList = new PersonModel.List();
+
+                    expect(newEmptyList).toBeDefined();
+                    expect(newEmptyList.length).toEqual(0);
+
+                    // ..where later in your application you push new objects into it using
+                    // the `.push(...)` function as you normally would.
+                    newEmptyList.push({
+                        name: 'Juri'
+                    });
+
+                    expect(newEmptyList.length).toEqual(1);
+                    expect(newEmptyList[0] instanceof PersonModel).toBeTruthy();
+                });
+
+                it('you can even push multiple objects separated by a comma', function() {
+                    var newList = new PersonModel.List();
+
+                    // You can even push multiple JavaScript objects to the `push(...)`
+                    // function. Obviously, all of them will be wrapped as models.
+                    newList.push({
+                        name: 'Juri'
+                    }, {
+                        name: 'Austin'
+                    });
+
+                    // assert
+                    expect(newList.length).toEqual(2);
+                    expect(newList[0] instanceof PersonModel).toBeTruthy();
+                    expect(newList[1] instanceof PersonModel).toBeTruthy();
+                });
+
+            });
+
+/*
 ## Build-in REST comunication functions
 
+Model factory not only encapsulates your backend communication in dedicated
+services, but it's main objective is to make any data exchange as easy as possible.
 
-
+As such there are a couple of build-in functions.
  */
             describe('to contact the remote backend', function(){
                 var $httpBackend,
@@ -140,9 +204,9 @@ already comes with **predefined static functions** to retrieve new instances and
                     });
 
                     it('you can use query() to fetch all of the records', function(){
+                        // `PersonModel.query()` returns a promise which return a list of people where each
+                        // entry is already wrapped as an instance of "PersonModel".
                         PersonModel.query()
-                            // implement the promise which will return a list of people where each
-                            // entry is already wrapped as an instance of "PersonModel".
                             .then(function(peopleList) {
                                 expect(peopleList).toBeDefined();
                                 expect(peopleList.length).toEqual(3);
@@ -167,6 +231,12 @@ already comes with **predefined static functions** to retrieve new instances and
 
                 });
 
+
+/*
+### To fetch a single record
+
+To fetch a single instance of some record from your backend, you'd make a call to `<baseurl>/people/<id>`.
+ */
                 describe('when you want to fetch a single record from the backend', function(){
 
                     beforeEach(function() {
@@ -178,14 +248,9 @@ already comes with **predefined static functions** to retrieve new instances and
                             });
                     });
 
-/*
-### To fetch a single record
-
-To fetch a single instance of some record from your backend, you'd make a call to `<baseurl>/people/<id>`.
-You can do this by using the `.get(123)` function.
- */
-
                     it('you can use get(<id>) to fetch a single instance, usually identified by some id', function(){
+
+                        // You can do this by using the `.get(123)` function.
                         PersonModel.get(123)
                             .then(function(theFetchedPerson) {
                                 expect(theFetchedPerson).toBeDefined();
@@ -223,18 +288,180 @@ You can do this by using the `.get(123)` function.
                         $httpBackend.expectGET('/api/people/123?age=29');
                         $httpBackend.flush();
                     });
-
-                    xit('should return the requested resource by its id when passing it as object', function() {
-                        PersonModel.get({
-                            id: 123
-                        });
-
-                        $httpBackend.expectGET('/api/people/123');
-                        $httpBackend.flush();
-                    });
                 });
 
+/*
 
+### Persisting data
+
+The next step after you learned how to fetch data from the backend, is to learn
+how you can save any modifications back to the server.
+
+There are two build-in options:
+
+- `$save()`
+- `$delete()`
+
+*/
+                describe('using $save()', function() {
+                    var $httpBackend;
+
+                    beforeEach(inject(function(_$httpBackend_) {
+                        $httpBackend = _$httpBackend_;
+                    }));
+
+                    afterEach(function() {
+                        $httpBackend.verifyNoOutstandingExpectation();
+                        $httpBackend.verifyNoOutstandingRequest();
+                    });
+
+                    it('should execute a POST when we have a new model', function() {
+                        // After creating a new model instance (as already illustrated before),
+                        var newModel = new PersonModel({
+                            name: 'Juri'
+                        });
+
+                        var postData = JSON.stringify(newModel);
+
+                        // use `$save()` on that instance to send the data to your backend API.
+                        newModel.$save();
+
+                        // If the model is a new one, that is, it's primary key property (default: `id`) is not defined or equal to 0, calling `$save()` issues
+                        // a request to `POST /api/people` (or how you specified in your model definition).
+                        $httpBackend.expectPOST('/api/people', postData).respond(200, '');
+                        $httpBackend.flush();
+                    });
+
+                    it('should execute a PUT when we have an existing model', function() {
+                        // Instead, if the model represents an existing instance you previously
+                        // fetched from the server (again, `id` > 0), then
+                        var newModel = new PersonModel({
+                            id: 123,
+                            name: 'Juri'
+                        });
+                        var postData = JSON.stringify(newModel);
+
+                        newModel.$save();
+
+                        // a `PUT /api/people/<id>` will be executed.
+                        $httpBackend.expectPUT('/api/people/123', postData).respond(200, '');
+                        $httpBackend.flush();
+                    });
+
+                    it('should update the entry with the new results from the server', function() {
+                        var children = {
+                            count: 1
+                        };
+
+                        var newModel = new PersonModel({
+                            name: 'Juri',
+                            kids: children
+                        });
+
+                        $httpBackend.expectPOST('/api/people', JSON.stringify(newModel)).respond(200, JSON.stringify({
+                            id: 12,
+                            name: 'Juri Strumpflohner',
+                            kids: { count: 99 }
+                        }));
+
+                        newModel.$save();
+                        $httpBackend.flush();
+
+                        // The cool thing is that the model will automatically be updated
+                        // with the data sent back from the server.
+                        expect(newModel.id).toEqual(12);
+                        expect(newModel.name).toEqual('Juri Strumpflohner');
+
+                        // It even takes care of your object references s.t. your two-way bindings
+                        // won't be broken :).
+                        expect(newModel.kids).toBe(children);
+                        expect(children.count).toEqual(99);
+                    });
+
+                    // That works even with arrays. If you sent back an array within a model-factory instance
+                    // that contains 2 elements and the server sends back another one, the same array on the
+                    // client side will synch with the one returned by the server.
+                    it('should overwrite array properties with the returned server version on update', function() {
+                        var people = [];
+                        people.push(new PersonModel({
+                                name: 'Ryan'
+                            }
+                        ));
+                        people.push(new PersonModel({
+                                name: 'Austin'
+                            }
+                        ));
+                        var newModel = new PersonModel({
+                            friends: people
+                        });
+
+                        var sender = people.slice().reverse();
+                        sender.push(new PersonModel( { name: 'Juri'}));
+
+                        $httpBackend.expectPOST('/api/people', JSON.stringify(newModel)).respond(200, JSON.stringify({
+                            friends: sender
+                        }));
+
+                        //act
+                        newModel.$save();
+                        $httpBackend.flush();
+
+                        // Arrays should be exactly as returned
+                        expect(newModel.friends.length).toBe(3);
+                        expect(newModel.friends[1].name).toBe('Ryan');
+                    });
+
+                    // **TODO** move to separate spec file not used as docs.
+                    it('on a copied model it should sent back the copied model data', function(){
+                        var newModel = new PersonModel({
+                            name: 'Juri'
+                        });
+
+                        var copied = angular.copy(newModel);
+                        copied.name = 'Austin'; //change something in the clone
+
+                        $httpBackend.expectPOST('/api/people', JSON.stringify(copied)).respond(200, '');
+
+
+                        copied.$save();
+                        $httpBackend.flush();
+                    });
+
+                    // **TODO** move to separate spec file not used as docs.
+                    it('should not loose $$array reference when updating existing model', function (){
+                        var list = new PersonModel.List([
+                            {
+                                id: 1,
+                                name: 'Juri'
+                            }
+                        ]);
+
+                        var aPerson = new PersonModel({
+                            name: 'Jack'
+                        });
+
+                        aPerson.$save()
+                            .then(function() {
+                                // add to list
+                                list.push(aPerson);
+                            });
+                        $httpBackend.expectPOST('/api/people').respond(200, JSON.stringify({ id: 123, name: 'Jack' }));
+                        $httpBackend.flush();
+
+                        // save again
+                        aPerson.$save();
+                        $httpBackend.expectPUT('/api/people/123').respond(200, JSON.stringify({ id: 123, name: 'Jack'}));
+                        $httpBackend.flush();
+
+                        // now delete
+                        aPerson.$destroy();
+                        $httpBackend.expectDELETE('/api/people/123').respond(200, '');
+                        $httpBackend.flush();
+
+                        expect(list.length).toBe(1);
+                    });
+
+                });
 
 
             });
@@ -278,145 +505,6 @@ You can do this by using the `.get(123)` function.
             PersonWithMapModel = _PersonWithMapModel_;
         }));
 
-        describe('when using the list helper', function() {
-            var modelList;
-
-            beforeEach(function() {
-                modelList = new PersonModel.List([{
-                    name: 'Juri'
-                }]);
-            });
-
-            it('should instantiate a new model list with some predefined objects', function() {
-                expect(modelList).toBeDefined();
-                expect(modelList.length).toEqual(1);
-            });
-
-            it('should contain wrapped model objects', function() {
-                expect(modelList[0] instanceof PersonModel).toBeTruthy();
-            });
-
-            // TODO this doesn't work right now...should it??
-            it('should wrap newly added JavaScript objects', function() {
-                modelList.push({
-                    name: 'Tom'
-                });
-
-                expect(modelList[1] instanceof PersonModel).toBeTruthy();
-            });
-
-            it('should account for Array.push(obj1, obj2,...) API; all passed obj should be wrapped as models', function() {
-                var newList = new PersonModel.List();
-
-                // act
-                newList.push({
-                    name: 'Juri'
-                }, {
-                    name: 'Austin'
-                });
-
-                // assert
-                expect(newList.length).toEqual(2);
-                expect(newList[0] instanceof PersonModel).toBeTruthy();
-                expect(newList[1] instanceof PersonModel).toBeTruthy();
-            });
-
-            it('should allow to define an empty list', function() {
-                var newEmptyList = new PersonModel.List();
-                expect(newEmptyList).toBeDefined();
-                expect(newEmptyList.length).toEqual(0);
-            });
-
-            it('should allow to add elements on a previously empty model list collection', function() {
-                var newList = new PersonModel.List();
-
-                newList.push({
-                    name: 'Juri'
-                });
-                expect(newList.length).toEqual(1);
-                expect(newList[0] instanceof PersonModel).toBeTruthy(); // wrapping should still work
-            });
-
-            it('should allow to add new models', function() {
-
-                modelList.push({
-                    name: 'Anna'
-                });
-
-                expect(modelList.length).toEqual(2);
-            });
-
-        });
-
-        describe('when calling get(..)', function() {
-            var $httpBackend;
-
-            beforeEach(inject(function(_$httpBackend_) {
-                $httpBackend = _$httpBackend_;
-
-                $httpBackend
-                    .whenGET('/api/people/123')
-                    .respond({
-                        id: 123,
-                        name: 'Juri'
-                    });
-            }));
-
-            afterEach(function() {
-                $httpBackend.verifyNoOutstandingExpectation();
-                $httpBackend.verifyNoOutstandingRequest();
-            });
-
-
-            it('should return the requested resource by its id (as number)', function() {
-                PersonModel.get(123)
-                    .then(function(theFetchedPerson) {
-                        expect(theFetchedPerson).toBeDefined();
-                        expect(theFetchedPerson.name).toEqual('Juri');
-                    });
-
-                $httpBackend.expectGET('/api/people/123');
-                $httpBackend.flush();
-            });
-
-            it('should return the requested resource by its id (as string)', function() {
-                PersonModel.get('123')
-                    .then(function(theFetchedPerson) {
-                        expect(theFetchedPerson).toBeDefined();
-                        expect(theFetchedPerson.name).toEqual('Juri');
-                    });
-
-                $httpBackend.expectGET('/api/people/123');
-                $httpBackend.flush();
-            });
-
-            it('should allow to add additional query params', function(){
-                PersonModel.get(123, { age: 29 });
-
-                $httpBackend
-                    .whenGET('/api/people/123?age=29')
-                    .respond({
-                        id: 123,
-                        name: 'Juri',
-                        age: 29
-                    });
-
-                $httpBackend.expectGET('/api/people/123?age=29');
-                $httpBackend.flush();
-            });
-
-
-            xit('should return the requested resource by its id when passing it as object', function() {
-                PersonModel.get({
-                    id: 123
-                });
-
-                $httpBackend.expectGET('/api/people/123');
-                $httpBackend.flush();
-            });
-
-        });
-
         describe('when calling $update()', function() {
 
             it('should update the existing model properties with the new ones', function() {
@@ -441,154 +529,6 @@ You can do this by using the `.get(123)` function.
 
         });
 
-        describe('when calling $save()', function() {
-            var $httpBackend;
-
-            beforeEach(inject(function(_$httpBackend_) {
-                $httpBackend = _$httpBackend_;
-            }));
-
-            afterEach(function() {
-                $httpBackend.verifyNoOutstandingExpectation();
-                $httpBackend.verifyNoOutstandingRequest();
-            });
-
-            it('should execute a POST when we have a new model', function() {
-                var newModel = new PersonModel({
-                    name: 'Juri'
-                });
-
-                $httpBackend.expectPOST('/api/people', JSON.stringify(newModel)).respond(200, '');
-
-                // act
-                newModel.$save();
-                $httpBackend.flush();
-            });
-
-            it('should execute a PUT when we have an existing model', function() {
-                var newModel = new PersonModel({
-                    id: 123,
-                    name: 'Juri'
-                });
-
-                $httpBackend.expectPUT('/api/people/123', JSON.stringify(newModel)).respond(200, '');
-
-                // act
-                newModel.$save();
-                $httpBackend.flush();
-            });
-
-            it('should update the entry with the new results from the server', function() {
-
-                var children = {
-                    count: 1
-                };
-
-                var newModel = new PersonModel({
-                    name: 'Juri',
-                    kids: children
-                });
-
-                $httpBackend.expectPOST('/api/people', JSON.stringify(newModel)).respond(200, JSON.stringify({
-                    id: 12,
-                    name: 'Juri Strumpflohner',
-                    kids: { count: 99 }
-                }));
-
-                //act
-                newModel.$save();
-                $httpBackend.flush();
-
-                expect(newModel.id).toEqual(12);
-                expect(newModel.name).toEqual('Juri Strumpflohner');
-
-                // Make sure object references are not lost
-                expect(newModel.kids).toBe(children);
-                expect(children.count).toEqual(99);
-            });
-
-            it('Should overwrite array properties with the returned server version on update', function() {
-
-                // Set PersonModel object with an array property
-                var people = [];
-                people.push(new PersonModel({
-                        name: 'Ryan'
-                    }
-                ));
-                people.push(new PersonModel({
-                        name: 'Austin'
-                    }
-                ));
-                var newModel = new PersonModel({
-                    friends: people
-                });
-
-                // Create a changed array to return which has an extra element
-                var sender = people.slice().reverse();
-                sender.push(new PersonModel( { name: 'Juri'}));
-
-                $httpBackend.expectPOST('/api/people', JSON.stringify(newModel)).respond(200, JSON.stringify({
-                    friends: sender
-                }));
-
-                //act
-                newModel.$save();
-                $httpBackend.flush();
-
-                // Arrays should be exactly as returned
-                expect(newModel.friends.length).toBe(3);
-                expect(newModel.friends[1].name).toBe('Ryan');
-            });
-
-            it('on a copied model it should sent back the copied model data', function(){
-                var newModel = new PersonModel({
-                    name: 'Juri'
-                });
-
-                var copied = angular.copy(newModel);
-                copied.name = 'Austin'; //change something in the clone
-
-                $httpBackend.expectPOST('/api/people', JSON.stringify(copied)).respond(200, '');
-
-
-                copied.$save();
-                $httpBackend.flush();
-            });
-
-            it('should not loose $$array reference when updating existing model', function (){
-                var list = new PersonModel.List([
-                    {
-                        id: 1,
-                        name: 'Juri'
-                    }
-                ]);
-
-                var aPerson = new PersonModel({
-                    name: 'Jack'
-                });
-
-                aPerson.$save()
-                    .then(function() {
-                        // add to list
-                        list.push(aPerson);
-                    });
-                $httpBackend.expectPOST('/api/people').respond(200, JSON.stringify({ id: 123, name: 'Jack' }));
-                $httpBackend.flush();
-
-                // save again
-                aPerson.$save();
-                $httpBackend.expectPUT('/api/people/123').respond(200, JSON.stringify({ id: 123, name: 'Jack'}));
-                $httpBackend.flush();
-
-                // now delete
-                aPerson.$destroy();
-                $httpBackend.expectDELETE('/api/people/123').respond(200, '');
-                $httpBackend.flush();
-
-                expect(list.length).toBe(1);
-            });
-
-        });
 
         describe('when calling $rollback', function() {
 
