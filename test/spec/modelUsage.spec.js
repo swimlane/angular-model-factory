@@ -300,7 +300,7 @@ how you can save any modifications back to the server.
 There are two build-in options:
 
 - `$save()`
-- `$delete()`
+- `$destroy()`
 
 */
                 describe('using $save()', function() {
@@ -315,6 +315,11 @@ There are two build-in options:
                         $httpBackend.verifyNoOutstandingRequest();
                     });
 
+/*
+#### Create and save a new object
+
+*/
+
                     it('should execute a POST when we have a new model', function() {
                         // After creating a new model instance (as already illustrated before),
                         var newModel = new PersonModel({
@@ -327,7 +332,7 @@ There are two build-in options:
                         newModel.$save();
 
                         // If the model is a new one, that is, it's primary key property (default: `id`) is not defined or equal to 0, calling `$save()` issues
-                        // a request to `POST /api/people` (or how you specified in your model definition).
+                        // a `POST /api/people` request.
                         $httpBackend.expectPOST('/api/people', postData).respond(200, '');
                         $httpBackend.flush();
                     });
@@ -406,9 +411,162 @@ There are two build-in options:
                         newModel.$save();
                         $httpBackend.flush();
 
-                        // Arrays should be exactly as returned
                         expect(newModel.friends.length).toBe(3);
                         expect(newModel.friends[1].name).toBe('Ryan');
+                    });
+
+                });
+
+
+/*
+#### Delete an object
+
+*/
+                // If you want to delete an object instead, use the `$destroy()` function
+                // on the object instance you'd like to remove.
+                describe('using $destroy()', function() {
+                    var $httpBackend;
+
+                    beforeEach(inject(function(_$httpBackend_) {
+                        $httpBackend = _$httpBackend_;
+                    }));
+
+                    afterEach(function() {
+                        $httpBackend.verifyNoOutstandingExpectation();
+                        $httpBackend.verifyNoOutstandingRequest();
+                    });
+
+                    it('should properly execute a DELETE request', function() {
+                        var theModel = new PersonModel({
+                            id: 1234
+                        });
+
+                        theModel.$destroy();
+
+                        // That executes a `DELETE /api/people/<id>` request.
+                        $httpBackend.expectDELETE('/api/people/1234').respond(200, '');
+                        $httpBackend.flush();
+                    });
+
+                    it('should remove the deleted object from a model list when the deletion succeeds', function() {
+                        // When you have a list of models, always using the `Model.List` constructor,...
+                        var modelList = new PersonModel.List([{
+                            id: 1,
+                            name: 'Juri'
+                        }, {
+                            id: 2,
+                            name: 'Jack'
+                        }, {
+                            id: 3,
+                            name: 'Austin'
+                        }]);
+
+                        // ...and you delete a model,
+                        var modelToDelete = modelList[1];
+                        modelToDelete.$destroy();
+
+                        $httpBackend.expectDELETE('/api/people/2').respond(200, '');
+                        $httpBackend.flush();
+
+                        // it will automatically be removed from that list if the deletion
+                        // succeeded, that is, the server returned a `HTTP 200 ok` response.
+                        expect(modelList.length).toEqual(2);
+                        expect(modelList[0].id).toEqual(1);
+                        expect(modelList[1].id).toEqual(3);
+                    });
+
+                    // That works totally independent from the order of the objects in the list, obviously.
+                    it('should remove the deleted object even if the list order changed', function() {
+                        var modelList = new PersonModel.List([{
+                            id: 1,
+                            name: 'Juri'
+                        }, {
+                            id: 2,
+                            name: 'Otto'
+                        }, {
+                            id: 3,
+                            name: 'Austin'
+                        }]);
+
+                        var modelToDelete = modelList[1];
+
+                        modelList.sort(function(a, b){
+                            return a.name.localeCompare(b.name);
+                        });
+
+                        modelToDelete.$destroy();
+
+                        $httpBackend.expectDELETE('/api/people/2').respond(200, '');
+                        $httpBackend.flush();
+
+                        expect(modelList.length).toEqual(2);
+                    });
+
+                    // The model won't be removed from the list, if the deletion fails
+                    // (the server returns a reponse code <> 200).
+                    it('should NOT remove the deleted object from a model list when the deletion fails', function() {
+                        var modelList = new PersonModel.List([{
+                            id: 1,
+                            name: 'Juri'
+                        }, {
+                            id: 2,
+                            name: 'Jack'
+                        }, {
+                            id: 3,
+                            name: 'Austin'
+                        }]);
+
+                        // act
+                        modelList[1].$destroy();
+
+                        $httpBackend.expectDELETE('/api/people/2').respond(500, '');
+                        $httpBackend.flush();
+
+                        expect(modelList.length).toEqual(3);
+                    });
+
+
+                    // **TODO** move to separate spec file
+                    it('should not include any data in the request body', function(){
+                        var theModel = new PersonModel({
+                            id: 1234,
+                            name: 'Juri',
+                            age: 30
+                        });
+
+                        // act
+                        theModel.$destroy();
+
+                        $httpBackend.expect('DELETE', '/api/people/1234', null).respond(200, '');
+                        $httpBackend.flush();
+                    });
+
+                    it('should also properly remove an object that has just been added to the list before', function(){
+
+                        var modelList = new PersonModel.List([{
+                            id: 1,
+                            name: 'Juri'
+                        }]);
+
+
+                        // save a new model through the $save function
+                        var newModel = new PersonModel({ name: 'Tom' });
+                        newModel.$save()
+                            .then(function(){
+                                // add it to the overall collection
+                                modelList.push(newModel);
+
+                                // act: delete the newly added model again
+                                modelList[1].$destroy();
+                            });
+
+                        $httpBackend.expectPOST('/api/people').respond(200, JSON.stringify({ id: 111, name: 'Tom'}));
+                        $httpBackend.expectDELETE('/api/people/111').respond(200, '');
+                        $httpBackend.flush();
+
+                        // I'd expect that it is properly removed from it
+                        expect(modelList.length).toBe(1);
+                        expect(modelList[0].name).toEqual('Juri');
                     });
 
                     // **TODO** move to separate spec file not used as docs.
@@ -583,30 +741,30 @@ There are two build-in options:
                 $httpBackend.verifyNoOutstandingRequest();
             });
 
+            it('should also remove deleted models that have a different PK name', function(){
+                var modelList = new PersonWithMapModel.List([{
+                    fooId: 112,
+                    name: 'Juri'
+                }]);
 
-            it('should properly execute a DELETE request', function() {
-                var theModel = new PersonModel({
-                    id: 1234
-                });
+                //act
+                modelList[0].$destroy();
 
-                // act
-                theModel.$destroy();
-
-                $httpBackend.expectDELETE('/api/people/1234').respond(200, '');
+                $httpBackend.expectDELETE('/api/peoplemodified/112').respond(200, '');
                 $httpBackend.flush();
+
+                expect(modelList.length).toBe(0);
             });
 
-            it('should not include any data in the request body', function(){
-                var theModel = new PersonModel({
-                    id: 1234,
-                    name: 'Juri',
-                    age: 30
+            it('should properly execute a correct DELETE request with a different PK name', function(){
+                var theModel = new PersonWithMapModel({
+                    fooId: 1234
                 });
 
                 // act
                 theModel.$destroy();
 
-                $httpBackend.expect('DELETE', '/api/people/1234', null).respond(200, '');
+                $httpBackend.expectDELETE('/api/peoplemodified/1234').respond(200, '');
                 $httpBackend.flush();
             });
 
@@ -624,136 +782,7 @@ There are two build-in options:
                 $httpBackend.flush();
             });
 
-            it('should properly execute a correct DELETE request with a different PK name', function(){
-                var theModel = new PersonWithMapModel({
-                    fooId: 1234
-                });
 
-                // act
-                theModel.$destroy();
-
-                $httpBackend.expectDELETE('/api/peoplemodified/1234').respond(200, '');
-                $httpBackend.flush();
-            });
-
-            it('should remove the deleted object from a model list when the deletion succeeds', function() {
-                var modelList = new PersonModel.List([{
-                    id: 1,
-                    name: 'Juri'
-                }, {
-                    id: 2,
-                    name: 'Jack'
-                }, {
-                    id: 3,
-                    name: 'Austin'
-                }]);
-
-                // act
-                var modelToDelete = modelList[1];
-                modelToDelete.$destroy();
-
-                // assert
-                $httpBackend.expectDELETE('/api/people/2').respond(200, '');
-                $httpBackend.flush();
-
-                expect(modelList.length).toEqual(2);
-                expect(modelList[0].id).toEqual(1);
-                expect(modelList[1].id).toEqual(3);
-            });
-
-            it('should remove the deleted object even if the list order changed', function() {
-                var modelList = new PersonModel.List([{
-                    id: 1,
-                    name: 'Juri'
-                }, {
-                    id: 2,
-                    name: 'Otto'
-                }, {
-                    id: 3,
-                    name: 'Austin'
-                }]);
-
-                var modelToDelete = modelList[1];
-
-                // resort the list s.t. the array indices change..
-                modelList.sort(function(a, b){
-                    return a.name.localeCompare(b.name);
-                });
-
-                // act
-                modelToDelete.$destroy();
-
-                // should still delete "Otto"
-                $httpBackend.expectDELETE('/api/people/2').respond(200, '');
-                $httpBackend.flush();
-
-                expect(modelList.length).toEqual(2);
-            });
-
-            it('should also properly remove an object that has just been added to the list before', function(){
-
-                var modelList = new PersonModel.List([{
-                    id: 1,
-                    name: 'Juri'
-                }]);
-
-
-                // save a new model through the $save function
-                var newModel = new PersonModel({ name: 'Tom' });
-                newModel.$save()
-                    .then(function(){
-                        // add it to the overall collection
-                        modelList.push(newModel);
-
-                        // act: delete the newly added model again
-                        modelList[1].$destroy();
-                    });
-
-                $httpBackend.expectPOST('/api/people').respond(200, JSON.stringify({ id: 111, name: 'Tom'}));
-                $httpBackend.expectDELETE('/api/people/111').respond(200, '');
-                $httpBackend.flush();
-
-                // I'd expect that it is properly removed from it
-                expect(modelList.length).toBe(1);
-                expect(modelList[0].name).toEqual('Juri');
-            });
-
-            it('should also remove deleted models that have a different PK name', function(){
-                var modelList = new PersonWithMapModel.List([{
-                    fooId: 112,
-                    name: 'Juri'
-                }]);
-
-                //act
-                modelList[0].$destroy();
-
-                $httpBackend.expectDELETE('/api/peoplemodified/112').respond(200, '');
-                $httpBackend.flush();
-
-                expect(modelList.length).toBe(0);
-            });
-
-            it('should NOT remove the deleted object from a model list when the deletion fails', function() {
-                var modelList = new PersonModel.List([{
-                    id: 1,
-                    name: 'Juri'
-                }, {
-                    id: 2,
-                    name: 'Jack'
-                }, {
-                    id: 3,
-                    name: 'Austin'
-                }]);
-
-                // act
-                modelList[1].$destroy();
-
-
-                $httpBackend.expectDELETE('/api/people/2').respond(500, '');
-                $httpBackend.flush();
-
-                expect(modelList.length).toEqual(3);
-            });
 
         });
 
