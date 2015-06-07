@@ -68,6 +68,7 @@ already comes with **predefined static functions** to retrieve new instances and
             it('you can simply create a new instance using the "new" keyword', function(){
                 // Once you defined a model, it can simply be instantiated using the `new` keyword.
                 var person = new PersonModel();
+
                 expect(person).toBeDefined();
                 expect(person instanceof PersonModel).toBeTruthy();
             });
@@ -138,6 +139,8 @@ Model Factory has build-in support for lists as well.
                 });
 
                 it('should contain wrapped model objects', function() {
+                    // All JavaScript objects added to a Model list are automatically wrapped as instances
+                    // of that model.
                     expect(modelList[0] instanceof PersonModel).toBeTruthy();
                 });
 
@@ -170,7 +173,6 @@ Model Factory has build-in support for lists as well.
                         name: 'Austin'
                     });
 
-                    // assert
                     expect(newList.length).toEqual(2);
                     expect(newList[0] instanceof PersonModel).toBeTruthy();
                     expect(newList[1] instanceof PersonModel).toBeTruthy();
@@ -181,7 +183,7 @@ Model Factory has build-in support for lists as well.
 /*
 ## Build-in REST comunication functions
 
-Model factory not only encapsulates your backend communication in dedicated
+Model factory not only encapsulates your backend communication in dedicated data
 services, but it's main objective is to make any data exchange as easy as possible.
 
 As such there are a couple of build-in functions.
@@ -493,7 +495,7 @@ There are two build-in options:
                         $httpBackend.flush();
 
                         // it will automatically be removed from that list if the deletion
-                        // succeeded, that is, the server returned a `HTTP 200 ok` response.
+                        // succeeds, that is, the server returns a `HTTP 200 ok` response.
                         expect(modelList.length).toEqual(2);
                         expect(modelList[0].id).toEqual(1);
                         expect(modelList[1].id).toEqual(3);
@@ -526,7 +528,7 @@ There are two build-in options:
                         expect(modelList.length).toEqual(2);
                     });
 
-                    // The model won't be removed from the list, if the deletion fails
+                    // On the other side, the model won't be removed from the list, if the deletion fails
                     // (the server returns a reponse code <> 200).
                     it('should NOT remove the deleted object from a model list when the deletion fails', function() {
                         var modelList = new PersonModel.List([{
@@ -566,17 +568,16 @@ You can define defaults which often come in handy.
             var PersonModelWithDefaults;
 
             beforeEach(function() {
-                // angular.module('test-module', ['modelFactory'])
                 module.factory('PersonModelWithDefaults', function($modelFactory) {
-                        return $modelFactory('/api/people', {
-                            // Simply declare a `defaults` object within the model
-                            // configuration and set the desired default properties
-                            // accordingly.
-                            defaults: {
-                                age: 18
-                            }
-                        });
+                    return $modelFactory('/api/people', {
+                        // Simply declare a `defaults` object within the model
+                        // configuration and set the desired default properties
+                        // accordingly.
+                        defaults: {
+                            age: 18
+                        }
                     });
+                });
             });
 
             beforeEach(inject(function(_PersonModelWithDefaults_) {
@@ -602,9 +603,9 @@ You can define defaults which often come in handy.
             });
 
             it('should not overwrite with the default when passing a value for it', function() {
-                // Correctly, when you pass the value of the default property in the
-                // constructor, that value takes precedence over the previously specified default
-                // value.
+                // Moreover, when you explicity assign some value to the property specified in the
+                // defaults, in the constructor, that value takes precedence over the previously
+                // specified default value.
                 var personWithDefaults = new PersonModelWithDefaults({
                     name: 'Juri',
                     age: 29
@@ -619,6 +620,189 @@ You can define defaults which often come in handy.
                 }]);
 
                 expect(personWithDefaultsList[0].age).toEqual(18);
+            });
+
+        });
+
+/*
+## Custom actions
+
+The predefined REST actions like `query, get, $save, $destroy` might not be enough in many cases. Model-factory
+is flexible enought, though, to define custom endpoints at will.
+
+*/
+        describe('custom actions', function() {
+            var PersonModel, $httpBackend;
+
+            beforeEach(function() {
+                module.factory('PersonModel', function($modelFactory) {
+                    return $modelFactory('/api/people', {
+                        // Define an `actions` object
+                        actions: {
+
+                            // and then your custom endpoint.
+                            queryChildren: {
+                                // The `url` is appended to the base URL of the model.
+                                url: 'children',
+
+                                // The `method` allows to override the HTTP method to
+                                // be used. `GET` is the default.
+                                method: 'GET',
+
+                                // By setting the `isArray` you can control whether the
+                                // expected result is an array or a single object.
+                                isArray: true,
+
+                                // The `wrap` param sets whether the response should be wrapped
+                                // as an instance (or instance list) of models. Default is `true`.
+                                wrap: true
+                            },
+
+                            // Functions prefixed by `$` instance-level functions.
+                            '$serverCopy': {
+                                method: 'POST',
+                                url: 'copy'
+                            }
+
+                        }
+                    });
+                });
+            });
+
+            beforeEach(inject(function(_PersonModel_, _$httpBackend_) {
+                PersonModel = _PersonModel_;
+                $httpBackend = _$httpBackend_;
+            }));
+
+            it('should correctly call the defined url', function() {
+                // You can then simply invoke the custom action by its name.
+                PersonModel.queryChildren();
+                $httpBackend.expectGET('/api/people/children').respond(200, []);
+                $httpBackend.flush();
+            });
+
+            it('take params as JavaScript objects and append them to the url', function() {
+                // As with the default REST functions you can pass parameters as JavaScript objects.
+                PersonModel.queryChildren({
+                    type: 'minor'
+                });
+
+                // Parameters are appended as query params.
+                $httpBackend.expectGET('/api/people/children?type=minor').respond(200, '');
+                $httpBackend.flush();
+            });
+
+            it('should wrap the returned objects', function() {
+                PersonModel.queryChildren()
+                    .then(function(result) {
+                        expect(result.length).toBe(1);
+                        expect(result[0] instanceof PersonModel).toBeTruthy(); // check whether it's a model
+                    });
+
+                $httpBackend.expectGET('/api/people/children').respond(200, [{
+                    type: 'minor',
+                    name: 'Juri'
+                }]);
+                $httpBackend.flush();
+            });
+
+            it('should correctly invoke the custom model instance function', function() {
+                var model = new PersonModel({
+                    name: 'Juri'
+                });
+
+                $httpBackend.expectPOST('/api/people/copy').respond(200, '');
+
+                // Instance-level actions have to be used on an instance of the model.
+                model.$serverCopy();
+                $httpBackend.flush();
+            });
+
+        });
+
+/*
+### URL templates
+
+Internally, model-factory uses the uri-templates library to resolve the URLs.
+
+*/
+
+        describe('custom URL templates', function() {
+            var $httpBackend;
+
+            beforeEach(function() {
+                module.factory('PersonModel', function($modelFactory) {
+                      return $modelFactory('/api/people', {
+                          actions: {
+
+                              // That means you can specify placeholders like `{id}` within
+                              // your url and it will be replaced by the according JavaScript property
+                              // passed to the method call.
+                              getById: {
+                                  url: 'child/{id}/some/subpath'
+                              },
+
+                              // It not only works with the primary key but with any arbitrary property.
+                              getByName: {
+                                  url: 'child/{name}/some/subpath'
+                              },
+
+                              // It works on the instance-level functions in the exact same way, just that
+                              // the properties are resolved from the model properties itself.
+                              '$serverCopy': {
+                                  method: 'POST',
+                                  url: 'copy/{name}'
+                              },
+
+                              '$customUpdate': {
+                                  method: 'PUT',
+                                  url: 'update/{name}'
+                              }
+
+                          }
+                      });
+                  });
+            });
+
+            beforeEach(inject(function(_PersonModel_, _$httpBackend_) {
+                PersonModel = _PersonModel_;
+                $httpBackend = _$httpBackend_;
+            }));
+
+            it('should resolve any {id} placeholder with the appropriate value', function(){
+                PersonModel.getById({ id: 123 });
+
+                $httpBackend.expectGET('/api/people/child/123/some/subpath').respond(200, []);
+                $httpBackend.flush();
+            });
+
+            it('should also work with properties other than the pk', function(){
+                PersonModel.getByName({ name: 'juri' });
+
+                $httpBackend.expectGET('/api/people/child/juri/some/subpath').respond(200, []);
+                $httpBackend.flush();
+            });
+
+            it('should also work with POST requests and name variable', function(){
+                var person = new PersonModel({
+                  name: 'juri'
+                });
+
+                person.$serverCopy();
+
+                $httpBackend.expectPOST('/api/people/copy/juri').respond(200, []);
+                $httpBackend.flush();
+            });
+
+            it('should also work with PUT requests and name variable', function(){
+                var person = new PersonModel({
+                  name: 'juri'
+                });
+
+                person.$customUpdate();
+
+                $httpBackend.expectPUT('/api/people/update/juri').respond(200, []);
+                $httpBackend.flush();
             });
 
         });
@@ -697,166 +881,6 @@ You can define defaults which often come in handy.
 
     });
 
-    describe('backend URL resolution', function() {
-        var $httpBackend;
-
-        beforeEach(function() {
-          angular.module('test-module', ['modelFactory'])
-              .factory('PersonModel', function($modelFactory) {
-                  return $modelFactory('/api/people', {
-                      actions: {
-
-                          // static
-                          queryChildren: {
-                              url: 'children',
-                              isArray: true
-                          },
-
-                          getById: {
-                              url: 'child/{id}/some/subpath'
-                          },
-
-                          getByName: {
-                              url: 'child/{name}/some/subpath'
-                          },
-
-                          // instance function
-                          '$serverCopy': {
-                              method: 'POST',
-                              url: 'copy/{name}'
-                          },
-
-                          '$customUpdate': {
-                              method: 'PUT',
-                              url: 'update/{name}'
-                          }
-
-                      }
-                  });
-              });
-        });
-
-        beforeEach(angular.mock.module('test-module'));
-
-        beforeEach(inject(function(_PersonModel_, _$httpBackend_) {
-            PersonModel = _PersonModel_;
-            $httpBackend = _$httpBackend_;
-        }));
-
-        it('should work with GET and id variable', function(){
-            PersonModel.getById({ id: 123 });
-
-            $httpBackend.expectGET('/api/people/child/123/some/subpath').respond(200, []);
-            $httpBackend.flush();
-        });
-
-        it('should work with GET and name variable', function(){
-            PersonModel.getByName({ name: 'juri' });
-
-            $httpBackend.expectGET('/api/people/child/juri/some/subpath').respond(200, []);
-            $httpBackend.flush();
-        });
-
-        it('should work with POST and name variable', function(){
-            var person = new PersonModel({
-              name: 'juri'
-            });
-
-            person.$serverCopy();
-
-            $httpBackend.expectPOST('/api/people/copy/juri').respond(200, []);
-            $httpBackend.flush();
-        });
-
-        it('should work with PUT and name variable', function(){
-            var person = new PersonModel({
-              name: 'juri'
-            });
-
-            person.$customUpdate();
-
-            $httpBackend.expectPUT('/api/people/update/juri').respond(200, []);
-            $httpBackend.flush();
-        });
-
-    });
-
-    describe('with custom actions', function() {
-        var $httpBackend;
-
-        beforeEach(function() {
-            angular.module('test-module', ['modelFactory'])
-                .factory('PersonModel', function($modelFactory) {
-                    return $modelFactory('/api/people', {
-                        actions: {
-
-                            // static
-                            queryChildren: {
-                                url: 'children',
-                                isArray: true
-                            },
-
-                            // instance function
-                            '$serverCopy': {
-                                method: 'POST',
-                                url: 'copy'
-                            }
-
-                        }
-                    });
-                });
-        });
-
-        beforeEach(angular.mock.module('test-module'));
-
-        beforeEach(inject(function(_PersonModel_, _$httpBackend_) {
-            PersonModel = _PersonModel_;
-            $httpBackend = _$httpBackend_;
-        }));
-
-        it('should correctly call the defined url', function() {
-            PersonModel.queryChildren();
-            $httpBackend.expectGET('/api/people/children').respond(200, []);
-            $httpBackend.flush();
-        });
-
-        it('should allow to specify query parameters', function() {
-
-            PersonModel.queryChildren({
-                type: 'minor'
-            });
-
-            $httpBackend.expectGET('/api/people/children?type=minor').respond(200, '');
-            $httpBackend.flush();
-        });
-
-        it('should wrap the returned objects', function() {
-
-            PersonModel.queryChildren()
-                .then(function(result) {
-                    expect(result.length).toBe(1);
-                    expect(result[0] instanceof PersonModel).toBeTruthy(); // check whether it's a model
-                });
-
-            $httpBackend.expectGET('/api/people/children').respond(200, [{
-                type: 'minor',
-                name: 'Juri'
-            }]);
-            $httpBackend.flush();
-        });
-
-        it('should correctly invoke the custom model instance function', function() {
-            var model = new PersonModel({
-                name: 'Juri'
-            });
-
-            $httpBackend.expectPOST('/api/people/copy').respond(200, '');
-            // act
-            model.$serverCopy();
-            $httpBackend.flush();
-        });
-
-    });
 
     describe('using the isArray property', function(){
         var AddressModel, $httpBackend;
