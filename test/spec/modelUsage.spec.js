@@ -52,8 +52,8 @@ already comes with **predefined static functions** to retrieve new instances and
                 // To define a new model, create a factory, import `$modelFactory` from
                 // the angular-model-factory module and configure it.
                 module.factory('PersonModel', function($modelFactory) {
-                    // In the simplest scenario, simply define the endpoint
-                    // url of the model.
+                    // In the simplest scenario, define the endpoint
+                    // url of the model. That's it.
                     return $modelFactory('/api/people');
                 });
 
@@ -770,6 +770,8 @@ Internally, model-factory uses the uri-templates library to resolve the URLs.
             }));
 
             it('should resolve any {id} placeholder with the appropriate value', function(){
+                // When you call the custom endpoint, simply pass in an object that matches
+                // the URL template's placeholders.
                 PersonModel.getById({ id: 123 });
 
                 $httpBackend.expectGET('/api/people/child/123/some/subpath').respond(200, []);
@@ -809,6 +811,53 @@ Internally, model-factory uses the uri-templates library to resolve the URLs.
 
     });
 
+    describe('when calling $rollback', function() {
+        var $httpBackend;
+
+        beforeEach(inject(function(_$httpBackend_) {
+            $httpBackend = _$httpBackend_;
+        }));
+
+
+        it('should revert to the previous values of the object', function() {
+            var newModel = new PersonModel({
+                name: 'Juri'
+            });
+
+            // act
+            newModel.name = 'Jack';
+            newModel.$rollback();
+
+            expect(newModel.name).toEqual('Juri');
+        });
+
+        it('should NOT revert to the old values after an entity has been persisted with $save', inject(function($httpBackend) {
+            var newModel = new PersonModel({
+                name: 'Juri'
+            });
+
+            newModel.name = 'Jack';
+
+            // persist it
+            newModel.$save();
+
+            $httpBackend
+                .expectPOST('/api/people')
+                .respond(200, JSON.stringify({
+                    id: 1,
+                    name: 'Jack'
+                }));
+            $httpBackend.flush();
+
+            // act
+            newModel.$rollback();
+
+            // assert
+            expect(newModel.name).toEqual('Jack'); // there is nothing to revert 'cause the model is fresh from the server'
+        }));
+
+    });
+
     describe('with the default configuration', function() {
 
         beforeEach(function() {
@@ -836,47 +885,6 @@ Internally, model-factory uses the uri-templates library to resolve the URLs.
         beforeEach(inject(function(_PersonModel_) {
             PersonModel = _PersonModel_;
         }));
-
-        describe('when calling $rollback', function() {
-
-            it('should revert to the previous values of the object', function() {
-                var newModel = new PersonModel({
-                    name: 'Juri'
-                });
-
-                // act
-                newModel.name = 'Jack';
-                newModel.$rollback();
-
-                expect(newModel.name).toEqual('Juri');
-            });
-
-            it('should NOT revert to the old values after an entity has been persisted with $save', inject(function($httpBackend) {
-                var newModel = new PersonModel({
-                    name: 'Juri'
-                });
-
-                newModel.name = 'Jack';
-
-                // persist it
-                newModel.$save();
-
-                $httpBackend
-                    .expectPOST('/api/people')
-                    .respond(200, JSON.stringify({
-                        id: 1,
-                        name: 'Jack'
-                    }));
-                $httpBackend.flush();
-
-                // act
-                newModel.$rollback();
-
-                // assert
-                expect(newModel.name).toEqual('Jack'); // there is nothing to revert 'cause the model is fresh from the server'
-            }));
-
-        });
 
 
     });
