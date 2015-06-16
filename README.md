@@ -1,5 +1,7 @@
 # modelFactory [![Build Status](https://travis-ci.org/Swimlane/angular-model-factory.svg?branch=master)](https://travis-ci.org/Swimlane/model-factory) [![Codacy Badge](https://www.codacy.com/project/badge/d6659f50bd234f099738358a2a17bf9c)](https://www.codacy.com/public/amcdaniel2/model-factory)
 
+[![Join the chat at https://gitter.im/Swimlane/angular-model-factory](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Swimlane/angular-model-factory?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A light-weight model layer that bridges the gap between AngularJS and your RESTful APIs.
 
 Why would you use this over other available solutions?
