@@ -1100,4 +1100,66 @@ describe('A person model defined using modelFactory', function() {
 
     });
 
+    describe('using the model instance features',function(){
+        var Contact, Phone;
+
+         beforeEach(function() {
+            angular.module('test-module', ['modelFactory'])
+                .factory('Contact', function($modelFactory, Phone) {
+                    return $modelFactory('/api/people', {
+                        pk: 'Id',
+                        map: {
+                            Phones: Phone.List
+                        },
+                        defaults: {
+                            GivenName: '',
+                            FamilyName: '',
+                            Phones: []
+                        },
+                        instance: {
+                            addPhone: function (options) {
+                                this.Phones.push(new Phone(options));
+                            },
+                            removePhone: function (phone) {
+                                this.Phones.splice(this.Phones.indexOf(phone), 1);
+                            }
+                        }
+                    });
+                })
+                .factory('Phone', function($modelFactory){
+                    return $modelFactory('', {
+                        pk: 'Id',
+                        defaults: {
+                            Type: 'Mobile',
+                            PhoneCode: '1',
+                            Number: '',
+                            Extension: '',
+                            IsPrimary: false
+                        }
+                    });
+                });
+        });
+
+        beforeEach(angular.mock.module('test-module'));
+
+        beforeEach(inject(function(_Contact_, _Phone_) {
+            Contact = _Contact_;
+            Phone = _Phone_;
+        }));
+
+        it('test', function(){
+            var contact = new Contact();
+            expect(contact).toBeDefined();
+
+            contact.addPhone();
+
+            var anotherContact = new Contact();
+            anotherContact.addPhone();
+
+            expect(contact.Phones.length).toEqual(1);
+            expect(anotherContact.Phones.length).toEqual(1);
+        });
+
+    });
+
 });
