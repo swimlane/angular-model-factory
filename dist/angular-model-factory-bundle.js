@@ -1,6 +1,6 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v0.4.0 - 2015-05-26
+ * @version v0.4.1 - 2015-06-24
  * @link https://github.com/swimlane/model-factory
  * @author Austin McDaniel <amcdaniel2@gmail.com>, Juri Strumpflohner <juri.strumpflohner@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -1068,12 +1068,12 @@ module.provider('$modelFactory', function(){
                 // strip all the internal functions/etc
                 params.data = Model.$strip(params.data);
 
-                $http(params).success(function(response){
+                $http(params).then(function(response){
                     // after callbacks
                     if(params.afterRequest) {
-                        var transform = params.afterRequest(response);
+                        var transform = params.afterRequest(response.data);
                         if(transform) {
-                            response = transform;
+                            response.data = transform;
                         }
                     }
 
@@ -1087,21 +1087,18 @@ module.provider('$modelFactory', function(){
                     if (response) {
                         if (params.wrap) {
                             if (params.isArray) {
-                                def.resolve(new Model.List(response));
+                                def.resolve(new Model.List(response.data));
                             } else {
-                                def.resolve(new Model(response));
+                                def.resolve(new Model(response.data));
                             }
                         } else {
-                            def.resolve(response);
+                            def.resolve(response.data);
                         }
                     } else {
                         def.resolve();
                     }
-
+                }, def.reject).finally(function () {
                     promiseTracker[signature] = undefined;
-                }).error(function(response){
-                    promiseTracker[signature] = undefined;
-                    def.reject(response);
                 });
 
                 return def.promise;
