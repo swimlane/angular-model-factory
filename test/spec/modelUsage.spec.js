@@ -1076,10 +1076,20 @@ describe('A person model defined using modelFactory', function() {
         it('should be passed to the error promise', function(){
             PersonModel.query()
                 .then(function(){
-                    // this should never be executed
-                    expect(false).toBeTruthy();
                 })
                 .catch(function(response){
+                    expect(response).toBeDefined();
+                    expect(response.status).toEqual(500);
+                });
+
+            $httpBackend.expectGET('/api/people').respond(500);
+            $httpBackend.flush();
+        });
+
+        it('should be possible to use the error callback instead of catch', function(){
+            PersonModel.query()
+                .then(function(){
+                }, function(response){
                     expect(response).toBeDefined();
                     expect(response.status).toEqual(500);
                 });
