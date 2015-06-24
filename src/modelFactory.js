@@ -658,9 +658,9 @@ module.provider('$modelFactory', function(){
                 $http(params).then(function(response){
                     // after callbacks
                     if(params.afterRequest) {
-                        var transform = params.afterRequest(response);
+                        var transform = params.afterRequest(response.data);
                         if(transform) {
-                            response = transform;
+                            response.data = transform;
                         }
                     }
 
