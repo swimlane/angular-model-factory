@@ -655,12 +655,12 @@ module.provider('$modelFactory', function(){
                 // strip all the internal functions/etc
                 params.data = Model.$strip(params.data);
 
-                $http(params).success(function(response){
+                $http(params).then(function(response){
                     // after callbacks
                     if(params.afterRequest) {
-                        var transform = params.afterRequest(response);
+                        var transform = params.afterRequest(response.data);
                         if(transform) {
-                            response = transform;
+                            response.data = transform;
                         }
                     }
 
@@ -674,21 +674,18 @@ module.provider('$modelFactory', function(){
                     if (response) {
                         if (params.wrap) {
                             if (params.isArray) {
-                                def.resolve(new Model.List(response));
+                                def.resolve(new Model.List(response.data));
                             } else {
-                                def.resolve(new Model(response));
+                                def.resolve(new Model(response.data));
                             }
                         } else {
-                            def.resolve(response);
+                            def.resolve(response.data);
                         }
                     } else {
                         def.resolve();
                     }
-
+                }, def.reject).finally(function () {
                     promiseTracker[signature] = undefined;
-                }).error(function(response){
-                    promiseTracker[signature] = undefined;
-                    def.reject(response);
                 });
 
                 return def.promise;

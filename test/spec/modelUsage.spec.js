@@ -1040,4 +1040,54 @@ describe('A person model defined using modelFactory', function() {
 
     });
 
+    describe('when the server returns an error response',function(){
+        var PersonModel, $httpBackend;
+
+         beforeEach(function() {
+            angular.module('test-module', ['modelFactory'])
+                .factory('PersonModel', function($modelFactory) {
+                    return $modelFactory('/api/people');
+                });
+        });
+
+        beforeEach(angular.mock.module('test-module'));
+
+        beforeEach(inject(function(_PersonModel_,_$httpBackend_) {
+            PersonModel = _PersonModel_;
+            $httpBackend = _$httpBackend_;
+        }));
+
+        afterEach(function() {
+            $httpBackend.verifyNoOutstandingExpectation();
+            $httpBackend.verifyNoOutstandingRequest();
+        });
+
+        it('should not call the success callback', function(){
+            PersonModel.query()
+                .then(function(){
+                    // this should never be executed
+                    expect(false).toBeTruthy();
+                });
+
+            $httpBackend.expectGET('/api/people').respond(500);
+            $httpBackend.flush();
+        });
+
+        it('should be passed to the error promise', function(){
+            PersonModel.query()
+                .then(function(){
+                    // this should never be executed
+                    expect(false).toBeTruthy();
+                })
+                .catch(function(response){
+                    expect(response).toBeDefined();
+                    expect(response.status).toEqual(500);
+                });
+
+            $httpBackend.expectGET('/api/people').respond(500);
+            $httpBackend.flush();
+        });
+
+    });
+
 });
