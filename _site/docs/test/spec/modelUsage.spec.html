@@ -1,0 +1,817 @@
+<!DOCTYPE html><html lang="en"><head><title>test/spec/modelUsage.spec</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../../"><meta name="groc-document-path" content="test/spec/modelUsage.spec"><meta name="groc-project-path" content="test/spec/modelUsage.spec.js"><link rel="stylesheet" type="text/css" media="all" href="../../assets/style.css"><script type="text/javascript" src="../../assets/behavior.js"></script><body><div id="meta"><div class="file-path">test/spec/modelUsage.spec.js</div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="hljs-pi">'use strict'</span>;</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h1 id="angular-model-factory">Angular Model Factory</h1>
+<p>Angular model-factory is a lightweight model layer that bridges the gap
+between AngularJS and your RESTful APIs.</p>
+<p>More infos can be found at the <a href="https://github.com/Swimlane/angular-model-factory">official GitHub Repo</a>.</p></div></div><div class="code"><div class="wrapper">describe(<span class="hljs-string">'A person model defined using modelFactory'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">var</span> PersonModel;
+
+    beforeEach(angular.mock.module(<span class="hljs-string">'modelFactory'</span>));</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="setting-it-up">Setting it up</h2>
+<p>Model-factory is based upon the concept of having a JavaScript object
+upon which we can act to retrieve the according data. Meaning, if we have
+an API <code>/api/v1/people</code>, we create (for instance) a model <code>PersonModel</code> which
+wrapps all the interactions with that specific endpoint. The PersonModel object
+already comes with <strong>predefined static functions</strong> to retrieve new instances and
+<strong>per-instance functions</strong> to operate upon existing data.</p></div></div><div class="code"><div class="wrapper">    describe(<span class="hljs-string">'the angular-model-factory'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+        <span class="hljs-keyword">var</span> <span class="hljs-built_in">module</span>;
+
+        beforeEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>First of all, we have to <strong>reference the &quot;modelFactory&quot; module</strong>
+to make use of the services it comes with.</p></div></div><div class="code"><div class="wrapper">            <span class="hljs-built_in">module</span> = angular.module(<span class="hljs-string">'test-module'</span>, [<span class="hljs-string">'modelFactory'</span>]);
+        });
+
+        beforeEach(angular.mock.module(<span class="hljs-string">'test-module'</span>));</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="define-a-new-model">Define a new Model</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">        describe(<span class="hljs-string">'after defining a new model'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+
+            beforeEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>To define a new model, create a factory, import <code>$modelFactory</code> from
+the angular-model-factory module and configure it.</p></div></div><div class="code"><div class="wrapper">                <span class="hljs-built_in">module</span>.factory(<span class="hljs-string">'PersonModel'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">$modelFactory</span>) </span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>In the simplest scenario, simply define the endpoint
+url of the model.</p></div></div><div class="code"><div class="wrapper">                    <span class="hljs-keyword">return</span> $modelFactory(<span class="hljs-string">'/api/people'</span>);
+                });
+
+            });
+
+            beforeEach(angular.mock.module(<span class="hljs-string">'test-module'</span>));
+
+            beforeEach(inject(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">_PersonModel_</span>) </span>{
+                PersonModel = _PersonModel_;
+            }));
+
+            it(<span class="hljs-string">'you can simply create a new instance using the "new" keyword'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Once you defined a model, it can simply be instantiated using the <code>new</code> keyword.</p></div></div><div class="code"><div class="wrapper">                <span class="hljs-keyword">var</span> person = <span class="hljs-keyword">new</span> PersonModel();
+
+                expect(person).toBeDefined();
+                expect(person <span class="hljs-keyword">instanceof</span> PersonModel).toBeTruthy();
+            });
+
+            it(<span class="hljs-string">'you can initialize the model with some data passed to the constructor'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>It is also possible to initialize the model directly with some
+data by simply passing an object to the &quot;constructor&quot;...</p></div></div><div class="code"><div class="wrapper">                <span class="hljs-keyword">var</span> person = <span class="hljs-keyword">new</span> PersonModel({
+                    name: <span class="hljs-string">'Juri'</span>,
+                    age: <span class="hljs-number">30</span>
+                });
+
+                expect(person.name).toBe(<span class="hljs-string">'Juri'</span>);
+                expect(person.age).toBe(<span class="hljs-number">30</span>);
+            });
+
+            it(<span class="hljs-string">'you can set model properties just like with any other JavaScript object'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+                <span class="hljs-keyword">var</span> person = <span class="hljs-keyword">new</span> PersonModel();</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>...or simply set the data on the existing object.</p></div></div><div class="code"><div class="wrapper">                person.name = <span class="hljs-string">'Juri'</span>;
+
+                expect(person.name).toBe(<span class="hljs-string">'Juri'</span>);
+            });
+
+
+            it(<span class="hljs-string">'you can also use the $update function and pass in an entire object'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                <span class="hljs-keyword">var</span> newModel = <span class="hljs-keyword">new</span> PersonModel({
+                    name: <span class="hljs-literal">null</span>
+                });
+
+                <span class="hljs-keyword">var</span> newModelUpdate = <span class="hljs-keyword">new</span> PersonModel({
+                    name: <span class="hljs-string">'elec29a'</span>,
+                    language: {
+                      de: <span class="hljs-string">'hallo'</span>
+                    }
+                });</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>By using the <code>$update(someObj)</code> function, you can update a whole set of
+properties by passing in the interested ones.</p></div></div><div class="code"><div class="wrapper">                newModel.$update(newModelUpdate);
+
+                expect(newModel.name).toEqual(<span class="hljs-string">'elec29a'</span>);
+                expect(newModel.language).toBeDefined();
+                expect(newModel.language.de).toEqual(<span class="hljs-string">'hallo'</span>);
+            });</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="model-lists">Model Lists</h2>
+<p>Model Factory has build-in support for lists as well.</p></div></div><div class="code"><div class="wrapper">            describe(<span class="hljs-string">'instantiate a list by using the Model.List constructor'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                <span class="hljs-keyword">var</span> modelList;
+
+                beforeEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>You can define a new model list by creating a new instance of <code>PersonModel.List</code> instead of <code>PersonModel</code>. Then, instead of an object, pass in an array of objects.</p></div></div><div class="code"><div class="wrapper">                    modelList = <span class="hljs-keyword">new</span> PersonModel.List([{
+                        name: <span class="hljs-string">'Juri'</span>
+                    }]);
+                });
+
+                it(<span class="hljs-string">'should instantiate a new model list with some predefined objects'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                    expect(modelList).toBeDefined();
+                    expect(modelList.length).toEqual(<span class="hljs-number">1</span>);
+                });
+
+                it(<span class="hljs-string">'should contain wrapped model objects'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>All JavaScript objects added to a Model list are automatically wrapped as instances
+of that model.</p></div></div><div class="code"><div class="wrapper">                    expect(modelList[<span class="hljs-number">0</span>] <span class="hljs-keyword">instanceof</span> PersonModel).toBeTruthy();
+                });
+
+                it(<span class="hljs-string">'you can instantiate an empty list and add new objects later using push()'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Obviously it allows to define an empty list...</p></div></div><div class="code"><div class="wrapper">                    <span class="hljs-keyword">var</span> newEmptyList = <span class="hljs-keyword">new</span> PersonModel.List();
+
+                    expect(newEmptyList).toBeDefined();
+                    expect(newEmptyList.length).toEqual(<span class="hljs-number">0</span>);</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>..where later in your application you push new objects into it using
+the <code>.push(...)</code> function as you normally would.</p></div></div><div class="code"><div class="wrapper">                    newEmptyList.push({
+                        name: <span class="hljs-string">'Juri'</span>
+                    });
+
+                    expect(newEmptyList.length).toEqual(<span class="hljs-number">1</span>);
+                    expect(newEmptyList[<span class="hljs-number">0</span>] <span class="hljs-keyword">instanceof</span> PersonModel).toBeTruthy();
+                });
+
+                it(<span class="hljs-string">'you can even push multiple objects separated by a comma'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                    <span class="hljs-keyword">var</span> newList = <span class="hljs-keyword">new</span> PersonModel.List();</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>You can even push multiple JavaScript objects to the <code>push(...)</code>
+function. Obviously, all of them will be wrapped as models.</p></div></div><div class="code"><div class="wrapper">                    newList.push({
+                        name: <span class="hljs-string">'Juri'</span>
+                    }, {
+                        name: <span class="hljs-string">'Austin'</span>
+                    });
+
+                    expect(newList.length).toEqual(<span class="hljs-number">2</span>);
+                    expect(newList[<span class="hljs-number">0</span>] <span class="hljs-keyword">instanceof</span> PersonModel).toBeTruthy();
+                    expect(newList[<span class="hljs-number">1</span>] <span class="hljs-keyword">instanceof</span> PersonModel).toBeTruthy();
+                });
+
+            });</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="build-in-rest-comunication-functions">Build-in REST comunication functions</h2>
+<p>Model factory not only encapsulates your backend communication in dedicated data
+services, but it&#39;s main objective is to make any data exchange as easy as possible.</p>
+<p>As such there are a couple of build-in functions.</p></div></div><div class="code"><div class="wrapper">            describe(<span class="hljs-string">'to contact the remote backend'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+                <span class="hljs-keyword">var</span> $httpBackend,
+                    backendMockResponse;
+
+                beforeEach(inject(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">_$httpBackend_</span>) </span>{
+                    $httpBackend = _$httpBackend_;
+
+                    backendMockResponse = [{
+                        name: <span class="hljs-string">'Juri'</span>
+                    }, {
+                        name: <span class="hljs-string">'Jack'</span>
+                    }, {
+                        name: <span class="hljs-string">'Anne'</span>
+                    }];
+                }));
+
+                afterEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                    $httpBackend.verifyNoOutstandingExpectation();
+                    $httpBackend.verifyNoOutstandingRequest();
+                });</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h3 id="to-fetch-multiple-records">To fetch multiple records</h3>
+<p>Use the static function <code>.query()</code> to fetch a list of records from the backend. In a REST
+like API this usually maps to <code>&lt;baseurl&gt;/entityname/</code>.</p></div></div><div class="code"><div class="wrapper">                describe(<span class="hljs-string">'when you want to fetch multiple records'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+                    <span class="hljs-keyword">var</span> backendMockResponse;
+
+                    beforeEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                        backendMockResponse = [{
+                            name: <span class="hljs-string">'Juri'</span>
+                        }, {
+                            name: <span class="hljs-string">'Jack'</span>
+                        }, {
+                            name: <span class="hljs-string">'Anne'</span>
+                        }];
+                    });
+
+                    it(<span class="hljs-string">'you can use query() to fetch all of the records'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><code>PersonModel.query()</code> returns a promise which return a list of people where each
+entry is already wrapped as an instance of &quot;PersonModel&quot;.</p></div></div><div class="code"><div class="wrapper">                        PersonModel.query()
+                            .then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">peopleList</span>) </span>{
+                                expect(peopleList).toBeDefined();
+                                expect(peopleList.length).toEqual(<span class="hljs-number">3</span>);
+                                expect(peopleList[<span class="hljs-number">0</span>] <span class="hljs-keyword">instanceof</span> PersonModel).toBeTruthy();
+                            });
+
+                        $httpBackend.expectGET(<span class="hljs-string">'/api/people'</span>).respond(<span class="hljs-number">200</span>, backendMockResponse);
+                        $httpBackend.flush();
+                    });
+
+                    it(<span class="hljs-string">'you can also pass an object to query(..) which will be passed as query params'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>In order <strong>to send additional parameters to your backend</strong> (i.e. <code>/../people/?name=Juri...</code>),
+simply pass an object containing the desired params to the <code>query()</code> function.</p></div></div><div class="code"><div class="wrapper">                        PersonModel.query({
+                            name: <span class="hljs-string">'Juri'</span>,
+                            age: <span class="hljs-number">29</span>
+                        });
+
+                        $httpBackend.expectGET(<span class="hljs-string">'/api/people?name=Juri&amp;age=29'</span>).respond(<span class="hljs-number">200</span>, backendMockResponse);
+                        $httpBackend.flush();
+                    });
+
+                });</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h3 id="to-fetch-a-single-record">To fetch a single record</h3>
+<p>To fetch a single instance of some record from your backend, you&#39;d make a call to <code>&lt;baseurl&gt;/people/&lt;id&gt;</code>.</p></div></div><div class="code"><div class="wrapper">                describe(<span class="hljs-string">'when you want to fetch a single record from the backend'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+
+                    beforeEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                        $httpBackend
+                            .whenGET(<span class="hljs-string">'/api/people/123'</span>)
+                            .respond({
+                                id: <span class="hljs-number">123</span>,
+                                name: <span class="hljs-string">'Juri'</span>
+                            });
+                    });
+
+                    it(<span class="hljs-string">'you can use get(&lt;id&gt;) to fetch a single instance, usually identified by some id'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>You can do this by using the <code>.get(123)</code> function.</p></div></div><div class="code"><div class="wrapper">                        PersonModel.get(<span class="hljs-number">123</span>)
+                            .then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">theFetchedPerson</span>) </span>{
+                                expect(theFetchedPerson).toBeDefined();
+                                expect(theFetchedPerson.name).toEqual(<span class="hljs-string">'Juri'</span>);
+                            });
+
+                        $httpBackend.expectGET(<span class="hljs-string">'/api/people/123'</span>);
+                        $httpBackend.flush();
+                    });
+
+                    it(<span class="hljs-string">'you can also pass the id as a string'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+                        PersonModel.get(<span class="hljs-string">'123'</span>)
+                            .then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">theFetchedPerson</span>) </span>{
+                                expect(theFetchedPerson).toBeDefined();
+                                expect(theFetchedPerson.name).toEqual(<span class="hljs-string">'Juri'</span>);
+                            });
+
+                        $httpBackend.expectGET(<span class="hljs-string">'/api/people/123'</span>);
+                        $httpBackend.flush();
+                    });
+
+                    it(<span class="hljs-string">'you can also pass additional params to you get call to apply further filters'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>If you need, you can pass further filters to your <code>.get(..)</code> call as illustrated in the
+following piece of code.</p></div></div><div class="code"><div class="wrapper">                        PersonModel.get(<span class="hljs-number">123</span>, { age: <span class="hljs-number">29</span> });
+
+                        $httpBackend
+                            .whenGET(<span class="hljs-string">'/api/people/123?age=29'</span>)
+                            .respond({
+                                id: <span class="hljs-number">123</span>,
+                                name: <span class="hljs-string">'Juri'</span>,
+                                age: <span class="hljs-number">29</span>
+                            });
+
+                        $httpBackend.expectGET(<span class="hljs-string">'/api/people/123?age=29'</span>);
+                        $httpBackend.flush();
+                    });
+                });</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h3 id="persisting-data">Persisting data</h3>
+<p>The next step after knowing how to fetch data from the backend, is to learn
+how you can save any modifications back to the server.</p>
+<p>There are two build-in options:</p>
+<ul>
+<li><code>$save()</code></li>
+<li><code>$destroy()</code></li>
+</ul></div></div><div class="code"><div class="wrapper">                describe(<span class="hljs-string">'using $save()'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                    <span class="hljs-keyword">var</span> $httpBackend;
+
+                    beforeEach(inject(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">_$httpBackend_</span>) </span>{
+                        $httpBackend = _$httpBackend_;
+                    }));
+
+                    afterEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                        $httpBackend.verifyNoOutstandingExpectation();
+                        $httpBackend.verifyNoOutstandingRequest();
+                    });</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h4 id="create-and-save-a-new-object">Create and save a new object</h4></div></div></div><div class="segment"><div class="code"><div class="wrapper">                    it(<span class="hljs-string">'should execute a POST when we have a new model'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>After creating a new model instance (as already illustrated before),</p></div></div><div class="code"><div class="wrapper">                        <span class="hljs-keyword">var</span> newModel = <span class="hljs-keyword">new</span> PersonModel({
+                            name: <span class="hljs-string">'Juri'</span>
+                        });
+
+                        <span class="hljs-keyword">var</span> postData = <span class="hljs-built_in">JSON</span>.stringify(newModel);</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>use <code>$save()</code> on that instance to send the data to your backend API.</p></div></div><div class="code"><div class="wrapper">                        newModel.$save();</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>If the model is a new one, that is, it&#39;s primary key property (default: <code>id</code>) is not defined or equal to 0, calling <code>$save()</code> issues
+a <code>POST /api/people</code> request.</p></div></div><div class="code"><div class="wrapper">                        $httpBackend.expectPOST(<span class="hljs-string">'/api/people'</span>, postData).respond(<span class="hljs-number">200</span>, <span class="hljs-string">''</span>);
+                        $httpBackend.flush();
+                    });
+
+                    it(<span class="hljs-string">'should execute a PUT when we have an existing model'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Instead, if the model represents an existing instance you previously
+fetched from the server (again, <code>id</code> &gt; 0), then</p></div></div><div class="code"><div class="wrapper">                        <span class="hljs-keyword">var</span> newModel = <span class="hljs-keyword">new</span> PersonModel({
+                            id: <span class="hljs-number">123</span>,
+                            name: <span class="hljs-string">'Juri'</span>
+                        });
+                        <span class="hljs-keyword">var</span> postData = <span class="hljs-built_in">JSON</span>.stringify(newModel);
+
+                        newModel.$save();</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>a <code>PUT /api/people/&lt;id&gt;</code> will be executed.</p></div></div><div class="code"><div class="wrapper">                        $httpBackend.expectPUT(<span class="hljs-string">'/api/people/123'</span>, postData).respond(<span class="hljs-number">200</span>, <span class="hljs-string">''</span>);
+                        $httpBackend.flush();
+                    });
+
+                    it(<span class="hljs-string">'should update the entry with the new results from the server'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                        <span class="hljs-keyword">var</span> children = {
+                            count: <span class="hljs-number">1</span>
+                        };
+
+                        <span class="hljs-keyword">var</span> newModel = <span class="hljs-keyword">new</span> PersonModel({
+                            name: <span class="hljs-string">'Juri'</span>,
+                            kids: children
+                        });
+
+                        $httpBackend.expectPOST(<span class="hljs-string">'/api/people'</span>, <span class="hljs-built_in">JSON</span>.stringify(newModel)).respond(<span class="hljs-number">200</span>, <span class="hljs-built_in">JSON</span>.stringify({
+                            id: <span class="hljs-number">12</span>,
+                            name: <span class="hljs-string">'Juri Strumpflohner'</span>,
+                            kids: { count: <span class="hljs-number">99</span> }
+                        }));
+
+                        newModel.$save();
+                        $httpBackend.flush();</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The cool thing is that the model will automatically be updated
+with the data sent back from the server.</p></div></div><div class="code"><div class="wrapper">                        expect(newModel.id).toEqual(<span class="hljs-number">12</span>);
+                        expect(newModel.name).toEqual(<span class="hljs-string">'Juri Strumpflohner'</span>);</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>It even takes care of your object references s.t. your two-way bindings
+won&#39;t be broken :).</p></div></div><div class="code"><div class="wrapper">                        expect(newModel.kids).toBe(children);
+                        expect(children.count).toEqual(<span class="hljs-number">99</span>);
+                    });</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>That works even with arrays. If you sent back an array within a model-factory instance
+that contains 2 elements and the server sends back another one, the same array on the
+client side will synch with the one returned by the server.</p></div></div><div class="code"><div class="wrapper">                    it(<span class="hljs-string">'should overwrite array properties with the returned server version on update'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                        <span class="hljs-keyword">var</span> people = [];
+                        people.push(<span class="hljs-keyword">new</span> PersonModel({
+                                name: <span class="hljs-string">'Ryan'</span>
+                            }
+                        ));
+                        people.push(<span class="hljs-keyword">new</span> PersonModel({
+                                name: <span class="hljs-string">'Austin'</span>
+                            }
+                        ));
+                        <span class="hljs-keyword">var</span> newModel = <span class="hljs-keyword">new</span> PersonModel({
+                            friends: people
+                        });
+
+                        <span class="hljs-keyword">var</span> sender = people.slice().reverse();
+                        sender.push(<span class="hljs-keyword">new</span> PersonModel( { name: <span class="hljs-string">'Juri'</span>}));
+
+                        $httpBackend.expectPOST(<span class="hljs-string">'/api/people'</span>, <span class="hljs-built_in">JSON</span>.stringify(newModel)).respond(<span class="hljs-number">200</span>, <span class="hljs-built_in">JSON</span>.stringify({
+                            friends: sender
+                        }));
+
+                        <span class="hljs-comment">//act</span>
+                        newModel.$save();
+                        $httpBackend.flush();
+
+                        expect(newModel.friends.length).toBe(<span class="hljs-number">3</span>);
+                        expect(newModel.friends[<span class="hljs-number">1</span>].name).toBe(<span class="hljs-string">'Ryan'</span>);
+                    });
+
+                });</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h4 id="delete-an-object">Delete an object</h4>
+<p>If you want to delete an object instead, use the <code>$destroy()</code> function
+on the object instance you&#39;d like to remove.</p></div></div><div class="code"><div class="wrapper">                describe(<span class="hljs-string">'using $destroy()'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                    <span class="hljs-keyword">var</span> $httpBackend;
+
+                    beforeEach(inject(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">_$httpBackend_</span>) </span>{
+                        $httpBackend = _$httpBackend_;
+                    }));
+
+                    afterEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                        $httpBackend.verifyNoOutstandingExpectation();
+                        $httpBackend.verifyNoOutstandingRequest();
+                    });
+
+                    it(<span class="hljs-string">'should properly execute a DELETE request'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                        <span class="hljs-keyword">var</span> theModel = <span class="hljs-keyword">new</span> PersonModel({
+                            id: <span class="hljs-number">1234</span>
+                        });
+
+                        theModel.$destroy();</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>That executes a <code>DELETE /api/people/&lt;id&gt;</code> request.</p></div></div><div class="code"><div class="wrapper">                        $httpBackend.expectDELETE(<span class="hljs-string">'/api/people/1234'</span>).respond(<span class="hljs-number">200</span>, <span class="hljs-string">''</span>);
+                        $httpBackend.flush();
+                    });
+
+                    it(<span class="hljs-string">'should remove the deleted object from a model list when the deletion succeeds'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>When you have a list of models, always using the <code>Model.List</code> constructor,...</p></div></div><div class="code"><div class="wrapper">                        <span class="hljs-keyword">var</span> modelList = <span class="hljs-keyword">new</span> PersonModel.List([{
+                            id: <span class="hljs-number">1</span>,
+                            name: <span class="hljs-string">'Juri'</span>
+                        }, {
+                            id: <span class="hljs-number">2</span>,
+                            name: <span class="hljs-string">'Jack'</span>
+                        }, {
+                            id: <span class="hljs-number">3</span>,
+                            name: <span class="hljs-string">'Austin'</span>
+                        }]);</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>...and you delete a model,</p></div></div><div class="code"><div class="wrapper">                        <span class="hljs-keyword">var</span> modelToDelete = modelList[<span class="hljs-number">1</span>];
+                        modelToDelete.$destroy();
+
+                        $httpBackend.expectDELETE(<span class="hljs-string">'/api/people/2'</span>).respond(<span class="hljs-number">200</span>, <span class="hljs-string">''</span>);
+                        $httpBackend.flush();</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>it will automatically be removed from that list if the deletion
+succeeds, that is, the server returns a <code>HTTP 200 ok</code> response.</p></div></div><div class="code"><div class="wrapper">                        expect(modelList.length).toEqual(<span class="hljs-number">2</span>);
+                        expect(modelList[<span class="hljs-number">0</span>].id).toEqual(<span class="hljs-number">1</span>);
+                        expect(modelList[<span class="hljs-number">1</span>].id).toEqual(<span class="hljs-number">3</span>);
+                    });</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>That works totally independent from the order of the objects in the list, obviously.</p></div></div><div class="code"><div class="wrapper">                    it(<span class="hljs-string">'should remove the deleted object even if the list order changed'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                        <span class="hljs-keyword">var</span> modelList = <span class="hljs-keyword">new</span> PersonModel.List([{
+                            id: <span class="hljs-number">1</span>,
+                            name: <span class="hljs-string">'Juri'</span>
+                        }, {
+                            id: <span class="hljs-number">2</span>,
+                            name: <span class="hljs-string">'Otto'</span>
+                        }, {
+                            id: <span class="hljs-number">3</span>,
+                            name: <span class="hljs-string">'Austin'</span>
+                        }]);
+
+                        <span class="hljs-keyword">var</span> modelToDelete = modelList[<span class="hljs-number">1</span>];
+
+                        modelList.sort(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">a, b</span>)</span>{
+                            <span class="hljs-keyword">return</span> a.name.localeCompare(b.name);
+                        });
+
+                        modelToDelete.$destroy();
+
+                        $httpBackend.expectDELETE(<span class="hljs-string">'/api/people/2'</span>).respond(<span class="hljs-number">200</span>, <span class="hljs-string">''</span>);
+                        $httpBackend.flush();
+
+                        expect(modelList.length).toEqual(<span class="hljs-number">2</span>);
+                    });</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>On the other side, the model won&#39;t be removed from the list, if the deletion fails
+(the server returns a reponse code &lt;&gt; 200).</p></div></div><div class="code"><div class="wrapper">                    it(<span class="hljs-string">'should NOT remove the deleted object from a model list when the deletion fails'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                        <span class="hljs-keyword">var</span> modelList = <span class="hljs-keyword">new</span> PersonModel.List([{
+                            id: <span class="hljs-number">1</span>,
+                            name: <span class="hljs-string">'Juri'</span>
+                        }, {
+                            id: <span class="hljs-number">2</span>,
+                            name: <span class="hljs-string">'Jack'</span>
+                        }, {
+                            id: <span class="hljs-number">3</span>,
+                            name: <span class="hljs-string">'Austin'</span>
+                        }]);
+
+
+                        modelList[<span class="hljs-number">1</span>].$destroy();
+
+                        $httpBackend.expectDELETE(<span class="hljs-string">'/api/people/2'</span>).respond(<span class="hljs-number">500</span>, <span class="hljs-string">''</span>);
+                        $httpBackend.flush();
+
+                        expect(modelList.length).toEqual(<span class="hljs-number">3</span>);
+                    });
+
+                });
+
+            });
+
+        });</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="defaults">Defaults</h2>
+<p>You can define defaults which often come in handy.</p></div></div><div class="code"><div class="wrapper">        describe(<span class="hljs-string">'Model defaults'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+            <span class="hljs-keyword">var</span> PersonModelWithDefaults;
+
+            beforeEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                <span class="hljs-built_in">module</span>.factory(<span class="hljs-string">'PersonModelWithDefaults'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">$modelFactory</span>) </span>{
+                    <span class="hljs-keyword">return</span> $modelFactory(<span class="hljs-string">'/api/people'</span>, {</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Simply declare a <code>defaults</code> object within the model
+configuration and set the desired default properties
+accordingly.</p></div></div><div class="code"><div class="wrapper">                        defaults: {
+                            age: <span class="hljs-number">18</span>
+                        }
+                    });
+                });
+            });
+
+            beforeEach(inject(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">_PersonModelWithDefaults_</span>) </span>{
+                PersonModelWithDefaults = _PersonModelWithDefaults_;
+            }));
+
+            it(<span class="hljs-string">'when you instantiate the model, the default properties are already set'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Thus, when you create a new instance,</p></div></div><div class="code"><div class="wrapper">                <span class="hljs-keyword">var</span> personWithDefaults = <span class="hljs-keyword">new</span> PersonModelWithDefaults();</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>the default property is set to the value you specified before.</p></div></div><div class="code"><div class="wrapper">                expect(personWithDefaults.age).toEqual(<span class="hljs-number">18</span>);
+            });</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Obviously it doesn&#39;t only work with empty objects, but also when you already pass
+some data to the constructor of the object.</p></div></div><div class="code"><div class="wrapper">            it(<span class="hljs-string">'should use the defaults when creating an object with some data'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                <span class="hljs-keyword">var</span> personWithDefaults = <span class="hljs-keyword">new</span> PersonModelWithDefaults({
+                    name: <span class="hljs-string">'Juri'</span>
+                });
+
+                expect(personWithDefaults.age).toEqual(<span class="hljs-number">18</span>);
+            });
+
+            it(<span class="hljs-string">'should not overwrite with the default when passing a value for it'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Moreover, when you explicity assign some value to the property specified in the
+defaults, in the constructor, that value takes precedence over the previously
+specified default value.</p></div></div><div class="code"><div class="wrapper">                <span class="hljs-keyword">var</span> personWithDefaults = <span class="hljs-keyword">new</span> PersonModelWithDefaults({
+                    name: <span class="hljs-string">'Juri'</span>,
+                    age: <span class="hljs-number">29</span>
+                });
+
+                expect(personWithDefaults.age).toEqual(<span class="hljs-number">29</span>);
+            });
+
+            it(<span class="hljs-string">'should set the defaults when creating a list'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                <span class="hljs-keyword">var</span> personWithDefaultsList = <span class="hljs-keyword">new</span> PersonModelWithDefaults.List([{
+                    name: <span class="hljs-string">'Juri'</span>
+                }]);
+
+                expect(personWithDefaultsList[<span class="hljs-number">0</span>].age).toEqual(<span class="hljs-number">18</span>);
+            });
+
+        });</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="custom-actions">Custom actions</h2>
+<p>The predefined REST actions like <code>query, get, $save, $destroy</code> might not be enough in many cases. Model-factory
+is flexible enought, though, to define custom endpoints at will.</p></div></div><div class="code"><div class="wrapper">        describe(<span class="hljs-string">'custom actions'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+            <span class="hljs-keyword">var</span> PersonModel, $httpBackend;
+
+            beforeEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                <span class="hljs-built_in">module</span>.factory(<span class="hljs-string">'PersonModel'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">$modelFactory</span>) </span>{
+                    <span class="hljs-keyword">return</span> $modelFactory(<span class="hljs-string">'/api/people'</span>, {</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Define an <code>actions</code> object</p></div></div><div class="code"><div class="wrapper">                        actions: {</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>and then your custom endpoint.</p></div></div><div class="code"><div class="wrapper">                            queryChildren: {</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The <code>url</code> is appended to the base URL of the model.</p></div></div><div class="code"><div class="wrapper">                                url: <span class="hljs-string">'children'</span>,</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The <code>method</code> allows to override the HTTP method to
+be used. <code>GET</code> is the default.</p></div></div><div class="code"><div class="wrapper">                                method: <span class="hljs-string">'GET'</span>,</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>By setting the <code>isArray</code> you can control whether the
+expected result is an array or a single object.</p></div></div><div class="code"><div class="wrapper">                                isArray: <span class="hljs-literal">true</span>,</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The <code>wrap</code> param sets whether the response should be wrapped
+as an instance (or instance list) of models. Default is <code>true</code>.</p></div></div><div class="code"><div class="wrapper">                                wrap: <span class="hljs-literal">true</span>
+                            },</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Functions prefixed by <code>$</code> instance-level functions.</p></div></div><div class="code"><div class="wrapper">                            <span class="hljs-string">'$serverCopy'</span>: {
+                                method: <span class="hljs-string">'POST'</span>,
+                                url: <span class="hljs-string">'copy'</span>
+                            }
+
+                        }
+                    });
+                });
+            });
+
+            beforeEach(inject(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">_PersonModel_, _$httpBackend_</span>) </span>{
+                PersonModel = _PersonModel_;
+                $httpBackend = _$httpBackend_;
+            }));
+
+            it(<span class="hljs-string">'should correctly call the defined url'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>You can then simply invoke the custom action by its name.</p></div></div><div class="code"><div class="wrapper">                PersonModel.queryChildren();
+                $httpBackend.expectGET(<span class="hljs-string">'/api/people/children'</span>).respond(<span class="hljs-number">200</span>, []);
+                $httpBackend.flush();
+            });
+
+            it(<span class="hljs-string">'take params as JavaScript objects and append them to the url'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>As with the default REST functions you can pass parameters as JavaScript objects.</p></div></div><div class="code"><div class="wrapper">                PersonModel.queryChildren({
+                    type: <span class="hljs-string">'minor'</span>
+                });</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Parameters are appended as query params.</p></div></div><div class="code"><div class="wrapper">                $httpBackend.expectGET(<span class="hljs-string">'/api/people/children?type=minor'</span>).respond(<span class="hljs-number">200</span>, <span class="hljs-string">''</span>);
+                $httpBackend.flush();
+            });
+
+            it(<span class="hljs-string">'should wrap the returned objects'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                PersonModel.queryChildren()
+                    .then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">result</span>) </span>{
+                        expect(result.length).toBe(<span class="hljs-number">1</span>);
+                        expect(result[<span class="hljs-number">0</span>] <span class="hljs-keyword">instanceof</span> PersonModel).toBeTruthy(); <span class="hljs-comment">// check whether it's a model</span>
+                    });
+
+                $httpBackend.expectGET(<span class="hljs-string">'/api/people/children'</span>).respond(<span class="hljs-number">200</span>, [{
+                    type: <span class="hljs-string">'minor'</span>,
+                    name: <span class="hljs-string">'Juri'</span>
+                }]);
+                $httpBackend.flush();
+            });
+
+            it(<span class="hljs-string">'should correctly invoke the custom model instance function'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                <span class="hljs-keyword">var</span> model = <span class="hljs-keyword">new</span> PersonModel({
+                    name: <span class="hljs-string">'Juri'</span>
+                });
+
+                $httpBackend.expectPOST(<span class="hljs-string">'/api/people/copy'</span>).respond(<span class="hljs-number">200</span>, <span class="hljs-string">''</span>);</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Instance-level actions have to be used on an instance of the model.</p></div></div><div class="code"><div class="wrapper">                model.$serverCopy();
+                $httpBackend.flush();
+            });
+
+        });</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h3 id="url-templates">URL templates</h3>
+<p>Internally, model-factory uses the uri-templates library to resolve the URLs.</p></div></div><div class="code"><div class="wrapper">        describe(<span class="hljs-string">'backend URL resolution'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+            <span class="hljs-keyword">var</span> $httpBackend;
+
+            beforeEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                <span class="hljs-built_in">module</span>.factory(<span class="hljs-string">'PersonModel'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">$modelFactory</span>) </span>{
+                      <span class="hljs-keyword">return</span> $modelFactory(<span class="hljs-string">'/api/people'</span>, {
+                          actions: {</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>That means you can specify placeholders like <code>{id}</code> within
+your url and it will be replaced by the according JavaScript property
+passed to the method call.</p></div></div><div class="code"><div class="wrapper">                              getById: {
+                                  url: <span class="hljs-string">'child/{id}/some/subpath'</span>
+                              },</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>It not only works with the primary key but with any arbitrary property.</p></div></div><div class="code"><div class="wrapper">                              getByName: {
+                                  url: <span class="hljs-string">'child/{name}/some/subpath'</span>
+                              },</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>It works on the instance-level functions in the exact same way, just that
+the properties are resolved from the model properties itself.</p></div></div><div class="code"><div class="wrapper">                              <span class="hljs-string">'$serverCopy'</span>: {
+                                  method: <span class="hljs-string">'POST'</span>,
+                                  url: <span class="hljs-string">'copy/{name}'</span>
+                              },
+
+                              <span class="hljs-string">'$customUpdate'</span>: {
+                                  method: <span class="hljs-string">'PUT'</span>,
+                                  url: <span class="hljs-string">'update/{name}'</span>
+                              }
+
+                          }
+                      });
+                  });
+            });
+
+            beforeEach(inject(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">_PersonModel_, _$httpBackend_</span>) </span>{
+                PersonModel = _PersonModel_;
+                $httpBackend = _$httpBackend_;
+            }));
+
+            it(<span class="hljs-string">'should work with GET and id variable'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+                PersonModel.getById({ id: <span class="hljs-number">123</span> });
+
+                $httpBackend.expectGET(<span class="hljs-string">'/api/people/child/123/some/subpath'</span>).respond(<span class="hljs-number">200</span>, []);
+                $httpBackend.flush();
+            });
+
+            it(<span class="hljs-string">'should work with GET and name variable'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+                PersonModel.getByName({ name: <span class="hljs-string">'juri'</span> });
+
+                $httpBackend.expectGET(<span class="hljs-string">'/api/people/child/juri/some/subpath'</span>).respond(<span class="hljs-number">200</span>, []);
+                $httpBackend.flush();
+            });
+
+            it(<span class="hljs-string">'should work with POST and name variable'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+                <span class="hljs-keyword">var</span> person = <span class="hljs-keyword">new</span> PersonModel({
+                  name: <span class="hljs-string">'juri'</span>
+                });
+
+                person.$serverCopy();
+
+                $httpBackend.expectPOST(<span class="hljs-string">'/api/people/copy/juri'</span>).respond(<span class="hljs-number">200</span>, []);
+                $httpBackend.flush();
+            });
+
+            it(<span class="hljs-string">'should work with PUT and name variable'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+                <span class="hljs-keyword">var</span> person = <span class="hljs-keyword">new</span> PersonModel({
+                  name: <span class="hljs-string">'juri'</span>
+                });
+
+                person.$customUpdate();
+
+                $httpBackend.expectPUT(<span class="hljs-string">'/api/people/update/juri'</span>).respond(<span class="hljs-number">200</span>, []);
+                $httpBackend.flush();
+            });
+
+        });
+
+    });
+
+    describe(<span class="hljs-string">'with the default configuration'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+
+        beforeEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>First of all, we have to <strong>reference the &quot;modelFactory&quot; module</strong>
+to make use of the services it comes with.</p></div></div><div class="code"><div class="wrapper">            angular.module(<span class="hljs-string">'test-module'</span>, [<span class="hljs-string">'modelFactory'</span>])</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Define a new factory for an endpoint to read
+people.</p></div></div><div class="code"><div class="wrapper">                .factory(<span class="hljs-string">'PersonModel'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">$modelFactory</span>) </span>{
+                    <span class="hljs-keyword">return</span> $modelFactory(<span class="hljs-string">'/api/people'</span>, {
+                        actions: {
+                            <span class="hljs-string">'$customDelete'</span>: {
+                                method: <span class="hljs-string">'DELETE'</span>,
+                                url: <span class="hljs-string">'customDelete/{id}'</span>
+                            }
+                        }
+                    });
+                });
+        });
+
+        beforeEach(angular.mock.module(<span class="hljs-string">'test-module'</span>));
+
+        beforeEach(inject(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">_PersonModel_</span>) </span>{
+            PersonModel = _PersonModel_;
+        }));
+
+        describe(<span class="hljs-string">'when calling $rollback'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+
+            it(<span class="hljs-string">'should revert to the previous values of the object'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+                <span class="hljs-keyword">var</span> newModel = <span class="hljs-keyword">new</span> PersonModel({
+                    name: <span class="hljs-string">'Juri'</span>
+                });</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>act</p></div></div><div class="code"><div class="wrapper">                newModel.name = <span class="hljs-string">'Jack'</span>;
+                newModel.$rollback();
+
+                expect(newModel.name).toEqual(<span class="hljs-string">'Juri'</span>);
+            });
+
+            it(<span class="hljs-string">'should NOT revert to the old values after an entity has been persisted with $save'</span>, inject(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">$httpBackend</span>) </span>{
+                <span class="hljs-keyword">var</span> newModel = <span class="hljs-keyword">new</span> PersonModel({
+                    name: <span class="hljs-string">'Juri'</span>
+                });
+
+                newModel.name = <span class="hljs-string">'Jack'</span>;</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>persist it</p></div></div><div class="code"><div class="wrapper">                newModel.$save();
+
+                $httpBackend
+                    .expectPOST(<span class="hljs-string">'/api/people'</span>)
+                    .respond(<span class="hljs-number">200</span>, <span class="hljs-built_in">JSON</span>.stringify({
+                        id: <span class="hljs-number">1</span>,
+                        name: <span class="hljs-string">'Jack'</span>
+                    }));
+                $httpBackend.flush();</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>act</p></div></div><div class="code"><div class="wrapper">                newModel.$rollback();</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>assert</p></div></div><div class="code"><div class="wrapper">                expect(newModel.name).toEqual(<span class="hljs-string">'Jack'</span>); <span class="hljs-comment">// there is nothing to revert 'cause the model is fresh from the server'</span>
+            }));
+
+        });
+
+
+    });
+
+
+    describe(<span class="hljs-string">'using the isArray property'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+        <span class="hljs-keyword">var</span> AddressModel, $httpBackend;
+
+        beforeEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+            angular.module(<span class="hljs-string">'test-module'</span>, [<span class="hljs-string">'modelFactory'</span>])
+                .factory(<span class="hljs-string">'AddressModel'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">$modelFactory</span>) </span>{
+                    <span class="hljs-keyword">return</span> $modelFactory(<span class="hljs-string">'/api/addresses'</span>, {
+                        actions: {
+                            <span class="hljs-string">'query'</span>: {
+                                isArray: <span class="hljs-literal">false</span>
+                            },
+
+                            <span class="hljs-string">'myCustomAction'</span>: {
+                                url: <span class="hljs-string">'customAction'</span>,
+                                isArray: <span class="hljs-literal">false</span>
+                            }
+                        }
+                    });
+                });
+        });
+
+        beforeEach(angular.mock.module(<span class="hljs-string">'test-module'</span>));
+
+        beforeEach(inject(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">_AddressModel_, _$httpBackend_</span>) </span>{
+            AddressModel = _AddressModel_;
+            $httpBackend = _$httpBackend_;
+        }));
+
+        afterEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+            $httpBackend.verifyNoOutstandingExpectation();
+            $httpBackend.verifyNoOutstandingRequest();
+        });
+
+        it(<span class="hljs-string">'when setting it to false should accept non-array responses'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+            AddressModel.query()
+                .then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">result</span>)</span>{
+                    expect(result.rows.length).toBe(<span class="hljs-number">1</span>);
+                    expect(result.numRecords).toBe(<span class="hljs-number">1</span>);
+                });
+
+            $httpBackend.expectGET(<span class="hljs-string">'/api/addresses'</span>).respond(<span class="hljs-number">200</span>, { rows: [{ id: <span class="hljs-number">1</span>, street: <span class="hljs-string">'test'</span>}], numRecords: <span class="hljs-number">1</span> });
+            $httpBackend.flush();
+        });
+
+        it(<span class="hljs-string">'when setting it to false on a custom action should accept non-array responses'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+            AddressModel.myCustomAction()
+                .then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">result</span>)</span>{
+                    expect(result.rows.length).toBe(<span class="hljs-number">1</span>);
+                    expect(result.numRecords).toBe(<span class="hljs-number">1</span>);
+                });
+
+            $httpBackend.expectGET(<span class="hljs-string">'/api/addresses/customAction'</span>).respond(<span class="hljs-number">200</span>, { rows: [{ id: <span class="hljs-number">1</span>, street: <span class="hljs-string">'test'</span>}], numRecords: <span class="hljs-number">1</span> });
+            $httpBackend.flush();
+        });
+
+    });
+
+    describe(<span class="hljs-string">'when backend respond with metadata'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+        <span class="hljs-keyword">var</span> StadiumModel, $httpBackend;
+
+        beforeEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+            angular.module(<span class="hljs-string">'test-module'</span>, [<span class="hljs-string">'modelFactory'</span>])
+                .factory(<span class="hljs-string">'StadiumModel'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">$modelFactory</span>) </span>{
+                    <span class="hljs-keyword">return</span> $modelFactory(<span class="hljs-string">'/api/stadiums'</span>, {
+                        actions: {
+                            <span class="hljs-string">'base'</span>: {
+                                afterRequest: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">response</span>) </span>{
+                                    <span class="hljs-keyword">var</span> transfrom = response.data;
+                                    <span class="hljs-keyword">delete</span> response.data;
+                                    transfrom.meta = response;
+                                    <span class="hljs-keyword">return</span> transfrom;
+                                }
+                            },
+                            <span class="hljs-string">'query'</span>: {
+                                afterRequest: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">response</span>) </span>{
+                                    <span class="hljs-keyword">var</span> transfrom = response.data;
+                                    transfrom.paginator = response.paginator;
+                                    <span class="hljs-keyword">return</span> transfrom;
+                                }
+                            },
+                        }
+                    });
+                });
+        });
+
+        beforeEach(angular.mock.module(<span class="hljs-string">'test-module'</span>));
+
+        beforeEach(inject(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">_StadiumModel_, _$httpBackend_</span>) </span>{
+            StadiumModel = _StadiumModel_;
+            $httpBackend = _$httpBackend_;
+        }));
+
+        afterEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+            $httpBackend.verifyNoOutstandingExpectation();
+            $httpBackend.verifyNoOutstandingRequest();
+        });
+
+        it(<span class="hljs-string">'when backend respond with pagination '</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+            StadiumModel.query()
+                .then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">result</span>) </span>{
+                    expect(result.length).toBe(<span class="hljs-number">3</span>);
+                    expect(result.paginator.limit).toBe(<span class="hljs-number">3</span>);
+                });
+
+            $httpBackend.expectGET(<span class="hljs-string">'/api/stadiums'</span>).respond(<span class="hljs-number">200</span>, {
+                <span class="hljs-string">'data'</span>: [{
+                    <span class="hljs-string">'title'</span>: <span class="hljs-string">'Accusantium rem magni accusantium placeat.'</span>
+                }, {
+                    <span class="hljs-string">'title'</span>: <span class="hljs-string">'Maxime ut eum pariatur magni quia iusto.'</span>
+                }, {
+                    <span class="hljs-string">'title'</span>: <span class="hljs-string">'Sapiente perferendis consectetur ut ipsa consectetur.'</span>
+                }],
+                <span class="hljs-string">'paginator'</span>: {
+                    <span class="hljs-string">'totalCount'</span>: <span class="hljs-number">30</span>,
+                    <span class="hljs-string">'totalPage'</span>: <span class="hljs-number">10</span>,
+                    <span class="hljs-string">'currentPage'</span>: <span class="hljs-number">1</span>,
+                    <span class="hljs-string">'limit'</span>: <span class="hljs-number">3</span>
+                }
+            });
+            $httpBackend.flush();
+        });
+        it(<span class="hljs-string">'when backend respond with metadata '</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+            StadiumModel.get(<span class="hljs-number">1</span>)
+                .then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">result</span>) </span>{</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>console.log(result.meta);</p></div></div><div class="code"><div class="wrapper">                    expect(result.meta.status.code).toBe(<span class="hljs-number">1000</span>);</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>expect(result.paginator.limit).toBe(3);</p></div></div><div class="code"><div class="wrapper">                });
+
+            $httpBackend.expectGET(<span class="hljs-string">'/api/stadiums/1'</span>).respond(<span class="hljs-number">200</span>, {
+                <span class="hljs-string">'data'</span>: {
+                    <span class="hljs-string">'title'</span>: <span class="hljs-string">'Accusantium rem magni accusantium placeat.'</span>
+                },
+                <span class="hljs-string">'status'</span>: {
+                    <span class="hljs-string">'code'</span>: <span class="hljs-number">1000</span>
+                }
+            });
+            $httpBackend.flush();
+        });
+
+    });
+
+    describe(<span class="hljs-string">'using the map property'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+        <span class="hljs-keyword">var</span> PersonModel, $httpBackend;
+
+         beforeEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+            angular.module(<span class="hljs-string">'test-module'</span>, [<span class="hljs-string">'modelFactory'</span>])
+                .factory(<span class="hljs-string">'PersonModel'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">$modelFactory</span>) </span>{
+                    <span class="hljs-keyword">return</span> $modelFactory(<span class="hljs-string">'/api/people'</span>,{
+                        map:{
+                            <span class="hljs-string">'id'</span> : <span class="hljs-string">'personId'</span>,
+                            <span class="hljs-string">'address'</span> :<span class="hljs-string">'street'</span>
+                        }
+                    });
+                });
+        });
+
+        beforeEach(angular.mock.module(<span class="hljs-string">'test-module'</span>));
+
+        beforeEach(inject(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">_PersonModel_,_$httpBackend_</span>) </span>{
+            PersonModel = _PersonModel_;
+            $httpBackend = _$httpBackend_;
+        }));
+
+        afterEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+            $httpBackend.verifyNoOutstandingExpectation();
+            $httpBackend.verifyNoOutstandingRequest();
+        });
+
+        it(<span class="hljs-string">'setting map, transpose `personId` to `id` and `street` to `address` on our instance'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+            PersonModel.query()
+                .then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">result</span>)</span>{
+                    expect(result[<span class="hljs-number">0</span>].id).toBe(<span class="hljs-number">1</span>);
+                    expect(result[<span class="hljs-number">0</span>].address).toBe(<span class="hljs-string">'test'</span>);
+                });
+
+            $httpBackend.expectGET(<span class="hljs-string">'/api/people'</span>).respond(<span class="hljs-number">200</span>, [{ personId: <span class="hljs-number">1</span>, street: <span class="hljs-string">'test'</span>}]);
+            $httpBackend.flush();
+        });
+
+    });
+
+});</div></div></div></div></body></html>
