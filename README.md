@@ -76,8 +76,17 @@ This is a very full featured model/cache/validation etc.  Its framework agnostic
 - [ng-backbone](https://github.com/adrianlee44/ng-backbone)
 Another backbone model clone.  This one actually requires backbone and lodash.
 
+## Install
 
-## Dependencies
+Install via bower
+
+```
+bower install angular-model-factory --save
+```
+
+Alternatively you can download/clone the repo and link the files in `dist/`. 
+
+### Dependencies
 
 - Angular >= 1.3
 - [deep-diff](https://github.com/flitbit/diff)
