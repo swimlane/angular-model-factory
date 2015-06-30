@@ -85,9 +85,9 @@
             </div>
             <div class="row">
                 <h2>Contributors</h2>
-                <ul>
+                <ul class="collection">
                 {% for contributor in site.github.contributors %}
-                  <li>
+                  <li class="collection-item">
                     <img src="{{ contributor.avatar_url }}" width="32" height="32" /> <a href="{{ contributor.html_url }}">{{ contributor.login }}</a>
                   </li>
                 {% endfor %}
@@ -95,10 +95,10 @@
             </div>
             <div class="row">
                 <h2>Releases</h2>
-                <ul>
+                <ul class="collection">
                 {% for release in site.github.releases %}
-                  <li>
-                  <a href="{{ release.url }}">{{ release.tag_name }}</a>
+                  <li class="collection-item">
+                    <a href="{{ release.url }}">{{ release.tag_name }}</a>
                   </li>
                 {% endfor %}
                 </ul>
