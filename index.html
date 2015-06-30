@@ -22,10 +22,10 @@
                         <a href="{{ site.github.issues_url }}"><i class="material-icons left">bug_report</i>&nbsp;Issues</a>
                     </li>
                     <li>
-                        <a href="{{ site.github.url}}#contributing"><i class="material-icons left">group</i>&nbsp;Contribute</a>
+                        <a href="{{ site.github.repository_url}}#contributing"><i class="material-icons left">group</i>&nbsp;Contribute</a>
                     </li>
                     <li>
-                        <a href="{{ site.github.url }}"><i class="material-icons left">code</i>&nbsp;Fork on GitHub</a>
+                        <a href="{{ site.github.repository_url }}"><i class="material-icons left">code</i>&nbsp;Fork on GitHub</a>
                     </li>
                     <li>
                         <a href="#install"><i class="material-icons left">cloud_download</i>&nbsp;Install</a>
@@ -34,13 +34,13 @@
 
                 <ul id="nav-mobile" class="side-nav light">
                     <li>
-                        <a href="https://github.com/Swimlane/angular-model-factory/issues"><i class="material-icons left">bug_report</i>&nbsp;Issues</a>
+                        <a href="{{ site.github.issues_url }}"><i class="material-icons left">bug_report</i>&nbsp;Issues</a>
                     </li>
                     <li>
-                        <a href="https://github.com/Swimlane/angular-model-factory#contributing"><i class="material-icons left">group</i>&nbsp;Contribute</a>
+                        <a href="{{ site.github.repository_url}}#contributing"><i class="material-icons left">group</i>&nbsp;Contribute</a>
                     </li>
                     <li>
-                        <a href="https://github.com/Swimlane/angular-model-factory"><i class="material-icons left">code</i>&nbsp;Fork on GitHub</a>
+                        <a href="{{ site.github.repository_url }}"><i class="material-icons left">code</i>&nbsp;Fork on GitHub</a>
                     </li>
                     <li>
                         <a href="#install"><i class="material-icons left">cloud_download</i>&nbsp;Install</a>
@@ -78,8 +78,8 @@
             <div class="row">
                 <div class="col s12 m6">
                     <p>Installing model-factory is as easy as getting it <strong>from bower</strong>.</p>
-                    <p>Alternatively you can clone the repository and manually include the files from the <code>dist</code> folder.</p>
-                    <a href="https://github.com/Swimlane/angular-model-factory" class="btn waves-effect waves-light grey lighten-5" style="color:black;">Open Repository</a>
+                    <p>Alternatively you can download a release manually.</p>
+                    <a href="{{ site.github.releases_url }}" class="btn waves-effect waves-light grey lighten-5" style="color:black;">Open Releases</a>
                 </div>
                 <div class="col s12 m6">
                     <div class="card deep-orange lighten-5">
@@ -91,55 +91,6 @@ $ bower install angular-model-factory --save
                     </div>
                 </div>
             </div>
-
-            <!--   Icon Section   -->
-            <!-- <div class="row">
-                <div class="col s12 m4">
-                    <div class="icon-block">
-                        <h2 class="center light-blue-text"> <i class="material-icons">flash_on</i>
-                        </h2>
-                        <h5 class="center">Speeds up development</h5>
-                        <p>
-                            We did most of the heavy lifting for you to provide a default stylings that incorporate our custom components. Additionally, we refined animations and transitions to provide a smoother experience for developers.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="col s12 m4">
-                    <div class="icon-block">
-                        <h2 class="center light-blue-text">
-                            <i class="material-icons">group</i>
-                        </h2>
-                        <h5 class="center">User Experience Focused</h5>
-
-                        <p>
-                            By utilizing elements and principles of Material Design, we were able to create a framework that incorporates components and animations that provide more feedback to users. Additionally, a single underlying responsive system across all platforms allow for a more unified user experience.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="col s12 m4">
-                    <div class="icon-block">
-                        <h2 class="center light-blue-text">
-                            <i class="material-icons">settings</i>
-                        </h2>
-                        <h5 class="">Features</h5>
-                        <ul>
-                            <li>URI Templates (RFC6570)</li>
-                            <li>Model instances</li>
-                            <li>Collections</li>
-                            <li>Single Datastore</li>
-                            <li>Caching / Cache invalidation</li>
-                            <li>Default value population</li>
-                            <li>Pending / Completed Status</li>
-                            <li>Relationships</li>
-                            <li>Object Deep Diff / Reversion</li>
-                            <li>Track active promises to prevent duplicate sends</li>
-                        </ul>
-                    </div>
-                </div>
-            </div> -->
-
         </div>
         <div class="divider"></div>
         <a name="useit"></a>
