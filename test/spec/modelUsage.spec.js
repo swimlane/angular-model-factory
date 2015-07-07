@@ -1,3 +1,4 @@
+/// <reference path="../../typings/jasmine/jasmine.d.ts"/>
 'use strict';
 
 /*
@@ -1101,19 +1102,41 @@ describe('A person model defined using modelFactory', function() {
     });
 
     describe('using the model instance features',function(){
-        var Contact, Phone;
+        var Contact, Phone, Address;
 
          beforeEach(function() {
             angular.module('test-module', ['modelFactory'])
-                .factory('Contact', function($modelFactory, Phone) {
-                    return $modelFactory('/api/people', {
+                .factory('Contact', function($modelFactory, Address) {
+                    var model = $modelFactory('contacts', {
+                        pk: 'Id',
+                        map: {
+                            Addresses: Address.List
+                        },
+                        defaults: {
+                            GivenName: '',
+                            FamilyName: '',
+                            Addresses: []
+                        },
+                        instance: {
+                            addAddress: function (options) {
+                                this.Addresses.push(new Address(options));
+                            },
+                            removeAddress: function (address) {
+                                this.Addresses.splice(this.Addresses.indexOf(address), 1);
+                            }
+                        }
+                    });
+            
+                    return model;
+                })
+                .factory('Address', function ($modelFactory, Phone) {
+                    var model = $modelFactory('Address', {
                         pk: 'Id',
                         map: {
                             Phones: Phone.List
                         },
                         defaults: {
-                            GivenName: '',
-                            FamilyName: '',
+                            Line1: '',
                             Phones: []
                         },
                         instance: {
@@ -1125,6 +1148,8 @@ describe('A person model defined using modelFactory', function() {
                             }
                         }
                     });
+            
+                    return model;
                 })
                 .factory('Phone', function($modelFactory){
                     return $modelFactory('', {
@@ -1142,22 +1167,108 @@ describe('A person model defined using modelFactory', function() {
 
         beforeEach(angular.mock.module('test-module'));
 
-        beforeEach(inject(function(_Contact_, _Phone_) {
+        beforeEach(inject(function(_Contact_, _Phone_, _Address_) {
             Contact = _Contact_;
             Phone = _Phone_;
+            Address = _Address_;
         }));
 
         it('test', function(){
+            var address = new Address();
+            expect(address).toBeDefined();
+
+            address.addPhone();
+
+            var anotherAddress = new Address();
+            anotherAddress.addPhone();
+
+            expect(address.Phones.length).toEqual(1);
+            expect(anotherAddress.Phones.length).toEqual(1);
+        });
+        
+        it('should work with addresses',function(){
             var contact = new Contact();
-            expect(contact).toBeDefined();
+            
+            contact.addAddress({ Line1: '123 Main St'});
+            
+            expect(contact.Addresses.length).toEqual(1);
+            expect(contact.Addresses[0].Line1).toEqual('123 Main St');
+            expect(contact.Addresses[0].Phones.length).toEqual(0);
+        });
 
-            contact.addPhone();
+    });
+    
+    describe('regression test',function(){
+        var Contact, Phone, Address;
 
-            var anotherContact = new Contact();
-            anotherContact.addPhone();
+         beforeEach(function() {
+            angular.module('test-module', ['modelFactory'])
+                .factory('Contact', function($modelFactory, Address) {
+                    var model = $modelFactory('contacts', {
+                        pk: 'Id',
+                        map: {
+                            Addresses: Address.List
+                        },
+                        defaults: {
+                            GivenName: '',
+                            FamilyName: '',
+                            Addresses: []
+                        },
+                        instance: {
+                            addAddress: function (options) {
+                                this.Addresses.push(new Address(options));
+                            },
+                            removeAddress: function (address) {
+                                this.Addresses.splice(this.Addresses.indexOf(address), 1);
+                            }
+                        }
+                    });
+            
+                    return model;
+                })
+                .factory('Address', function ($modelFactory, Phone) {
+                    var model = $modelFactory('Address', {
+                        pk: 'Id',
+                        map: {
+                            Phones: Phone
+                        },
+                        defaults: {
+                            Line1: ''
+                        }
+                    });
+            
+                    return model;
+                })
+                .factory('Phone', function($modelFactory){
+                    return $modelFactory('', {
+                        pk: 'Id',
+                        defaults: {
+                            Type: 'Mobile',
+                            PhoneCode: '1',
+                            Number: '',
+                            Extension: '',
+                            IsPrimary: false
+                        }
+                    });
+                });
+        });
 
-            expect(contact.Phones.length).toEqual(1);
-            expect(anotherContact.Phones.length).toEqual(1);
+        beforeEach(angular.mock.module('test-module'));
+
+        beforeEach(inject(function(_Contact_, _Phone_, _Address_) {
+            Contact = _Contact_;
+            Phone = _Phone_;
+            Address = _Address_;
+        }));
+                
+        it('should work with addresses',function(){
+            var contact = new Contact();
+            
+            contact.addAddress({ Line1: '123 Main St'});
+            
+            expect(contact.Addresses.length).toEqual(1);
+            expect(contact.Addresses[0].Line1).toEqual('123 Main St');
+            expect(contact.Addresses[0].Phones.length).toEqual(0);
         });
 
     });
