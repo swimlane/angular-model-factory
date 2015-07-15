@@ -1,0 +1,9 @@
+<div class="collection">
+{% for p in site.pages %}
+    {% if p.type == "howto" %}
+    <a href="{{ p.url }}" class="collection-item">
+        {{ p.title}}
+    </a>
+    {% endif %}
+{% endfor %}
+</div>
