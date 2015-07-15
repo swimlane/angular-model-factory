@@ -381,7 +381,7 @@ module.provider('$modelFactory', function(){
 
                 // Map all the objects to new names or relationships
                 forEach(options.map, function(v, k){
-                    if (typeof v === Model || typeof v === ModelCollection) {
+                    if (v.name === 'Model' || v.name === 'ModelCollection') {
                         value[k] = new v(value[k]);
                     } else if (typeof v === 'function') {
                         // if its a function, invoke it,

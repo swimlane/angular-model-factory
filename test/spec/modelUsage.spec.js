@@ -1126,7 +1126,7 @@ describe('A person model defined using modelFactory', function() {
                             }
                         }
                     });
-            
+
                     return model;
                 })
                 .factory('Address', function ($modelFactory, Phone) {
@@ -1148,7 +1148,7 @@ describe('A person model defined using modelFactory', function() {
                             }
                         }
                     });
-            
+
                     return model;
                 })
                 .factory('Phone', function($modelFactory){
@@ -1185,19 +1185,19 @@ describe('A person model defined using modelFactory', function() {
             expect(address.Phones.length).toEqual(1);
             expect(anotherAddress.Phones.length).toEqual(1);
         });
-        
+
         it('should work with addresses',function(){
             var contact = new Contact();
-            
+
             contact.addAddress({ Line1: '123 Main St'});
-            
+
             expect(contact.Addresses.length).toEqual(1);
             expect(contact.Addresses[0].Line1).toEqual('123 Main St');
             expect(contact.Addresses[0].Phones.length).toEqual(0);
         });
 
     });
-    
+
     describe('regression test',function(){
         var Contact, Phone, Address;
 
@@ -1223,24 +1223,24 @@ describe('A person model defined using modelFactory', function() {
                             }
                         }
                     });
-            
+
                     return model;
                 })
                 .factory('Address', function ($modelFactory, Phone) {
-                    var model = $modelFactory('Address', {
+                    var model = $modelFactory('address', {
                         pk: 'Id',
                         map: {
-                            Phones: Phone
+                            Phone: Phone
                         },
                         defaults: {
                             Line1: ''
                         }
                     });
-            
+
                     return model;
                 })
                 .factory('Phone', function($modelFactory){
-                    return $modelFactory('', {
+                    return $modelFactory('phone', {
                         pk: 'Id',
                         defaults: {
                             Type: 'Mobile',
@@ -1260,15 +1260,20 @@ describe('A person model defined using modelFactory', function() {
             Phone = _Phone_;
             Address = _Address_;
         }));
-                
+
         it('should work with addresses',function(){
             var contact = new Contact();
-            
-            contact.addAddress({ Line1: '123 Main St'});
-            
+
+            contact.addAddress({
+                Line1: '123 Main St',
+                Phone: {
+                    Number: '112233'
+                }
+            });
+
             expect(contact.Addresses.length).toEqual(1);
             expect(contact.Addresses[0].Line1).toEqual('123 Main St');
-            expect(contact.Addresses[0].Phones.length).toEqual(0);
+            expect(contact.Addresses[0].Phone.Number).toEqual('112233');
         });
 
     });
