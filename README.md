@@ -109,3 +109,7 @@ Alternatively you can download/clone the repo and link the files in `dist/`.
 - Run the tests
 - Create a feature branch
 - When issuing a pull request, please exclude changes from the "dist" folder to avoid merge conflicts.
+
+## Credits
+
+`angular-model-factory` is a [Swimlane](http://swimlane.com) open-source project; we believe in giving back to the open-source community by sharing some of the projects we build for our application. Swimlane is an automated cyber security operations and incident response platform that enables cyber security teams to leverage threat intelligence, speed up incident response and automate security operations.
