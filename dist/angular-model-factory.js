@@ -1,6 +1,6 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v0.4.1 - 2015-06-24
+ * @version v0.4.1 - 2015-07-16
  * @link https://github.com/swimlane/model-factory
  * @author Austin McDaniel <amcdaniel2@gmail.com>, Juri Strumpflohner <juri.strumpflohner@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -367,7 +367,7 @@ module.provider('$modelFactory', function(){
              */
             function Model(value) {
                 var instance = this,
-                    commits = [];;
+                    commits = [];
 
                 // if the value is undefined, create a empty obj
                 value = value || {};
@@ -380,9 +380,9 @@ module.provider('$modelFactory', function(){
                             // pass the value so you can combine things
                             // this could be tricky if you have defaults that rely on other defaults ...
                             // like: { name: function(val) { return val.firstName + val.lastName }) }
-                            value[k] = v(value);
+                            value[k] = copy(v(value));
                         } else {
-                            value[k] = v;
+                            value[k] = copy(v);
                         }
                     }
                 });

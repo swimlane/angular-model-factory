@@ -1,13 +1,13 @@
 {
   "name": "angular-model-factory",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "authors": [
     "Austin McDaniel <amcdaniel2@gmail.com>",
     "Juri Strumpflohner <juri.strumpflohner@gmail.com>"
   ],
   "description": "modelFactory makes working with RESTful APIs in AngularJS easy",
   "license": "MIT",
-  "homepage": "https://github.com/swimlane/model-factory",
+  "homepage": "http://swimlane.github.io/angular-model-factory/",
   "repository": {
     "type": "git",
     "url": "git://github.com/swimlane/model-factory.git"
