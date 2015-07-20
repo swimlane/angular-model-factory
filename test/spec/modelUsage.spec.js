@@ -1173,7 +1173,7 @@ describe('A person model defined using modelFactory', function() {
             Address = _Address_;
         }));
 
-        it('test', function(){
+        it('should work with addresses',function(){
             var address = new Address();
             expect(address).toBeDefined();
 
@@ -1186,7 +1186,7 @@ describe('A person model defined using modelFactory', function() {
             expect(anotherAddress.Phones.length).toEqual(1);
         });
 
-        it('should work with addresses',function(){
+        it('multiple nesting of Models and Model collections through map', function(){
             var contact = new Contact();
 
             contact.addAddress({ Line1: '123 Main St'});

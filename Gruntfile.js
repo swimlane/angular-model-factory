@@ -73,7 +73,7 @@ module.exports = function(grunt) {
             reporters: ['mocha']
           },
           ci: {
-            configFile: 'test/karma.conf.js',
+            configFile: 'test/karma.conf-ci.js',
             singleRun: true,
             autoWatch: false,
             browsers: ['PhantomJS'],
