@@ -1,6 +1,6 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v0.4.3 - 2015-07-20
+ * @version v0.4.4 - 2015-07-22
  * @link http://swimlane.github.io/angular-model-factory/
  * @author Austin McDaniel <amcdaniel2@gmail.com>, Juri Strumpflohner <juri.strumpflohner@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -794,8 +794,8 @@ module.provider('$modelFactory', function(){
 
                 // Map all the objects to new names or relationships
                 forEach(options.map, function(v, k){
-                    if (v.name === 'Model' || v.name === 'ModelCollection') {
-                        value[k] = new v(value[k]);
+                    if (v.name === Model.name || v.name === ModelCollection.name) {
+                        value[k] = new v(value[k]); // jshint ignore:line
                     } else if (typeof v === 'function') {
                         // if its a function, invoke it,
                         // this would be helpful for seralizers
