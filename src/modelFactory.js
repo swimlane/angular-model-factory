@@ -346,6 +346,14 @@ module.provider('$modelFactory', function(){
                 return inst;
             };
 
+            // ES5, IE compatible version to retrieve the name of a function. ES6
+            // would permit to do something like functionRef.name
+            var functionName = function(fun){
+                var ret = fun.toString();
+                ret = ret.substr('function '.length);
+                ret = ret.substr(0, ret.indexOf('('));
+                return ret;
+            };
 
             //
             // Model Instance
@@ -381,7 +389,7 @@ module.provider('$modelFactory', function(){
 
                 // Map all the objects to new names or relationships
                 forEach(options.map, function(v, k){
-                    if (v.name === Model.name || v.name === ModelCollection.name) {
+                    if (functionName(v) === functionName(Model) || functionName(v) === functionName(ModelCollection)) {
                         value[k] = new v(value[k]); // jshint ignore:line
                     } else if (typeof v === 'function') {
                         // if its a function, invoke it,
