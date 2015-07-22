@@ -69,7 +69,7 @@ module.exports = function(grunt) {
             configFile: 'test/karma.conf.js',
             singleRun: false,
             autoWatch: true,
-            browsers: ['Chrome', 'IE'],
+            browsers: ['Chrome'],
             reporters: ['mocha']
           },
           ie: {
