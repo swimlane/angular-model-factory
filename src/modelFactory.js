@@ -381,8 +381,8 @@ module.provider('$modelFactory', function(){
 
                 // Map all the objects to new names or relationships
                 forEach(options.map, function(v, k){
-                    if (v.name === 'Model' || v.name === 'ModelCollection') {
-                        value[k] = new v(value[k]);
+                    if (v.name === Model.name || v.name === ModelCollection.name) {
+                        value[k] = new v(value[k]); // jshint ignore:line
                     } else if (typeof v === 'function') {
                         // if its a function, invoke it,
                         // this would be helpful for seralizers
