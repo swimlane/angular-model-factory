@@ -50,3 +50,8 @@ nav.top-nav a.page-title {
 .docs-body ul {
   padding-left: 30px;
 }
+
+.tocify {
+  width: inherit;
+  position: inherit;
+}
