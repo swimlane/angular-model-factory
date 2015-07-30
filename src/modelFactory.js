@@ -610,16 +610,14 @@ module.provider('$modelFactory', function(){
 
                         // if we have a extra argument on this case we should assume its a
                         //
-                        if(extras){
-                            data.param = extras;
-                            // uri += '{?param*}';
+                        if (extras && angular.isObject(extras)){
+                            clone.params = angular.merge({}, clone.params, extras);
                         }
                     } else if(clone.method === 'GET' && angular.isObject(data)){
                         // if its a GET request and its not the above, we can assume
                         // you want to do a query param like:
                         // ZooModel.query({ type: 'panda' }) and do /api/zoo?type=panda
-                        data = { param: data };
-                        // uri += '{?param*}';
+                        clone.params = angular.merge({}, clone.params, data);
                     }
                 } else {
                     uri = clone.url;
