@@ -31,6 +31,57 @@ Alternatively you can get it on [Bower](http://bower.io/search/?q=angular-model-
 $ bower install angular-model-factory --save
 ```
 
+# Quickstart example
+
+Here's the quickstart example showing you some of the features
+
+```javascript
+angular.module('app', ['modelFactory'])
+    // defining a new Person model
+    .factory('Person', function($modelFactory){
+        return $modelFactory('/api/people');
+    })
+    .controller('PersonController', function(Person){
+        var vm = this;
+        vm.peopleList = [];
+
+        // events
+        vm.savePerson = savePerson;
+        vm.deletePerson = deletePerson;
+
+        activate();
+
+        ////////////////////////////
+
+        function activate(){
+            Person.query().then(function(people){
+                vm.peopleList = people;
+            });
+        }
+
+        function savePerson(person){
+            // person is already an instance of a model factory
+            // model
+            person.$save().then(
+                function(){
+                    console.log('Person successfully saved!');
+                })
+                .catch(function(){
+                    console.error('Oops, there was an error saving the person');
+                });
+        }
+
+        function deletePerson(person){
+            person.$destroy();
+        }
+    });
+
+```
+
+Here's a live example on Plunkr:
+
+<iframe src="http://embed.plnkr.co/fkbFuGynShAkw3BTrwAo/preview" width="100%" height="300px"> </iframe>
+
 # Using model-factory in your Angular code
 
 ## Reference the module
@@ -107,12 +158,6 @@ Person.get(123, { age: 30 }).then(function(person){
     // do something interesting with person
 });
 ```
-
-### Example
-
-Here's a Plunker example of querying the backend with model-factory:
-
-<iframe src="http://embed.plnkr.co/fkbFuGynShAkw3BTrwAo/preview" width="100%" height="300px"> </iframe>
 
 ## Persisting data
 
