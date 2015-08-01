@@ -169,7 +169,7 @@ describe('A person model defined using modelFactory', function() {
                     age: 29
                 });
 
-                $httpBackend.expectGET('/api/people?name=Juri&age=29').respond(200, backendListResponse);
+                $httpBackend.expectGET('/api/people?age=29&name=Juri').respond(200, backendListResponse);
                 $httpBackend.flush();
             });
 
@@ -218,20 +218,14 @@ describe('A person model defined using modelFactory', function() {
             });
 
             it('should allow to add additional query params', function(){
-                PersonModel.get(123, { age: 29 });
+                PersonModel.get('123', { age: 29 });
 
-                $httpBackend
-                    .whenGET('/api/people/123?age=29')
-                    .respond({
-                        id: 123,
-                        name: 'Juri',
-                        age: 29
-                    });
-
-                $httpBackend.expectGET('/api/people/123?age=29');
+                $httpBackend.expectGET('/api/people/123?age=29').respond({
+                    id: 1,
+                    age: 29
+                });
                 $httpBackend.flush();
             });
-
 
             xit('should return the requested resource by its id when passing it as object', function() {
                 PersonModel.get({

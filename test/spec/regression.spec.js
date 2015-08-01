@@ -61,17 +61,4 @@ describe('A person model defined using modelFactory', function() {
         $httpBackend.flush();
     });
 
-    fit('should properly execute the HTTP request', inject(function($http){
-        $http({
-            url: '/test',
-            data: {
-                p1: 'Juri'
-            }
-        });
-
-        $httpBackend.expectGET('/test?p1=Juri').respond(200);
-        $httpBackend.flush();
-    }));
-
-
 });
