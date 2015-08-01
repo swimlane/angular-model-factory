@@ -1,38 +1,33 @@
 ---
 layout: default
 ---
-
 <div class="section no-pad-bot purple darken-2" id="index-banner">
     <div class="container">
-        <h1 class="header center white-text">
-            {{ page.title }}
-        </h1>
+        <h1 class="header center white-text">{{ page.title }}</h1>
         <br />
     </div>
 </div>
-<!--
-<div class="row">
-    <nav class="top-nav">
-        <div class="nav-wrapper"><a class="page-title">{{ page.title }}</a></div>
-    </nav>
-</div> -->
 
-<div class="row">
-    <div class="col s4">
+<div class="container">
+    <div class="row">
+        <!-- <div class="col s4">
         <div id="toc"></div>
     </div>
-    <div class="col s8">
+    -->
+    <div class="col s12">
         <div class="row">
             <div class="col s12 m12">
                 <div class="card-panel lime lighten-5">
                     <span class="black-text">
-                        We're working on a better documentation which should be online very soon. For now, you're best served by taking a look at our vast test suite, which demonstrates various use cases. <a href="https://github.com/Swimlane/angular-model-factory/blob/master/test/spec/modelUsage.spec.js">See it here: Github Repository Test Suite</a>.<br/><strong>Stay tuned!</strong>
+                        We're working on a better documentation which should be online very soon. For now, you're best served by taking a look at our vast test suite, which demonstrates various use cases.
+                        <a href="https://github.com/Swimlane/angular-model-factory/blob/master/test/spec/modelUsage.spec.js">See it here: Github Repository Test Suite</a>
+                        .
+                        <br/> <strong>Stay tuned!</strong>
                     </span>
                 </div>
             </div>
         </div>
-        <article class="row docs-body">
-            {{ content }}
-        </article>
+        <article class="row docs-body">{{ content }}</article>
     </div>
+</div>
 </div>
