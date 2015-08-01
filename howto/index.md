@@ -75,7 +75,6 @@ angular.module('app', ['modelFactory'])
             person.$destroy();
         }
     });
-
 ```
 
 Here's a live example on Plunkr:

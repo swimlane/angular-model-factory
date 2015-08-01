@@ -80,39 +80,53 @@ angular.module('myModule', ['modelFactory'])
                 <div class="card deep-orange lighten-5">
                     <div class="card-content white-text">
 <pre><code class=" language-javascript" data-lang="javascript">
-myModule.controller('PersonController', function(PersonModel){
-    var vm = this;
-    vm.peopleList = [];
-    vm.savePerson = savePerson;
+angular.module('app', ['modelFactory'])
+    // defining a new Person model
+    .factory('Person', function($modelFactory){
+        return $modelFactory('/api/people');
+    })
+    .controller('PersonController', function(Person){
+        var vm = this;
+        vm.peopleList = [];
 
-    activate();
+        // events
+        vm.savePerson = savePerson;
+        vm.deletePerson = deletePerson;
 
-    ////////////////
+        activate();
 
-    function activate(){
-        PersonModel.query().then(function(result){
-            vm.peopleList = result;
-        });
-    }
+        ////////////////////////////
 
-    function savePerson(aPerson){
-        // aPerson is an instance of PersonModel
-        // created with the new keyword.
-        aPerson.save();
-    }
-});
+        function activate(){
+            Person.query().then(function(people){
+                vm.peopleList = people;
+            });
+        }
+
+        function savePerson(person){
+            // person is already an instance of a model factory
+            // model
+            person.$save().then(
+                function(){
+                    console.log('Person successfully saved!');
+                })
+                .catch(function(){
+                    console.error('Oops, there was an error saving the person');
+                });
+        }
+
+        function deletePerson(person){
+            person.$destroy();
+        }
+    });
 </code></pre>
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col s12 m12">
-                <div class="card-panel lime lighten-5">
-                    <span class="black-text">
-                        We're working on a better documentation which should be online very soon. For now, you're best served by taking a look at our vast test suite, which demonstrates various use cases. <a href="https://github.com/Swimlane/angular-model-factory/blob/master/test/spec/modelUsage.spec.js">See it here: Github Repository Test Suite</a>.<br/><strong>Stay tuned!</strong>
-                    </span>
-                </div>
+            <div class="col s12 m12" style="text-align:center">
+                <a href="./howto/" id="download-button" class="btn-large waves-effect waves-light orange">Check out our docs</a>
             </div>
         </div>
     </div>
