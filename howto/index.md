@@ -115,6 +115,49 @@ function PersonModel($modelFactory){
 }
 ```
 
+Instantiating a model-factory object is just like you would any other JavaScript object. You can pass an object directly to the constructor to initialize it.
+
+```javascript
+var person = new PersonModel({
+    name: 'Juri',
+    age: 30
+});
+
+expect(person.name).toBe('Juri');
+expect(person.age).toBe(30);
+```
+
+Just like with any plain JavaScript objects, you're free to directly set a property:
+
+```javascript
+var person = new PersonModel();
+person.name = 'Juri';
+
+expect(person.name).toBe('Juri');
+```
+
+By using the `$update(someObj)` function, you can update a whole set of properties by passing in the interested ones.
+
+```javascript
+var newModel = new PersonModel({
+    name: null
+});
+
+var newModelUpdate = new PersonModel({
+    name: 'elec29a',
+    language: {
+      de: 'hallo'
+    }
+});
+
+
+newModel.$update(newModelUpdate);
+
+expect(newModel.name).toEqual('elec29a');
+expect(newModel.language).toBeDefined();
+expect(newModel.language.de).toEqual('hallo');
+```
+
 ## Querying the backend
 
 Each model comes with a set of predefined static and per-instance functions. **Static functions** are used to fetch new instances from your API, basically to get new instances when you don't have some already. **Instance functions** are used to operate upon the data of your existing model instance, normally to either delete a given model, to save or update it with your backend API.
