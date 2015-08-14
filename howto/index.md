@@ -31,6 +31,82 @@ Alternatively you can get it on [Bower](http://bower.io/search/?q=angular-model-
 $ bower install angular-model-factory --save
 ```
 
+## JSPM
+
+JSPM is a popular package manager, especially used with SystemJS and ES6. Although model-factory is not yet written in ES6 (but [we're planning to](https://github.com/Swimlane/angular-model-factory/issues/25)), it obviously doesn't mean you cannot use it.
+
+<div class="card-panel lime lighten-5">
+    <span class="black-text">
+        <strong>Note,</strong> the experience isn't that great yet, <a href="https://github.com/Swimlane/angular-model-factory/issues/54">but we're ready to improve it</a>. Or even better, you know how to do it? Submit us a PR!
+    </span>
+</div>
+
+You can **install angular-model-factory** with JSPM as follows:
+
+```
+$ jspm install github:swimlane/angular-model-factory
+```
+
+Then install it's dependencies as the're not yet loaded automatically:
+
+```
+$ jspm install github:geraintluff/uri-templates
+$ jspm install github:flitbit/diff
+```
+
+Finally, adjust your `system.config.js`:
+
+```javascript
+System.config({
+    ...
+    meta: {
+        "github:swimlane/angular-model-factory@0.4.5/dist/angular-model-factory": {
+            "deps": [
+                "github:geraintluff/uri-templates@0.1.5/uri-templates",
+                "github:flitbit/diff@0.3.2/releases/deep-diff-0.3.2.min"
+            ]
+        }
+    },
+    map: {
+        "angular": "github:angular/bower-angular@1.3.15",
+        "angular-model-factory": "github:swimlane/angular-model-factory@0.4.5",
+        "flitbit/diff": "github:flitbit/diff@0.3.2",
+        "uri-templates": "github:geraintluff/uri-templates@0.1.5",
+        ...
+    },
+    ...
+});
+```
+
+This should be enough. You can now use it within your ES6 modules. First, define a model (i.e. a Person Model)..
+
+```javascript
+//person.js
+
+// @ngInject
+export default function($modelFactory){
+    return $modelFactory('/api/v1/people');
+}
+```
+
+..and reference it within your module
+
+```javascript
+import angular from 'angular';
+import modelFactory from 'angular-model-factory';
+import PersonModel from './person';
+
+export default angular
+    .module('myModule', ['modelFactory'])
+    .factory('Person', PersonModel);
+```
+
+<div class="card-panel lime lighten-5">
+    <span class="black-text">
+    <strong>Info: </strong> Want to get started with the newest stuff around SystemJS and ES6? <br/> Swimlane has an excellent <a href="https://github.com/Swimlane/angular-systemjs-seed">angular-systemjs-seed</a> project which helps you get started.
+    </span>
+</div>
+
 # Quickstart example
 
 Here's the quickstart example showing you some of the features
