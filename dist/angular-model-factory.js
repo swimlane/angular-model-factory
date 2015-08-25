@@ -1,6 +1,6 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v0.4.5 - 2015-07-22
+ * @version v0.4.7 - 2015-08-25
  * @link http://swimlane.github.io/angular-model-factory/
  * @author Austin McDaniel <amcdaniel2@gmail.com>, Juri Strumpflohner <juri.strumpflohner@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -619,15 +619,17 @@ module.provider('$modelFactory', function(){
                         // if we have a extra argument on this case we should assume its a
                         //
                         if(extras){
-                            data.param = extras;
-                            uri += '{?param*}';
+                            // data.param = extras;
+                            clone.params = extendDeep({}, clone.params, extras);
+                            // uri += '{?param*}';
                         }
                     } else if(clone.method === 'GET' && angular.isObject(data)){
                         // if its a GET request and its not the above, we can assume
                         // you want to do a query param like:
                         // ZooModel.query({ type: 'panda' }) and do /api/zoo?type=panda
-                        data = { param: data };
-                        uri += '{?param*}';
+                        // data = { param: data };
+                        clone.params = extendDeep({}, clone.params, data);
+                        // uri += '{?param*}';
                     }
                 } else {
                     uri = clone.url;
