@@ -8,11 +8,12 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('bower.json'),
+        npmpkg: grunt.file.readJSON('package.json'),
 
         meta: {
           banner: '/**\n' +
           ' * <%= pkg.description %>\n' +
-          ' * @version v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %>\n' +
+          ' * @version v<%= npmpkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %>\n' +
           ' * @link <%= pkg.homepage %>\n' +
           ' * @author <%= pkg.authors.join(", ") %>\n' +
           ' * @license MIT License, http://www.opensource.org/licenses/MIT\n' +
