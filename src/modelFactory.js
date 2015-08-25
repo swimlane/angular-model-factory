@@ -612,7 +612,7 @@ module.provider('$modelFactory', function(){
                         //
                         if(extras){
                             // data.param = extras;
-                            clone.params = extend({}, clone.params, extras);
+                            clone.params = extendDeep({}, clone.params, extras);
                             // uri += '{?param*}';
                         }
                     } else if(clone.method === 'GET' && angular.isObject(data)){
@@ -620,7 +620,7 @@ module.provider('$modelFactory', function(){
                         // you want to do a query param like:
                         // ZooModel.query({ type: 'panda' }) and do /api/zoo?type=panda
                         // data = { param: data };
-                        clone.params = extend({}, clone.params, data);
+                        clone.params = extendDeep({}, clone.params, data);
                         // uri += '{?param*}';
                     }
                 } else {
