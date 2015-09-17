@@ -2,3 +2,6 @@ node_modules/
 .idea/*
 _site/
 typings/
+jspm_packages
+npm-debug.log
+dist
