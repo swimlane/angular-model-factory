@@ -786,6 +786,8 @@ module.provider('$modelFactory', function(){
 
         return modelFactory;
     }];
+
+    return module;
 });
 
 });
