@@ -1,6 +1,6 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v0.4.8 - 2015-09-22
+ * @version v0.4.8 - 2015-09-23
  * @link http://swimlane.github.io/angular-model-factory/
  * @author Austin McDaniel <amcdaniel2@gmail.com>, Juri Strumpflohner <juri.strumpflohner@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -794,8 +794,7 @@ module.provider('$modelFactory', function(){
 
         return modelFactory;
     }];
-
-    return module;
 });
 
+return module;
 });
