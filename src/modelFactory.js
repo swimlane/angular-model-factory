@@ -3,13 +3,13 @@
 
 (function(global, factory) {
     if (typeof define === 'function' && define.amd) {
-        define(['angular', 'uri-templates'], factory);
+        define(['angular', 'uri-templates', 'deep-diff'], factory);
     } else if (typeof module !== 'undefined' && module.exports) {
-        module.exports = factory();
+        module.exports = factory(require('angular'), require('uri-templates'), require('deep-diff'));
     } else {
-        global.ModelFactory = factory(angular, UriTemplate);
+        global.ModelFactory = factory(global.angular, global.UriTemplate, global.DeepDiff);
     }
-})(this, function(angular, UriTemplate) {
+})(this, function(angular, UriTemplate, DeepDiff) {
 
 var module = angular.module('modelFactory', []);
 
