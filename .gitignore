@@ -2,3 +2,4 @@ node_modules/
 .idea/*
 _site/
 typings/
+jspm_packages
