@@ -10,8 +10,8 @@ node_js:
 before_install:
   - npm i -g npm@^2.0.0
   - npm install -g grunt
-  - npm install
   - npm install -g bower
+  - npm install
   - bower install
 before_script:
   - npm prune
