@@ -1,4 +1,6 @@
-# modelFactory [![Build Status](https://travis-ci.org/Swimlane/angular-model-factory.svg?branch=master)](https://travis-ci.org/Swimlane/model-factory) [![Codacy Badge](https://www.codacy.com/project/badge/d6659f50bd234f099738358a2a17bf9c)](https://www.codacy.com/public/amcdaniel2/model-factory) [![Join the chat at https://gitter.im/Swimlane/angular-model-factory](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Swimlane/angular-model-factory?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# modelFactory 
+
+[![Build Status](https://travis-ci.org/Swimlane/angular-model-factory.svg?branch=master)](https://travis-ci.org/Swimlane/model-factory) [![npm version](https://badge.fury.io/js/angular-model-factory.svg)](http://badge.fury.io/js/angular-model-factory) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release) [![Codacy Badge](https://www.codacy.com/project/badge/d6659f50bd234f099738358a2a17bf9c)](https://www.codacy.com/public/amcdaniel2/model-factory) [![Join the chat at https://gitter.im/Swimlane/angular-model-factory](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Swimlane/angular-model-factory?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 A light-weight model layer that bridges the gap between AngularJS and your RESTful APIs.
 
