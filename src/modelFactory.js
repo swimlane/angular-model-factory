@@ -483,11 +483,15 @@ module.provider('$modelFactory', function(){
                  * current instance.
                  * https://github.com/flitbit/diff
                  */
-                instance.$diff = function(){
-                    return DeepDiff.deep(old, instance, function(path, key) {
+                instance.$diff = function(version){
+                    var prevCommit = commits[version || commits.length - 1],
+                        currCommit = angular.toJson(instance);
+
+                    return DeepDiff.diff(JSON.parse(prevCommit), JSON.parse(currCommit), function(path, key) {
                         return key[0] === '$';
                     });
                 };
+
 
                 /**
                  * Commits the change the commits bucket for rollback later if needed.

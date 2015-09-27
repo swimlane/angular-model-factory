@@ -115,4 +115,32 @@ describe('A person model defined using modelFactory', function() {
 
     });
 
+    describe('when calling $diff', function() {
+        // Need to use `JSON.parse(JSON.stringify(...))` to clean up `deep-diff` array
+        function toPlainObject(value) {
+            return JSON.parse(JSON.stringify(value));
+        }
+
+        it('should return differences when model changed', function(){
+            var model = new PersonModel({
+                id: 1,
+                name: 'Juri'
+            });
+
+            delete model.id;
+
+            model.name = 'Marat';
+
+            expect(toPlainObject(model.$diff())).toEqual([{
+                kind: 'D',
+                path: ['id'],
+                lhs: 1
+            }, {
+                kind: 'E',
+                path: ['name'],
+                lhs: 'Juri',
+                rhs: 'Marat'
+            }]);
+        });
+    });
 });
