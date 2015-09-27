@@ -78,10 +78,16 @@ Another backbone model clone.  This one actually requires backbone and lodash.
 
 ## Install
 
-Install via bower
+Install via bower:
 
 ```
-bower install angular-model-factory --save
+$ bower install angular-model-factory --save
+```
+
+Install via npm:
+
+```
+$ npm install angular-model-factory --save
 ```
 
 Alternatively you can download/clone the repo and link the files in `dist/`. 
@@ -93,22 +99,9 @@ Alternatively you can download/clone the repo and link the files in `dist/`.
 - [uri-templates](https://github.com/geraintluff/uri-templates)
 
 
-## Development
+## Contribute
 
-### Prepare your environment
-* Install [Node.js](http://nodejs.org/) and NPM (should come with)
-* Install global dev dependencies: `npm install -g bower grunt-cli`
-* Install local dev dependencies: `npm install && bower install` in repository directory
-
-### Development Commands
-* `grunt build` to concat and build
-* `grunt karma` for continuous testing mode with karma (useful during development as tests will be run on each change)
-* `grunt karma:ci` for a one-time execution of the tests (used by Travis)
-
-## Contributing
-- Run the tests
-- Create a feature branch
-- When issuing a pull request, please exclude changes from the "dist" folder to avoid merge conflicts.
+Libraries like this live and get better with an active community. Have something to contribute? We'd love to see it. Just head over to our [contribution guidelines](CONTRIBUTING.md).
 
 ## Credits
 
