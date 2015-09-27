@@ -1,5 +1,7 @@
 node_modules/
+bower_components/
+jspm_packages/
 .idea/*
 _site/
 typings/
-jspm_packages
+dist/
