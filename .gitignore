@@ -5,3 +5,4 @@ jspm_packages/
 _site/
 typings/
 dist/
+*.log
