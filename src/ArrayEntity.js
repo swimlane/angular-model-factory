@@ -26,6 +26,7 @@ export class ArrayEntity extends Array {
     //      extend(value, options.list);
     //  }
 
+    super(...arguments);
   }
 
   push(val){

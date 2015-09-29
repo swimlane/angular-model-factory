@@ -18,7 +18,9 @@ var compilerOptions = {
   modules: 'system',
   moduleIds: false,
   comments: true,
-  compact: false
+  compact: false,
+  stage: 1,
+  optional: ["runtime"]
 };
 
 var path = {
@@ -75,7 +77,7 @@ gulp.task('serve', ['es6'], function (done) {
 });
 
 gulp.task('watch', ['serve'], function () {
-  var watcher = gulp.watch([path.source], ['compile']);
+  var watcher = gulp.watch([path.source], ['es6']);
   watcher.on('change', function (event) {
     console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
   });

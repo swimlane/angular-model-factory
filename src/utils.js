@@ -1,9 +1,12 @@
+import angular from 'angular';
+import { instanceKeywords } from './keywords';
+
 // Deep extends
 // http://stackoverflow.com/questions/15310935/angularjs-extend-recursive
 export let extendDeep = function(dst) {
-  forEach(arguments, function(obj) {
+  angular.forEach(arguments, function(obj) {
     if (obj !== dst) {
-      forEach(obj, function(value, key) {
+      angular.forEach(obj, function(value, key) {
         if (instanceKeywords.indexOf(key) === -1) {
           if (dst[key]) {
             if (angular.isArray(dst[key])) {
@@ -36,7 +39,7 @@ export let shallowClearAndCopy = function(src, dst) {
 
   // Remove any properties in destination that were not
   // returned from the source
-  forEach(dst, function(value, key) {
+  angular.forEach(dst, function(value, key) {
     if (!src.hasOwnProperty(key) && key.charAt(0) !== '$') {
       delete dst[key];
     }

@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="viewport" content="width = device-width, minimal-ui, initial-scale = 1, user-scalable = no" />
     <meta name="apple-mobile-web-app-title" content="Datagrid">
-    <title>Datagrid</title>
+    <title>MF</title>
     <base href="/">
     <style>
       *, *:after, *:before {
@@ -32,6 +32,7 @@
 
       .wrap{
         width:75%;
+        padding:20px;
         margin:50px 50px 50px 50px;
         background:#FFF;
         -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
@@ -55,12 +56,16 @@
       System.import('modelFactory').then(function(mf){
         var module = angular.module('app', [ mf.default.name ]);
 
-        module.run(function($modelFactoryProvider){
+        module.run(function($modelFactory){
           //$modelFactoryProvider.defaultOptions.prefix = 'api';
         })
 
-        module.controller('HomeController', function($scope){
+        module.factory('AnimalModel', function($modelFactory){
+          return $modelFactory('api/animal');
+        })
 
+        module.controller('HomeController', function($scope, AnimalModel){
+          console.log(AnimalModel)
 
         });
       });

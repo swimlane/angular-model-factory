@@ -32,7 +32,10 @@
     "directories": {},
     "dependencies": {
       "angular": "npm:angular@^1.4.5",
-      "angular-mocks": "npm:angular-mocks@^1.4.6"
+      "angular-mocks": "npm:angular-mocks@^1.4.6",
+      "deep-diff": "npm:deep-diff@^0.3.2",
+      "rx": "npm:rx@^4.0.0",
+      "uri-templates": "npm:uri-templates@^0.1.7"
     },
     "devDependencies": {
       "babel": "npm:babel-core@^5.8.22",
