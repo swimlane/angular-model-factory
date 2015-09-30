@@ -35,7 +35,7 @@
       // - $destroy
     }
     
-    function ZooService($model){
+    export function ZooService($model){
       return $model('zoo', {
         mixins: [ History, Diff ],
         actions: {
@@ -53,9 +53,12 @@
 
     let module = angular.module('app', []);
     module.factory('ZooModel', ZooService);
+    
     module.controller((ZooModel) => {
+    
       let model = new ZooModel({ location: 'San Diego' });
       let result = yield model.$save();
+      
     });
 
 
