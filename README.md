@@ -3,59 +3,60 @@
 
 ### API 
 
-  export class Animal : BaseModelFactory {
-  
-    // diff mixin
-    // - $diff
+    export class Animal extends BaseModelFactory {
     
-    // history mixin
-    // - $commit
-    // - $rollback
-    // - $update
+      // diff mixin
+      // - $diff
+      
+      // history mixin
+      // - $commit
+      // - $rollback
+      // - $update
+      
+      // @default(false)
+      // bar
+      
+      //static get defaults(){
+      //  return {
+      //    bar: true,
+      //    foo: false
+      //  }
+      //}
+      
+      // static get mappings(){
+      //  if(this.food === 1) return 'meat';
+      //  if(this.food === 2) return 'bamboo';
+      // }
+      
+    }
     
-    // @default(false)
-    // bar
+    export class Zoo extends ServiceModelFactory {
+      // - $save
+      // - $destroy
+    }
     
-    //static get defaults(){
-    //  return {
-    //    bar: true,
-    //    foo: false
-    //  }
-    //}
-    
-    // static get mappings(){
-    //  if(this.food === 1) return 'meat';
-    //  if(this.food === 2) return 'bamboo';
-    // }
-  }
-  
-  export class Zoo : ServiceModelFactory {
-    // - $save
-    // - $destroy
-  }
-  
-  function ZooService($model){
-    return $model('zoo', {
-      mixins: [ History, Diff ],
-      actions: {
-       getAnimals { 
-          asClass: Animal,
-          url: '/animals' 
-        }
-      },
-      asClass: Zoo // if not defined, uses base service
-    })
-  }
+    function ZooService($model){
+      return $model('zoo', {
+        mixins: [ History, Diff ],
+        actions: {
+         getAnimals { 
+            asClass: Animal,
+            url: '/animals' 
+          }
+        },
+        asClass: Zoo // if not defined, uses base service
+      })
+    }
   
 
 ### Example Usage 
 
-  let module = angular.module('app', []);
-  module.factory('ZooModel', ZooService);
-  module.controller((ZooModel) => {
-    let model = new ZooModel({ location: 'San Diego' });
-    let result = yield model.$save();
-  });
+    let module = angular.module('app', []);
+    module.factory('ZooModel', ZooService);
+    module.controller((ZooModel) => {
+      let model = new ZooModel({ location: 'San Diego' });
+      let result = yield model.$save();
+    });
 
 
 ## Credits
