@@ -13,20 +13,19 @@
       // - $rollback
       // - $update
       
-      // @default(false)
-      // bar
+      static get defaults() {
+        return {
+          type: 'panda'
+        };
+      }
       
-      //static get defaults(){
-      //  return {
-      //    bar: true,
-      //    foo: false
-      //  }
-      //}
-      
-      // static get mappings(){
-      //  if(this.food === 1) return 'meat';
-      //  if(this.food === 2) return 'bamboo';
-      // }
+      static get mappings(){
+        return {
+          food: (type) => { 
+            return type === 'milk' ? 'cow' : 'panda';
+          }
+        };
+      }
       
     }
     
