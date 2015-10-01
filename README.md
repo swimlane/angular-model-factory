@@ -65,6 +65,7 @@
 
 - https://nvbn.github.io/2015/03/13/angular-without-callbacks/
 - https://github.com/nvbn/ng-gen/blob/master/dist/ng-gen.js
+- https://github.com/jeffmo/es-class-static-properties-and-fields
 
 
 
