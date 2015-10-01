@@ -12,6 +12,7 @@ var ngAnnotate = require('gulp-ng-annotate');
 //var rename = require('gulp-rename');
 //var uglify = require('gulp-uglify');
 var header = require('gulp-header');
+var sourcemaps = require('gulp-sourcemaps');
 
 
 var compilerOptions = {
@@ -46,10 +47,12 @@ gulp.task('es6', function () {
   return gulp.src(path.source)
     .pipe(plumber())
     .pipe(changed(path.output, { extension: '.js' }))
+    .pipe(sourcemaps.init({ loadMaps: true }))
     .pipe(babel(compilerOptions))
     .pipe(ngAnnotate({
       gulpWarnings: false
     }))
+    .pipe(sourcemaps.write("/sourcemaps", { sourceRoot: '/src' }))
     .pipe(gulp.dest(path.output))
     .pipe(browserSync.reload({ stream: true }));
 });

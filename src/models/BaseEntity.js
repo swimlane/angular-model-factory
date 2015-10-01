@@ -1,14 +1,36 @@
 import angular from 'angular';
 import diff from 'deep-diff';
 import rx from 'rx';
-import { shallowClearAndCopy } from './utils';
+import { shallowClearAndCopy } from '../utils';
 
 export class BaseEntity {
 
-  constructor(data){
+  static get $cache() { 
+    return this.$cacheFactory(url);
+  }
 
+  constructor(data){
     // copy values to the instance
     angular.extend(this, data);
+
+    // setup hooks
+    Object.defineProperty(this, '$hooks', {
+      value: {
+        before: {
+          create: [],
+          update: [],
+          remove: [],
+          save: []
+        },
+        after: {
+          create: [],
+          update: [],
+          remove: [],
+          save: []
+        }
+      },
+      enumerable: false
+    });
 
     // https://github.com/Reactive-Extensions/RxJS/blob/master/doc/gettingstarted/creating.md
     // rx.Observable

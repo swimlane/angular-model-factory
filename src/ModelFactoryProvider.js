@@ -1,7 +1,8 @@
 import angular from 'angular';
 import { extendDeep } from './utils';
 import { defaults } from './defaults';
-import { ServiceEntity } from './ServiceEntity';
+import { ServiceEntity } from './models/ServiceEntity';
+import { BuildRequest } from './builder';
 
 export function ModelFactoryProvider(){
 
@@ -18,7 +19,7 @@ export function ModelFactoryProvider(){
        *      { key: url, value: promise }
        *
        */
-      var promiseTracker = {};
+      let promiseTracker = {};
 
       // copy so we also extend our defaults and not override
       //var actions = angular.extend({}, defaultOptions.actions, options.actions);
@@ -28,6 +29,17 @@ export function ModelFactoryProvider(){
       ServiceEntity.$rootScope = $rootScope;
       ServiceEntity.$http = $http;
       ServiceEntity.$cacheFactory = $cacheFactory;
+
+      // attach actions
+      angular.forEach(options.actions, (v, k) => {
+        // don't do base or instance fns
+        if(k === 'base' || k[0] === '$') return;
+
+        ServiceEntity[k] = function(){
+          let args = Array.prototype.slice.call(arguments);
+          return BuildRequest.apply(this, [k, v].concat(args));
+        };
+      });
 
       return ServiceEntity;
     };

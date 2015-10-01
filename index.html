@@ -46,10 +46,13 @@
 
     <section class="wrap">
       <h1>Testing</h1>
+    <button type="button" ng-click="click()">Click me</button>
+    <button type="button" ng-click="save()">Save</button>
     </section>
 
     <script src="../jspm_packages/system.js"></script>
     <script src="../config.js"></script>
+
 
     <script>
 
@@ -66,6 +69,28 @@
 
         module.controller('HomeController', function($scope, AnimalModel){
           console.log(AnimalModel)
+          var model;
+
+          $scope.click = function(){
+            debugger;
+
+            model = new AnimalModel({
+              name: 'austin'
+            })
+
+            debugger;
+
+            return model;
+          }
+
+          $scope.save = function(){
+            model = model || $scope.click();
+            debugger;
+
+            model.$save();
+
+            debugger;
+          }
 
         });
       });
