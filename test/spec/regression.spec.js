@@ -28,6 +28,11 @@ describe('A person model defined using modelFactory', function() {
                             params: {
                                 Range: 'All'
                             }
+                        },
+
+                        '$saveChanges': {
+                            url: '{id}/changes',
+                            method: 'POST'
                         }
                     }
                 });
@@ -57,6 +62,16 @@ describe('A person model defined using modelFactory', function() {
         });
 
         Department.lookup({ Range: customParam });
+
+        $httpBackend.flush();
+    });
+
+    it('should properly send the content in the body', function() {
+        var someDepartment = new Department({ id: 123, name: 'Human Resources' });
+        var objToSend = { test: 'abc', isValid: true };
+
+        $httpBackend.expectPOST('department/123/changes', JSON.stringify(objToSend)).respond(200);
+        someDepartment.$saveChanges(objToSend);
 
         $httpBackend.flush();
     });
