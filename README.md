@@ -13,6 +13,9 @@
       // - $rollback
       // - $update
       
+      // objArrConverter mixin
+      // converts objs to array and vice versus
+      
       static get defaults() {
         return {
           type: 'panda'
@@ -23,7 +26,8 @@
         return {
           food: (type) => { 
             return type === 'milk' ? 'cow' : 'panda';
-          }
+          },
+          zoo: this.hasMany(Zoo)
         };
       }
       
@@ -36,7 +40,7 @@
     
     export function ZooService($model){
       return $model('zoo', {
-        mixins: [ History, Diff ],
+        mixins: [ History, Diff, ObjArrConverter ],
         actions: {
          getAnimals { 
             asClass: Animal,
