@@ -1,6 +1,6 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v1.0.2 - 2015-09-27
+ * @version v1.0.3 - 2015-11-09
  * @link http://swimlane.github.io/angular-model-factory/
  * @author Austin McDaniel <amcdaniel2@gmail.com>, Juri Strumpflohner <juri.strumpflohner@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -28,7 +28,7 @@
 	var uriTemplateSuffices = {
 		"*": true
 	};
-	
+
 	function notReallyPercentEncode(string) {
 		return encodeURI(string).replace(/%25[0-9][0-9]/g, function (doubleEncoded) {
 			return "%" + doubleEncoded.substring(3);
@@ -180,7 +180,7 @@
 				for (var i = 0; i < arrayValue.length; i++) {
 					var stringValue = arrayValue[i];
 					if (shouldEscape && stringValue.indexOf('=') != -1) {
-						hasEquals = true;  
+						hasEquals = true;
 					}
 					var innerArrayValue = stringValue.split(",");
 					for (var j = 0; j < innerArrayValue.length; j++) {
@@ -194,11 +194,15 @@
 						arrayValue[i] = innerArrayValue;
 					}
 				}
-			
+
 				if (showVariables || hasEquals) {
 					var objectValue = resultObj[varName] || {};
 					for (var j = 0; j < arrayValue.length; j++) {
 						var innerValue = stringValue;
+						if (showVariables && !innerValue) {
+							// The empty string isn't a valid variable, so if our value is zero-length we have nothing
+							continue;
+						}
 						if (typeof arrayValue[j] == "string") {
 							var stringValue = arrayValue[j];
 							var innerVarName = stringValue.split("=", 1)[0];
@@ -274,8 +278,13 @@
 				}
 				for (var i = 0; i < arrayValue.length; i++) {
 					var stringValue = arrayValue[i];
+					if (!stringValue && showVariables) {
+						// The empty string isn't a valid variable, so if our value is zero-length we have nothing
+						continue;
+					}
 					var innerArrayValue = stringValue.split(",");
-				
+					var hasEquals = false;
+
 					if (showVariables) {
 						var stringValue = innerArrayValue[0]; // using innerArrayValue
 						var varName = stringValue.split("=", 1)[0];
@@ -339,6 +348,13 @@
 			varNames = varNames.concat(funcs.substitution.varNames);
 		}
 		this.fill = function (valueFunction) {
+			if (valueFunction && typeof valueFunction !== 'function') {
+				var value = valueFunction;
+				valueFunction = function (varName) {
+					return value[varName];
+				};
+			}
+
 			var result = textParts[0];
 			for (var i = 0; i < substitutions.length; i++) {
 				var substitution = substitutions[i];
@@ -378,6 +394,7 @@
 						substituted = substituted.substring(nextPartPos);
 					} else if (prefixes[offset + 1]) {
 						var nextPartPos = substituted.indexOf(prefixes[offset + 1]);
+						if (nextPartPos === -1) nextPartPos = substituted.length;
 						var stringValue = substituted.substring(0, nextPartPos);
 						substituted = substituted.substring(nextPartPos);
 					} else if (textParts.length > offset + 2) {
@@ -403,14 +420,13 @@
 			return this.template;
 		},
 		fillFromObject: function (obj) {
-			return this.fill(function (varName) {
-				return obj[varName];
-			});
+			return this.fill(obj);
 		}
 	};
-	
+
 	return UriTemplate;
 });
+
 /* global angular:false */
 'use strict';
 

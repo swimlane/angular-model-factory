@@ -26,6 +26,7 @@
     "publish-latest": "^1.1.2",
     "semantic-release": "^4.3.5"
   },
+  "main": "./dist/angular-model-factory.js",
   "scripts": {
     "build": "grunt build",
     "prepublish": "npm run build",
@@ -37,5 +38,5 @@
     "type": "git",
     "url": "https://github.com/Swimlane/angular-model-factory.git"
   },
-  "version": "1.0.2"
+  "version": "1.0.3"
 }
