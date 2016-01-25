@@ -1202,9 +1202,6 @@ describe('A person model defined using modelFactory', function() {
                             get: {
                                 wrap:false,
                                 afterRequest: function (res) {
-                                    /* eslint no-debugger:2 */
-                                    debugger;
-                                    /* eslint no-debugger:1 */
                                     return res.data.newData;
                                 }
                             }
