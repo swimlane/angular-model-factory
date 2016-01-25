@@ -1192,6 +1192,87 @@ describe('A person model defined using modelFactory', function() {
 
     });
 
+    describe('when afterRequest returns data', function () {
+        var DummyGetModel, $httpBackend;
+        beforeEach(function () {
+            angular.module('test-module', ['modelFactory'])
+                .factory('DummyGetModel', function ($modelFactory) {
+                    return $modelFactory('/test/get/afterRequestTest', {
+                        actions: {
+                            get: {
+                                wrap:false,
+                                afterRequest: function (res) {
+                                    /* eslint no-debugger:2 */
+                                    debugger;
+                                    /* eslint no-debugger:1 */
+                                    return res.data.newData;
+                                }
+                            }
+                        }
+                    });
+                });
+        });
+
+        beforeEach(angular.mock.module('test-module'));
+
+        beforeEach(inject(function (_DummyGetModel_, _$httpBackend_) {
+            DummyGetModel = _DummyGetModel_;
+            $httpBackend = _$httpBackend_;
+        }));
+
+        it('should reset data if returns null', function(){
+            DummyGetModel.get(1).then(function(data){
+               expect(data).toBeNull();
+            });
+
+            $httpBackend.expectGET('/test/get/afterRequestTest/1').respond(200, {
+                'data': {
+                    newData: null
+                }
+            });
+            $httpBackend.flush();
+        });
+
+        it('should reset data if returns 0', function(){
+            DummyGetModel.get(1).then(function(data){
+                expect(data).toBe(0);
+            });
+
+            $httpBackend.expectGET('/test/get/afterRequestTest/1').respond(200, {
+                'data': {
+                    newData: 0
+                }
+            });
+            $httpBackend.flush();
+        });
+
+        it('should reset data if returns ""', function(){
+            DummyGetModel.get(1).then(function(data){
+                expect(data).toBe('');
+            });
+
+            $httpBackend.expectGET('/test/get/afterRequestTest/1').respond(200, {
+                'data': {
+                    newData: ''
+                }
+            });
+            $httpBackend.flush();
+        });
+
+        it('should not reset data if returns undefined', function(){
+            DummyGetModel.get(1).then(function(data){
+                expect(data.newData).toBe();
+            });
+
+            $httpBackend.expectGET('/test/get/afterRequestTest/1').respond(200, {
+                'data': {
+                    newData: undefined
+                }
+            });
+            $httpBackend.flush();
+        });
+    });
+
     describe('regression test',function(){
         var Contact, Phone, Address;
 

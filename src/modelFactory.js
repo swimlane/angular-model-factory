@@ -673,7 +673,7 @@ module.provider('$modelFactory', function(){
                     // after callbacks
                     if(params.afterRequest) {
                         var transform = params.afterRequest(response.data);
-                        if(transform) {
+                        if(!angular.isUndefined(transform)) {
                             response.data = transform;
                         }
                     }
