@@ -1,10 +1,11 @@
 /**
  * modelFactory makes working with RESTful APIs in AngularJS easy
- * @version v0.2.10 - 2015-05-06
+ * @version v0.2.12 - 2016-01-27
  * @link https://github.com/swimlane/model-factory
  * @author Austin McDaniel <amcdaniel2@gmail.com>, Juri Strumpflohner <juri.strumpflohner@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
+
 /* global angular:false */
 'use strict';
 
@@ -201,7 +202,14 @@ module.provider('$modelFactory', function(){
                 /**
                  * By default, do not cache the requests.
                  */
-                cache: false
+                cache: false,
+
+                /**
+                 * Throttles the request. If a second request with the same signature is made
+                 * before the first one resolves, it returns the promise of the first one
+                 * instead of sending a new request
+                 */
+                throttle: false
             },
             'get': {
                 method: 'GET'
@@ -467,7 +475,7 @@ module.provider('$modelFactory', function(){
                         if(arr){
                             arr.splice(arr.indexOf(instance), 1);
                         }
-                        
+
                         $rootScope.$broadcast(prettyName + '-destroyed', instance);
                     }, function(){
                         // rejected
@@ -637,7 +645,7 @@ module.provider('$modelFactory', function(){
             Model.$call = function(params){
                 // if we have the promise in queue, return it
                 var signature = params.method + ':' + params.url;
-                if (promiseTracker[signature]) {
+                if (params.throttle && promiseTracker[signature]) {
                     return promiseTracker[signature];
                 }
 
