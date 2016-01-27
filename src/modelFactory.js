@@ -194,7 +194,14 @@ module.provider('$modelFactory', function(){
                 /**
                  * By default, do not cache the requests.
                  */
-                cache: false
+                cache: false,
+
+                /**
+                 * Throttles the request. If a second request with the same signature is made
+                 * before the first one resolves, it returns the promise of the first one
+                 * instead of sending a new request
+                 */
+                throttle: false
             },
             'get': {
                 method: 'GET'
@@ -460,7 +467,7 @@ module.provider('$modelFactory', function(){
                         if(arr){
                             arr.splice(arr.indexOf(instance), 1);
                         }
-                        
+
                         $rootScope.$broadcast(prettyName + '-destroyed', instance);
                     }, function(){
                         // rejected
@@ -630,7 +637,7 @@ module.provider('$modelFactory', function(){
             Model.$call = function(params){
                 // if we have the promise in queue, return it
                 var signature = params.method + ':' + params.url;
-                if (promiseTracker[signature]) {
+                if (params.throttle && promiseTracker[signature]) {
                     return promiseTracker[signature];
                 }
 
