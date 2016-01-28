@@ -14,7 +14,8 @@
 var module = angular.module('modelFactory', []);
 
 // compression
-var forEach = angular.forEach,
+var isUndefined = angular.isUndefined,
+    forEach = angular.forEach,
     extend = angular.extend,
     copy = angular.copy;
 
@@ -673,7 +674,7 @@ module.provider('$modelFactory', function(){
                     // after callbacks
                     if(params.afterRequest) {
                         var transform = params.afterRequest(response.data);
-                        if(transform) {
+                        if(!isUndefined(transform)) {
                             response.data = transform;
                         }
                     }
