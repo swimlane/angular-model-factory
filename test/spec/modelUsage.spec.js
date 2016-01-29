@@ -715,6 +715,11 @@ describe('A person model defined using modelFactory', function() {
                               url: 'child/{name}/some/subpath'
                           },
 
+                          deleteLink: {
+                              method: 'DELETE',
+                              url: 'path/{id}/links/{linkId}'
+                          },
+
                           // instance function
                           '$serverCopy': {
                               method: 'POST',
@@ -742,6 +747,14 @@ describe('A person model defined using modelFactory', function() {
             PersonModel.getById({ id: 123 });
 
             $httpBackend.expectGET('/api/people/child/123/some/subpath').respond(200, []);
+            $httpBackend.flush();
+        });
+
+
+        it('should properly convert a static DELETE request', function(){
+            PersonModel.deleteLink({ id: 123, linkId: '111' });
+
+            $httpBackend.expectDELETE('/api/people/path/123/links/111').respond(200, []);
             $httpBackend.flush();
         });
 
