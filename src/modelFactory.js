@@ -593,7 +593,9 @@ module.provider('$modelFactory', function(){
 
                     // if we have a url defined, append to base
                     if(clone.url) {
-                        uri += '/' + clone.url;
+                        //check if we need to add slash, or we only duplicate it
+                        var requiredSlash = !/^(\/|{\/)/.test(clone.url);
+                        uri += requiredSlash ? '/' + clone.url : clone.url;
                     }
 
 
@@ -602,7 +604,7 @@ module.provider('$modelFactory', function(){
 
                     // attach the pk referece by default if it is a 'core' type
                     if(action === 'get' || action === 'post' || action === 'update' || action === 'delete'){
-                        uri += '/{' + options.pk + '}';
+                        uri += '{/' + options.pk + '}';
                     }
 
                     if(clone.method === 'GET' && (angular.isString(data) || angular.isNumber(data))){

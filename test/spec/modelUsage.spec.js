@@ -1270,6 +1270,70 @@ describe('A person model defined using modelFactory', function() {
         });
     });
 
+
+    describe('when action url (or action template url) contains slash', function () {
+        var DummyGetModel, $httpBackend;
+        beforeEach(function () {
+            angular.module('test-module', ['modelFactory'])
+                .factory('DummyGetModel', function ($modelFactory) {
+                    return $modelFactory('/test/get/actionSlashTest', {
+                        actions: {
+                            get: {
+                                url: '{/templateParam,templateParam2}'
+                            },
+                            query: {
+                                url: '/simpleUrl'
+                            }
+                        }
+                    });
+                });
+        });
+
+        beforeEach(angular.mock.module('test-module'));
+
+        beforeEach(inject(function (_DummyGetModel_, _$httpBackend_) {
+            DummyGetModel = _DummyGetModel_;
+            $httpBackend = _$httpBackend_;
+        }));
+
+        it('should build query with template params and no duplicate slashes', function () {
+            DummyGetModel.get({
+                templateParam: '123',
+                templateParam2: '456'
+            });
+
+            $httpBackend.expectGET('/test/get/actionSlashTest/123/456').respond(200);
+            $httpBackend.flush();
+        });
+
+        it('should set pk as query param, if we have path params as template', function () {
+            DummyGetModel.get({
+                templateParam: '123',
+                templateParam2: '456',
+                id: 0
+            });
+
+            $httpBackend.expectGET('/test/get/actionSlashTest/123/456?id=0').respond(200);
+            $httpBackend.flush();
+        });
+
+        it('should query data without duplicate slash', function () {
+            DummyGetModel.query();
+
+            $httpBackend.expectGET('/test/get/actionSlashTest/simpleUrl').respond(200);
+            $httpBackend.flush();
+        });
+
+        it('should query data without duplicate slash and add query params', function () {
+            DummyGetModel.query({
+                query: 'param'
+            });
+
+            $httpBackend.expectGET('/test/get/actionSlashTest/simpleUrl?query=param').respond(200);
+            $httpBackend.flush();
+        });
+    });
+
     describe('regression test',function(){
         var Contact, Phone, Address;
 
