@@ -650,7 +650,7 @@ module.provider('$modelFactory', function(){
              */
             Model.$call = function(params){
                 // if we have the promise in queue, return it
-                var signature = params.method + ':' + params.url;
+                var signature = params.method + ':' + params.url + ':' + angular.toJson(params.params);
                 if (promiseTracker[signature]) {
                     return promiseTracker[signature];
                 }
