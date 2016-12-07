@@ -649,16 +649,22 @@ module.provider('$modelFactory', function(){
              * callback before/after and state setting.
              */
             Model.$call = function(params){
+                // method which do not return the same result
+                // on multiple execution
+                var isIdempotent = params.method !== 'POST';
+
                 // if we have the promise in queue, return it
                 var signature = params.method + ':' + params.url;
-                if (promiseTracker[signature]) {
+                if (isIdempotent && promiseTracker[signature]) {
                     return promiseTracker[signature];
                 }
 
                 var def = $q.defer();
 
-                // set the queue for this promise
-                promiseTracker[signature] = def.promise;
+                if (isIdempotent) {
+                    // set the queue for this promise
+                    promiseTracker[signature] = def.promise;
+                }
 
                 // copy the data so we can manipulate
                 // it before the request and not affect
@@ -702,7 +708,9 @@ module.provider('$modelFactory', function(){
                         def.resolve();
                     }
                 }, def.reject).finally(function () {
-                    promiseTracker[signature] = undefined;
+                    if (isIdempotent) {
+                        promiseTracker[signature] = undefined;
+                    }
                 });
 
                 return def.promise;

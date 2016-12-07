@@ -41,6 +41,27 @@ describe('A person model defined using modelFactory', function() {
     //     });
     // });
 
+    describe('when creating a new model object', function() {
+
+        it('calling $save on two new models at the same time should submit two posts', function() {
+            var firstNewModel = new PersonModel({
+                name: 'Juri'
+            });
+            var secondNewModel = new PersonModel({
+                name: 'Hans'
+            });
+
+            $httpBackend.expectPOST('/api/people', JSON.stringify(firstNewModel)).respond(200, '');
+            $httpBackend.expectPOST('/api/people', JSON.stringify(secondNewModel)).respond(200, '');
+
+            firstNewModel.$save();
+            secondNewModel.$save();
+
+            $httpBackend.flush();
+        });
+
+    });
+
     describe('when copying a model object', function() {
 
         it('calling $save on a new model should submit the copied values', function() {
