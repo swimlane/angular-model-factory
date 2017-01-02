@@ -1283,6 +1283,66 @@ describe('A person model defined using modelFactory', function() {
         });
     });
 
+    describe('when params are path params', function(){
+        var DummyModel, $httpBackend;
+
+        var params = {
+            pathParam1: 'test',
+            pathParam2: 123
+        };
+
+        var paramsCopy = angular.copy(params);
+
+        beforeEach(function () {
+            angular.module('test-module', ['modelFactory'])
+                .factory('DummyModel', function ($modelFactory) {
+                    return $modelFactory('/test/pathParamsTest{/pathParam1,pathParam2}', {});
+                });
+        });
+
+        beforeEach(angular.mock.module('test-module'));
+
+        beforeEach(inject(function (_DummyModel_, _$httpBackend_) {
+            DummyModel = _DummyModel_;
+            $httpBackend = _$httpBackend_;
+        }));
+
+        it('get request should not change original params object', function(){
+            DummyModel.get(params);
+
+            $httpBackend.expectGET('/test/pathParamsTest/test/123').respond(200);
+            expect(params).toEqual(paramsCopy);
+            $httpBackend.flush();
+            expect(params).toEqual(paramsCopy);
+        });
+
+        it('post request should not change original params object', function(){
+            DummyModel.post(params);
+
+            $httpBackend.expectPOST('/test/pathParamsTest/test/123').respond(200);
+            expect(params).toEqual(paramsCopy);
+            $httpBackend.flush();
+            expect(params).toEqual(paramsCopy);
+        });
+
+        it('update request should not change original params object', function(){
+            DummyModel.update(params, {});
+
+            $httpBackend.expectPUT('/test/pathParamsTest/test/123').respond(200);
+            expect(params).toEqual(paramsCopy);
+            $httpBackend.flush();
+            expect(params).toEqual(paramsCopy);
+        });
+
+        it('delete request should not change original params object', function(){
+            DummyModel.delete(params, {});
+
+            $httpBackend.expectDELETE('/test/pathParamsTest/test/123').respond(200);
+            expect(params).toEqual(paramsCopy);
+            $httpBackend.flush();
+            expect(params).toEqual(paramsCopy);
+        });
+    });
 
     describe('when action url (or action template url) contains slash', function () {
         var DummyGetModel, $httpBackend;

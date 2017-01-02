@@ -566,8 +566,10 @@ module.provider('$modelFactory', function(){
             /**
              * Builds the request for a set of actions.
              */
-            Model.$buildRequest = function(action, param, data, extras){
+            Model.$buildRequest = function(action, param, requestData, extras){
                 var clone = copy(options.actions.base);
+                var data = copy(requestData);
+
                 extend(clone, copy(param));
 
                 // if we explicity call cache
